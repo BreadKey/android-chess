@@ -21,13 +21,7 @@ public class ChessGameTest {
     }
 
     private void printChessBoard() {
-        List<Integer> reversedRanks = new ArrayList<>();
         for(int rank: ChessBoard.ranks) {
-            reversedRanks.add(rank);
-        }
-        Collections.reverse(reversedRanks);
-
-        for(int rank: reversedRanks) {
             System.out.print(String.valueOf(rank) + "\t");
             for(char file: ChessBoard.files) {
                 ChessPiece piece = chessGame.getPieceAt(file, rank);

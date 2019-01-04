@@ -5,7 +5,7 @@ import java.util.List;
 
 public  class ChessBoard {
     public static final List<Character> files = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
-    public static final List<Integer> ranks = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);
+    public static final List<Integer> ranks = Arrays.asList(8, 7, 6, 5, 4, 3, 2, 1);
     Square[][] squares;
     public ChessBoard() {
         createSquares();
