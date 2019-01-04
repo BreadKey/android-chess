@@ -18,7 +18,7 @@ public  class ChessBoard {
         }
     }
 
-    private final List<Integer> rankRange = Arrays.asList(1, 2, 3, 4, 5, 6, 7);
+    private final List<Integer> rankRange = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);
     Square[][] squares;
     public ChessBoard() {
         createSquares();
