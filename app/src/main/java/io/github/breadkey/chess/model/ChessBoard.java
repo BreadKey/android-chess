@@ -1,6 +1,8 @@
 package io.github.breadkey.chess.model;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public  class ChessBoard {
     public enum Files {
@@ -16,15 +18,14 @@ public  class ChessBoard {
         }
     }
 
-    private final int[] rankRange = {1, 2, 3, 4, 5, 6, 7};
-
+    private final List<Integer> rankRange = Arrays.asList(1, 2, 3, 4, 5, 6, 7);
     Square[][] squares;
     public ChessBoard() {
         createSquares();
     }
 
     private void createSquares() {
-        squares = new Square[Files.values().length][rankRange.length];
+        squares = new Square[Files.values().length][rankRange.size()];
 
         for (Files file: Files.values()) {
             for (int rank: rankRange) {
@@ -34,11 +35,28 @@ public  class ChessBoard {
     }
 
     public void placePiece(Files file, int rank, ChessPiece piece) {
+        if (!rankRange.contains(rank)) {
+            return;
+        }
+
         squares[file.getValue()][rank - 1].setPieceOnSquare(piece);
     }
 
     public ChessPiece getPieceAt(Files file, int rank) {
         return squares[file.getValue()][rank - 1].getPieceOnSquare();
+    }
+
+    public int countPieces() {
+        int count = 0;
+        for (Files file: Files.values()) {
+            for (int rank: rankRange) {
+                if (squares[file.getValue()][rank - 1].getPieceOnSquare() != null) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
     }
 }
 
