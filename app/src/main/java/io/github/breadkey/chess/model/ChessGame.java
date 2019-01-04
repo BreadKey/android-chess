@@ -66,4 +66,8 @@ public class ChessGame {
         chessBoard.placePiece('e', 1, new King(Division.White));
         chessBoard.placePiece('e', 8, new King(Division.Black));
     }
+
+    public ChessPiece getPieceAt(char file, int rank) {
+        return chessBoard.getPieceAt(file, rank);
+    }
 }
