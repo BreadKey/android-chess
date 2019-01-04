@@ -16,13 +16,6 @@ public class ChessBoardTest {
    }
 
     @Test
-    public void fileValueIsCorrect() {
-        int aValue = ChessBoard.Files.a.getValue();
-
-        assertEquals(0, aValue);
-    }
-
-    @Test
     public void squaresAreCreated() {
         Square firstSquare = chessBoard.squares[0][0];
 
@@ -31,16 +24,18 @@ public class ChessBoardTest {
 
     @Test
     public void placePawnAt_e1() {
-        chessBoard.placePiece(ChessBoard.Files.e, 1, new Pawn());
+        chessBoard.placePiece('e', 1, new Pawn(ChessGame.Division.Black));
 
-        ChessPiece.Type actualPieceOn_e1Type = chessBoard.getPieceAt(ChessBoard.Files.e, 1).getType();
+        ChessPiece.Type actualPieceOn_e1Type = chessBoard.getPieceAt('e', 1).getType();
         assertEquals(ChessPiece.Type.Pawn, actualPieceOn_e1Type);
     }
 
     @Test
     public void placePawnOutOfRankRange() {
-        chessBoard.placePiece(ChessBoard.Files.a, -4, new Pawn());
-        chessBoard.placePiece(ChessBoard.Files.a, 8, new Pawn());
+        chessBoard.placePiece('a', -4, new Pawn(ChessGame.Division.Black));
+        chessBoard.placePiece('a', 9, new Pawn(ChessGame.Division.White));
+        chessBoard.placePiece('q', 1, new Pawn(ChessGame.Division.White));
+        chessBoard.placePiece('z', 1, new Pawn(ChessGame.Division.Black));
 
         assertEquals(0, chessBoard.countPieces());
     }

@@ -3,9 +3,9 @@ package io.github.breadkey.chess.model.chessPieces;
 import io.github.breadkey.chess.model.ChessGame;
 import io.github.breadkey.chess.model.ChessPiece;
 
-public class Pawn extends ChessPiece {
-    public Pawn(ChessGame.Division division) {
+public class Queen extends ChessPiece {
+    public Queen(ChessGame.Division division) {
         super(division);
-        type = Type.Pawn;
+        type = Type.Queen;
     }
 }

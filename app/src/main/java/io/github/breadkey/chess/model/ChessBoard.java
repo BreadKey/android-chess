@@ -5,52 +5,40 @@ import java.util.HashMap;
 import java.util.List;
 
 public  class ChessBoard {
-    public enum Files {
-        a(0), b(1), c(2), d(3), e(4), f(5), g(6), h(7);
-
-        private int value;
-        private Files(int value) {
-            this.value = value;
-        }
-
-        public int getValue() {
-            return value;
-        }
-    }
-
-    private final List<Integer> rankRange = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);
+    public static final List<Character> fileRange = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
+    public static final List<Integer> rankRange = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);
     Square[][] squares;
     public ChessBoard() {
         createSquares();
     }
 
     private void createSquares() {
-        squares = new Square[Files.values().length][rankRange.size()];
+        squares = new Square[fileRange.size()][rankRange.size()];
 
-        for (Files file: Files.values()) {
+        for (char file: fileRange) {
             for (int rank: rankRange) {
-                squares[file.getValue()][rank - 1] = new Square();
+                squares[fileRange.indexOf(file)][rank - 1] = new Square();
             }
         }
     }
 
-    public void placePiece(Files file, int rank, ChessPiece piece) {
-        if (!rankRange.contains(rank)) {
+    public void placePiece(char file, int rank, ChessPiece piece) {
+        if (!rankRange.contains(rank) || !fileRange.contains(file)) {
             return;
         }
 
-        squares[file.getValue()][rank - 1].setPieceOnSquare(piece);
+        squares[fileRange.indexOf(file)][rank - 1].setPieceOnSquare(piece);
     }
 
-    public ChessPiece getPieceAt(Files file, int rank) {
-        return squares[file.getValue()][rank - 1].getPieceOnSquare();
+    public ChessPiece getPieceAt(char file, int rank) {
+        return squares[fileRange.indexOf(file)][rank - 1].getPieceOnSquare();
     }
 
     public int countPieces() {
         int count = 0;
-        for (Files file: Files.values()) {
+        for (char file: fileRange) {
             for (int rank: rankRange) {
-                if (squares[file.getValue()][rank - 1].getPieceOnSquare() != null) {
+                if (squares[fileRange.indexOf(file)][rank - 1].getPieceOnSquare() != null) {
                     count++;
                 }
             }
