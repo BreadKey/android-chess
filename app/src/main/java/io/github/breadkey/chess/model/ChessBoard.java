@@ -22,7 +22,7 @@ public  class ChessBoard {
     }
 
     public void placePiece(char file, int rank, ChessPiece piece) {
-        if (!ranks.contains(rank) || !files.contains(file)) {
+        if (isOutOfBoard(file, rank)) {
             return;
         }
 
@@ -30,6 +30,10 @@ public  class ChessBoard {
     }
 
     public ChessPiece getPieceAt(char file, int rank) {
+        if (isOutOfBoard(file, rank)) {
+            return null;
+        }
+
         return squares[files.indexOf(file)][rank - 1].getPieceOnSquare();
     }
 
@@ -44,6 +48,10 @@ public  class ChessBoard {
         }
 
         return count;
+    }
+
+    private boolean isOutOfBoard(char file, int rank) {
+        return !files.contains(file) || !ranks.contains(rank);
     }
 }
 
