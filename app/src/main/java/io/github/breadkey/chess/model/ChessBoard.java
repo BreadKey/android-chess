@@ -1,44 +1,43 @@
 package io.github.breadkey.chess.model;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public  class ChessBoard {
-    public static final List<Character> fileRange = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
-    public static final List<Integer> rankRange = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);
+    public static final List<Character> files = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
+    public static final List<Integer> ranks = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);
     Square[][] squares;
     public ChessBoard() {
         createSquares();
     }
 
     private void createSquares() {
-        squares = new Square[fileRange.size()][rankRange.size()];
+        squares = new Square[files.size()][ranks.size()];
 
-        for (char file: fileRange) {
-            for (int rank: rankRange) {
-                squares[fileRange.indexOf(file)][rank - 1] = new Square();
+        for (char file: files) {
+            for (int rank: ranks) {
+                squares[files.indexOf(file)][rank - 1] = new Square();
             }
         }
     }
 
     public void placePiece(char file, int rank, ChessPiece piece) {
-        if (!rankRange.contains(rank) || !fileRange.contains(file)) {
+        if (!ranks.contains(rank) || !files.contains(file)) {
             return;
         }
 
-        squares[fileRange.indexOf(file)][rank - 1].setPieceOnSquare(piece);
+        squares[files.indexOf(file)][rank - 1].setPieceOnSquare(piece);
     }
 
     public ChessPiece getPieceAt(char file, int rank) {
-        return squares[fileRange.indexOf(file)][rank - 1].getPieceOnSquare();
+        return squares[files.indexOf(file)][rank - 1].getPieceOnSquare();
     }
 
     public int countPieces() {
         int count = 0;
-        for (char file: fileRange) {
-            for (int rank: rankRange) {
-                if (squares[fileRange.indexOf(file)][rank - 1].getPieceOnSquare() != null) {
+        for (char file: files) {
+            for (int rank: ranks) {
+                if (squares[files.indexOf(file)][rank - 1].getPieceOnSquare() != null) {
                     count++;
                 }
             }

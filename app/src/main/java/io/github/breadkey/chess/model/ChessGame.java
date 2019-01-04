@@ -30,7 +30,7 @@ public class ChessGame {
     }
 
     private void placePawns() {
-        for (char file: ChessBoard.fileRange) {
+        for (char file: ChessBoard.files) {
             chessBoard.placePiece(file, 2, new Pawn(Division.White));
             chessBoard.placePiece(file, 7, new Pawn(Division.Black));
         }
