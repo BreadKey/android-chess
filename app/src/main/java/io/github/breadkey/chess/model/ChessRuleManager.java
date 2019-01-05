@@ -30,9 +30,9 @@ public class ChessRuleManager {
                 }
                 if (chessBoard.getPieceAt(file, rank + forward) == null) {
                     coordinates.add(new Coordinate(file, rank + forward));
-                }
-                if (piece.moveCount == 0) {
-                    coordinates.add(new Coordinate(file, rank + forward * 2));
+                    if (piece.moveCount == 0) {
+                        coordinates.add(new Coordinate(file, rank + forward * 2));
+                    }
                 }
             }
         }

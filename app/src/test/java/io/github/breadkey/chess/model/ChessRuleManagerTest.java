@@ -38,6 +38,16 @@ public class ChessRuleManagerTest {
         assertCoordinatesContains('a', 5, canMoveCoordinates);
     }
 
+    @Test
+    public void find_a2PawnCanMoveCoordinatesWhenAnotherPieceIsExistInFront() {
+        chessBoard.placePiece('a', 2, new Pawn(ChessGame.Division.White));
+        chessBoard.placePiece('a', 3, new Pawn(ChessGame.Division.Black));
+
+        List<Coordinate> canMoveCoordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'a', 2);
+
+        assertEquals(0, canMoveCoordinates.size());
+    }
+
     private void assertCoordinatesContains(char file, int rank, List<Coordinate> coordinates) {
         boolean isContain = false;
 
