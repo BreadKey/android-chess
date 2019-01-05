@@ -16,7 +16,7 @@ public class ChessRuleManager {
     public List<Coordinate> findSquareCoordinateCanMove(ChessBoard chessBoard, char file, int rank) {
         ChessPiece piece = chessBoard.getPieceAt(file, rank);
         if (piece == null) {
-            return null;
+            return new ArrayList<>();
         }
 
         List<Coordinate> coordinates = new ArrayList<>();
