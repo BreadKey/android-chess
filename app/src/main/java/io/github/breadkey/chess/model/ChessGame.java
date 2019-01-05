@@ -13,11 +13,13 @@ public class ChessGame {
     }
 
     ChessBoard chessBoard;
+    private Division currentTurn;
 
     public ChessGame() {
         chessBoard = new ChessBoard();
 
         placePieces();
+        currentTurn = Division.White;
     }
 
     private void placePieces() {
@@ -69,5 +71,11 @@ public class ChessGame {
 
     public ChessPiece getPieceAt(char file, int rank) {
         return chessBoard.getPieceAt(file, rank);
+    }
+
+    public void move(char fromFile, int fromRank, char toFile, int toRank) {
+        ChessPiece pieceWillMove = getPieceAt(fromFile, fromRank);
+        chessBoard.placePiece(toFile, toRank, pieceWillMove);
+        chessBoard.placePiece(fromFile, fromRank, null);
     }
 }

@@ -5,6 +5,8 @@ import org.junit.Test;
 
 import java.util.List;
 
+import io.github.breadkey.chess.model.chessPieces.Pawn;
+
 import static org.junit.Assert.*;
 
 public class ChessGameTest {
@@ -37,6 +39,14 @@ public class ChessGameTest {
         assertCoordinatesContains('a', 5, canMoveCoordinates);
     }
 
+    @Test
+    public void move_a2PawnTo_a4() {
+        chessGame.move('a', 2, 'a', 4);
+        assertEquals(ChessPiece.Type.Pawn, chessGame.getPieceAt('a', 4).type);
+        assertEquals(null, chessGame.getPieceAt('a', 2));
+        printChessBoard();
+    }
+
     private void assertCoordinatesContains(char file, int rank, List<Coordinate> coordinates) {
         boolean isContain = false;
 
@@ -56,8 +66,12 @@ public class ChessGameTest {
             for(char file: ChessBoard.files) {
                 ChessPiece piece = chessGame.getPieceAt(file, rank);
                 if (piece != null) {
-                    System.out.print(piece.type.toString() + "\t");
+                    System.out.print(piece.type.toString());
                 }
+                else {
+                    System.out.print('\t');
+                }
+                System.out.print('\t');
             }
             System.out.println();
         }
