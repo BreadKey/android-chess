@@ -88,6 +88,42 @@ public class ChessRuleManager {
                 coordinates = filteredCoordinates;
                 break;
             }
+
+            case Rook: {
+                int pieceFileIndex = chessBoard.files.indexOf(file);
+                int fileCount = ChessBoard.files.size();
+                List<Character> leftFiles = new ArrayList<>(ChessBoard.files.subList(0, pieceFileIndex));
+                Collections.reverse(leftFiles);
+                List<Coordinate> leftCoordinates = new ArrayList<>();
+                for (char currentFile: leftFiles) {
+                    leftCoordinates.add(new Coordinate(currentFile, rank));
+                }
+                findCoordinatesInCandidates(chessBoard, coordinates, leftCoordinates, piece.division);
+
+                List<Character> rightFiles = ChessBoard.files.subList(pieceFileIndex + 1, fileCount);
+                List<Coordinate> rightCoordinates = new ArrayList<>();
+                for (char currentFile: rightFiles) {
+                    rightCoordinates.add(new Coordinate(currentFile, rank));
+                }
+                findCoordinatesInCandidates(chessBoard, coordinates, rightCoordinates, piece.division);
+
+                int pieceRankIndex = ChessBoard.ranks.indexOf(rank);
+                int rankCount = ChessBoard.ranks.size();
+                List<Integer> upRanks = new ArrayList<>(ChessBoard.ranks.subList(0, pieceRankIndex));
+                Collections.reverse(upRanks);
+                List<Coordinate> upCoordinates = new ArrayList<>();
+                for (int currentRank: upRanks) {
+                    upCoordinates.add(new Coordinate(file, currentRank));
+                }
+                findCoordinatesInCandidates(chessBoard, coordinates, upCoordinates, piece.division);
+
+                List<Integer> downRanks = ChessBoard.ranks.subList(pieceRankIndex + 1, rankCount);
+                List<Coordinate> downCoordinates = new ArrayList<>();
+                for (int currentRank: downRanks) {
+                    downCoordinates.add(new Coordinate(file, currentRank));
+                }
+                findCoordinatesInCandidates(chessBoard, coordinates, downCoordinates, piece.division);
+            }
         }
 
         return coordinates;
@@ -100,5 +136,18 @@ public class ChessRuleManager {
         }
 
         return false;
+    }
+
+    private void findCoordinatesInCandidates(ChessBoard chessBoard, List<Coordinate> destination, List<Coordinate> candidates, ChessGame.Division division) {
+        for (Coordinate coordinate: candidates) {
+            ChessPiece pieceAlreadyPlaced = chessBoard.getPieceAt(coordinate.getFile(), coordinate.getRank());
+            if (pieceAlreadyPlaced != null) {
+                if (pieceAlreadyPlaced.division != division) {
+                    destination.add(coordinate);
+                }
+                break;
+            }
+            destination.add(coordinate);
+        }
     }
 }

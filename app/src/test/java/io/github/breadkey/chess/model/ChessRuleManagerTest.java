@@ -7,6 +7,7 @@ import java.util.List;
 
 import io.github.breadkey.chess.model.chessPieces.Knight;
 import io.github.breadkey.chess.model.chessPieces.Pawn;
+import io.github.breadkey.chess.model.chessPieces.Rook;
 
 import static org.junit.Assert.*;
 
@@ -102,6 +103,51 @@ public class ChessRuleManagerTest {
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'b', 1);
         assertEquals(3, coordinates.size());
         assertCoordinatesContains('a', 3, coordinates);
+    }
+
+    @Test
+    public void find_d4RookCanMoveCoordinates() {
+        chessBoard.placePiece('d', 4, new Rook(ChessGame.Division.White));
+
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
+        for (char file: ChessBoard.files) {
+            if (file == 'd') { continue; }
+            assertCoordinatesContains(file, 4, coordinates);
+        }
+        for (int rank: ChessBoard.ranks) {
+            if (rank == 4) { continue; }
+            assertCoordinatesContains('d', rank, coordinates);
+        }
+        assertCoordinatesNotContains('d', 4, coordinates);
+    }
+
+    @Test
+    public void find_d4RookCanMoveCoordinatesWhenIsBlockedEveryDirections() {
+        chessBoard.placePiece('d', 4, new Rook(ChessGame.Division.White));
+        chessBoard.placePiece('d', 3, new Pawn(ChessGame.Division.White));
+        chessBoard.placePiece('d', 5, new Pawn(ChessGame.Division.White));
+        chessBoard.placePiece('c', 4, new Pawn(ChessGame.Division.White));
+        chessBoard.placePiece('e', 4, new Pawn(ChessGame.Division.White));
+        
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
+        assertEquals(0, coordinates.size());
+    }
+
+    @Test
+    public void find_d4RookCanMoveCoordinatesWhenIsBlockedEveryDirectionsByEnemy() {
+
+        chessBoard.placePiece('d', 4, new Rook(ChessGame.Division.White));
+        chessBoard.placePiece('d', 3, new Pawn(ChessGame.Division.Black));
+        chessBoard.placePiece('d', 5, new Pawn(ChessGame.Division.Black));
+        chessBoard.placePiece('c', 4, new Pawn(ChessGame.Division.Black));
+        chessBoard.placePiece('e', 4, new Pawn(ChessGame.Division.Black));
+
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
+        assertEquals(4, coordinates.size());
+        assertCoordinatesContains('d', 3, coordinates);
+        assertCoordinatesContains('d', 5, coordinates);
+        assertCoordinatesContains('c', 4, coordinates);
+        assertCoordinatesContains('e', 4, coordinates);
     }
 
     private void assertCoordinatesContains(char file, int rank, List<Coordinate> coordinates) {
