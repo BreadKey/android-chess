@@ -1,6 +1,7 @@
 package io.github.breadkey.chess.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ChessRuleManager {
@@ -54,6 +55,37 @@ public class ChessRuleManager {
                         }
                     }
                 }
+                break;
+            }
+
+            case Knight: {
+                coordinates.add(new Coordinate((char) (file - 1), rank + 2));
+                coordinates.add(new Coordinate((char) (file + 1), rank + 2));
+                coordinates.add(new Coordinate((char) (file - 1), rank - 2));
+                coordinates.add(new Coordinate((char) (file + 1), rank - 2));
+                coordinates.add(new Coordinate((char) (file - 2), rank + 1));
+                coordinates.add(new Coordinate((char) (file - 2), rank - 1));
+                coordinates.add(new Coordinate((char) (file + 2), rank + 1));
+                coordinates.add(new Coordinate((char) (file + 2), rank - 1));
+                List<Coordinate> filteredCoordinates = new ArrayList<>(coordinates);
+
+                for (Coordinate coordinate: coordinates) {
+                    if (chessBoard.isOutOfBoard(coordinate.getFile(), coordinate.getRank())) {
+                        filteredCoordinates.remove(coordinate);
+                    }
+                }
+
+                coordinates = new ArrayList<>(filteredCoordinates);
+                for (Coordinate coordinate: coordinates) {
+                    ChessPiece pieceOnSquare = chessBoard.getPieceAt(coordinate.getFile(), coordinate.getRank());
+                    if (pieceOnSquare != null) {
+                        if (pieceOnSquare.division == piece.division) {
+                            filteredCoordinates.remove(coordinate);
+                        }
+                    }
+                }
+
+                coordinates = filteredCoordinates;
                 break;
             }
         }

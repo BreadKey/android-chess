@@ -50,7 +50,7 @@ public  class ChessBoard {
         return count;
     }
 
-    private boolean isOutOfBoard(char file, int rank) {
+    boolean isOutOfBoard(char file, int rank) {
         return !files.contains(file) || !ranks.contains(rank);
     }
 }

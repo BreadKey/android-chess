@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.List;
 
+import io.github.breadkey.chess.model.chessPieces.Knight;
 import io.github.breadkey.chess.model.chessPieces.Pawn;
 
 import static org.junit.Assert.*;
@@ -57,7 +58,61 @@ public class ChessRuleManagerTest {
         assertCoordinatesContains('b', 3, canMoveCoordinates);
     }
 
+    @Test
+    public void find_d4KnightCanMoveCoordinates() {
+        chessBoard.placePiece('d', 4, new Knight(ChessGame.Division.White));
+
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
+        assertCoordinatesContains('c', 6, coordinates);
+        assertCoordinatesContains('e', 6, coordinates);
+        assertCoordinatesContains('c', 2, coordinates);
+        assertCoordinatesContains('e', 2, coordinates);
+        assertCoordinatesContains('b', 5, coordinates);
+        assertCoordinatesContains('b', 3, coordinates);
+        assertCoordinatesContains('f', 5, coordinates);
+        assertCoordinatesContains('f', 3, coordinates);
+    }
+
+    @Test
+    public void find_b1KnightCanMoveCoordinatesWhenBoardInitialized() {
+        ChessGame chessGame = new ChessGame();
+        chessBoard = chessGame.chessBoard;
+
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'b', 1);
+        assertEquals(2, coordinates.size());
+        assertCoordinatesContains('a', 3, coordinates);
+        assertCoordinatesContains('c', 3, coordinates);
+    }
+
+    @Test
+    public void canNotMove_b1KnightTo_a3BecauseAlly() {
+        chessBoard.placePiece('b', 1, new Knight(ChessGame.Division.White));
+        chessBoard.placePiece('a', 3, new Pawn(ChessGame.Division.White));
+
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard,'b', 1);
+        assertEquals(2, coordinates.size());
+        assertCoordinatesNotContains('a', 3, coordinates);
+    }
+
+    @Test
+    public void canMove_b1KnightTo_a3WhereEnemyPlaced() {
+        chessBoard.placePiece('b', 1, new Knight(ChessGame.Division.White));
+        chessBoard.placePiece('a', 3, new Pawn(ChessGame.Division.Black));
+
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'b', 1);
+        assertEquals(3, coordinates.size());
+        assertCoordinatesContains('a', 3, coordinates);
+    }
+
     private void assertCoordinatesContains(char file, int rank, List<Coordinate> coordinates) {
+        assertTrue(isContain(file, rank, coordinates));
+    }
+
+    private void assertCoordinatesNotContains(char file, int rank, List<Coordinate> coordinates) {
+        assertTrue(!isContain(file, rank, coordinates));
+    }
+
+    private boolean isContain(char file, int rank, List<Coordinate> coordinates) {
         boolean isContain = false;
 
         for (Coordinate coordinate: coordinates) {
@@ -67,6 +122,6 @@ public class ChessRuleManagerTest {
             }
         }
 
-        assertTrue(isContain);
+        return isContain;
     }
 }
