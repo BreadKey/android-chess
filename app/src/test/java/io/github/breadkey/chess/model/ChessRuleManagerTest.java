@@ -48,6 +48,15 @@ public class ChessRuleManagerTest {
         assertEquals(0, canMoveCoordinates.size());
     }
 
+    @Test
+    public void findWhitePawnCoordinateWhereCanKillEnemyPiece() {
+        chessBoard.placePiece('a', 2, new Pawn(ChessGame.Division.White));
+        chessBoard.placePiece('b', 3, new Pawn(ChessGame.Division.Black));
+
+        List<Coordinate> canMoveCoordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'a', 2);
+        assertCoordinatesContains('b', 3, canMoveCoordinates);
+    }
+
     private void assertCoordinatesContains(char file, int rank, List<Coordinate> coordinates) {
         boolean isContain = false;
 
