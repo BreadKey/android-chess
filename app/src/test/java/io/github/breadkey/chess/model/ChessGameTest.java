@@ -24,22 +24,6 @@ public class ChessGameTest {
     }
 
     @Test
-    public void find_a2PawnCanMoveCoordinates() {
-        List<Coordinate> canMoveCoordinates = ruleManager.findSquareCoordinateCanMove(chessGame.chessBoard, 'a', 2);;
-
-        assertCoordinatesContains('a', 3, canMoveCoordinates);
-        assertCoordinatesContains('a', 4, canMoveCoordinates);
-    }
-
-    @Test
-    public void find_a7PawnCanMoveCoordinates() {
-        List<Coordinate> canMoveCoordinates = ruleManager.findSquareCoordinateCanMove(chessGame.chessBoard, 'a', 7);
-
-        assertCoordinatesContains('a', 6, canMoveCoordinates);
-        assertCoordinatesContains('a', 5, canMoveCoordinates);
-    }
-
-    @Test
     public void move_a2PawnTo_a4() {
         chessGame.move('a', 2, 'a', 4);
         assertEquals(ChessPiece.Type.Pawn, chessGame.getPieceAt('a', 4).type);
@@ -62,19 +46,6 @@ public class ChessGameTest {
         assertEquals(null, chessGame.getPieceAt('a', 5));
         assertEquals(null, chessGame.getPieceAt('a', 6));
         assertEquals(ChessGame.Division.White, chessGame.getCurrentTurn());
-    }
-
-    private void assertCoordinatesContains(char file, int rank, List<Coordinate> coordinates) {
-        boolean isContain = false;
-
-        for (Coordinate coordinate: coordinates) {
-            if (coordinate.getFile() == file && coordinate.getRank() == rank) {
-                isContain = true;
-                break;
-            }
-        }
-
-        assertTrue(isContain);
     }
 
     private void printChessBoard() {
