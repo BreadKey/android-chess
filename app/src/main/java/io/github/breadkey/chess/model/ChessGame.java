@@ -78,8 +78,12 @@ public class ChessGame {
 
     public void move(char fromFile, int fromRank, char toFile, int toRank) {
         List coordinatesCanMove = ruleManager.findSquareCoordinateCanMove(chessBoard, fromFile, fromRank);
-        if (isContainCoordinate(coordinatesCanMove, toFile, toRank)) {
+        if (isCoordinatesContain(coordinatesCanMove, toFile, toRank)) {
             ChessPiece pieceWillMove = getPieceAt(fromFile, fromRank);
+            if (getPieceAt(toFile, toRank) != null) {
+                pieceWillMove.killScore++;
+            }
+
             chessBoard.placePiece(toFile, toRank, pieceWillMove);
             chessBoard.placePiece(fromFile, fromRank, null);
             pieceWillMove.moveCount++;
@@ -88,7 +92,7 @@ public class ChessGame {
         }
     }
 
-    private boolean isContainCoordinate(List<Coordinate> coordinates, char file, int rank) {
+    private boolean isCoordinatesContain(List<Coordinate> coordinates, char file, int rank) {
         boolean isContain = false;
 
         for (Coordinate coordinate: coordinates) {

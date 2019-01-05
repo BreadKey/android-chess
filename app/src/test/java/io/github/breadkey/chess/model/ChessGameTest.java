@@ -60,6 +60,17 @@ public class ChessGameTest {
         printChessBoard();
     }
 
+    @Test
+    public void kill() {
+        chessGame.move('a', 2, 'a', 4);
+        chessGame.move('b', 7, 'b', 5);
+        chessGame.move('a', 4, 'b', 5);
+
+        assertEquals(ChessGame.Division.White, chessGame.getPieceAt('b', 5).division);
+        assertEquals(1, chessGame.getPieceAt('b', 5).killScore);
+        printChessBoard();
+    }
+
     private void printChessBoard() {
         for(int rank: ChessBoard.ranks) {
             System.out.print(String.valueOf(rank) + "\t");
