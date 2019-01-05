@@ -82,6 +82,7 @@ public class ChessGame {
             ChessPiece pieceWillMove = getPieceAt(fromFile, fromRank);
             chessBoard.placePiece(toFile, toRank, pieceWillMove);
             chessBoard.placePiece(fromFile, fromRank, null);
+            pieceWillMove.moveCount++;
 
             changeTurn();
         }

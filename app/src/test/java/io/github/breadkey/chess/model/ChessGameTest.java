@@ -48,6 +48,18 @@ public class ChessGameTest {
         assertEquals(ChessGame.Division.White, chessGame.getCurrentTurn());
     }
 
+    @Test
+    public void pawnCanNotMove2SquareAfterMove() {
+        chessGame.move('a', 2, 'a', 3);
+        chessGame.move('a', 7, 'a', 6);
+        chessGame.move('a', 3, 'a', 5);
+
+        assertNull(chessGame.getPieceAt('a', 5));
+        assertEquals(ChessPiece.Type.Pawn, chessGame.getPieceAt('a', 3).type);
+        assertEquals(ChessGame.Division.White, chessGame.getCurrentTurn());
+        printChessBoard();
+    }
+
     private void printChessBoard() {
         for(int rank: ChessBoard.ranks) {
             System.out.print(String.valueOf(rank) + "\t");
@@ -66,6 +78,6 @@ public class ChessGameTest {
         for(char file: ChessBoard.files) {
             System.out.print("\t" + file + "\t");
         }
-        System.out.println();
+        System.out.println("\nCurrent Turn: " + chessGame.getCurrentTurn());
     }
 }
