@@ -66,3 +66,21 @@ class Square {
         return pieceOnSquare;
     }
 }
+
+class Coordinate {
+    private char file;
+    private int rank;
+
+    Coordinate(char file, int rank) {
+        this.file = file;
+        this.rank = rank;
+    }
+
+    char getFile() {
+        return file;
+    }
+
+    int getRank() {
+        return rank;
+    }
+}
