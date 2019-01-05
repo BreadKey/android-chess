@@ -72,23 +72,7 @@ public class ChessGameTest {
     }
 
     private void printChessBoard() {
-        for(int rank: ChessBoard.ranks) {
-            System.out.print(String.valueOf(rank) + "\t");
-            for(char file: ChessBoard.files) {
-                ChessPiece piece = chessGame.getPieceAt(file, rank);
-                if (piece != null) {
-                    System.out.print(piece.type.toString());
-                }
-                else {
-                    System.out.print('\t');
-                }
-                System.out.print('\t');
-            }
-            System.out.println();
-        }
-        for(char file: ChessBoard.files) {
-            System.out.print("\t" + file + "\t");
-        }
-        System.out.println("\nCurrent Turn: " + chessGame.getCurrentTurn());
+        System.out.println(chessGame.chessBoard);
+        System.out.println("Current Turn: " + chessGame.getCurrentTurn());
     }
 }

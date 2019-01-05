@@ -53,6 +53,31 @@ public  class ChessBoard {
     boolean isOutOfBoard(char file, int rank) {
         return !files.contains(file) || !ranks.contains(rank);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder chessBoard = new StringBuilder();
+
+        for(int rank: ranks) {
+            chessBoard.append(String.valueOf(rank) + "\t");
+            for(char file: files) {
+                ChessPiece piece = getPieceAt(file, rank);
+                if (piece != null) {
+                    chessBoard .append(piece.type.toString());
+                }
+                else {
+                    chessBoard.append("\t");
+                }
+                chessBoard.append("\t");
+            }
+            chessBoard.append("\n");
+        }
+        for(char file: files) {
+            chessBoard.append("\t" + file + "\t");
+        }
+
+        return chessBoard.toString();
+    }
 }
 
 class Square {
@@ -82,5 +107,10 @@ class Coordinate {
 
     int getRank() {
         return rank;
+    }
+
+    @Override
+    public String toString() {
+        return getFile() + String.valueOf(getRank());
     }
 }
