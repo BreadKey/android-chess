@@ -58,11 +58,11 @@ public  class ChessBoard {
 class Square {
     private ChessPiece pieceOnSquare;
 
-    public void setPieceOnSquare(ChessPiece pieceOnSquare) {
+    void setPieceOnSquare(ChessPiece pieceOnSquare) {
         this.pieceOnSquare = pieceOnSquare;
     }
 
-    public ChessPiece getPieceOnSquare() {
+    ChessPiece getPieceOnSquare() {
         return pieceOnSquare;
     }
 }
