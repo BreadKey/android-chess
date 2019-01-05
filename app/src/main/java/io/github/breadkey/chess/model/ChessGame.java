@@ -12,7 +12,7 @@ public class ChessGame {
         Black, White
     }
 
-    private ChessBoard chessBoard;
+    ChessBoard chessBoard;
 
     public ChessGame() {
         chessBoard = new ChessBoard();

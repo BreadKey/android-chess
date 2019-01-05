@@ -1,6 +1,8 @@
 package io.github.breadkey.chess.model;
 
 public abstract class ChessPiece {
+    public int moveCount = 0;
+
     public enum Type {
         King,
         Queen,
