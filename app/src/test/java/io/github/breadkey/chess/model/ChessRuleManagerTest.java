@@ -128,7 +128,7 @@ public class ChessRuleManagerTest {
         chessBoard.placePiece('d', 5, new Pawn(ChessGame.Division.White));
         chessBoard.placePiece('c', 4, new Pawn(ChessGame.Division.White));
         chessBoard.placePiece('e', 4, new Pawn(ChessGame.Division.White));
-        
+
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
         assertEquals(0, coordinates.size());
     }
