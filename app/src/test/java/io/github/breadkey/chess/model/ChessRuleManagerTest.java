@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.List;
 
+import io.github.breadkey.chess.model.chessPieces.Bishop;
 import io.github.breadkey.chess.model.chessPieces.Knight;
 import io.github.breadkey.chess.model.chessPieces.Pawn;
 import io.github.breadkey.chess.model.chessPieces.Rook;
@@ -135,7 +136,6 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_d4RookCanMoveCoordinatesWhenIsBlockedEveryDirectionsByEnemy() {
-
         chessBoard.placePiece('d', 4, new Rook(ChessGame.Division.White));
         chessBoard.placePiece('d', 3, new Pawn(ChessGame.Division.Black));
         chessBoard.placePiece('d', 5, new Pawn(ChessGame.Division.Black));
@@ -148,6 +148,51 @@ public class ChessRuleManagerTest {
         assertCoordinatesContains('d', 5, coordinates);
         assertCoordinatesContains('c', 4, coordinates);
         assertCoordinatesContains('e', 4, coordinates);
+    }
+
+    @Test
+    public void find_d4BishopCanMoveCoordinates() {
+        chessBoard.placePiece('d', 4, new Bishop(ChessGame.Division.White));
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
+
+        char[] rightDownDiagonalFileRange = {'a', 'b', 'c', 'e', 'f', 'g'};
+        int[] rightDownDiagonalRankRange = {7, 6, 5, 3, 2, 1};
+        for (int i = 0; i < rightDownDiagonalFileRange.length; i++) {
+            assertCoordinatesContains(rightDownDiagonalFileRange[i], rightDownDiagonalRankRange[i], coordinates);
+        }
+        char[] rightUpDiagonalFileRange = {'a', 'b', 'c', 'e', 'f', 'g'};
+        int[] rightUpDiagonalRankRange = {1, 2, 3, 5, 6, 7};
+        for (int i = 0; i < rightUpDiagonalFileRange.length; i++) {
+            assertCoordinatesContains(rightUpDiagonalFileRange[i], rightUpDiagonalRankRange[i], coordinates);
+        }
+    }
+
+    @Test
+    public void find_d4BishopCanMoveCoordinatesWhenBlockedEveryDirections() {
+        chessBoard.placePiece('d', 4, new Bishop(ChessGame.Division.White));
+        chessBoard.placePiece('c', 5, new Pawn(ChessGame.Division.White));
+        chessBoard.placePiece('e', 5, new Pawn(ChessGame.Division.White));
+        chessBoard.placePiece('c', 3, new Pawn(ChessGame.Division.White));
+        chessBoard.placePiece('e', 3, new Pawn(ChessGame.Division.White));
+
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
+        assertEquals(0, coordinates.size());
+    }
+
+    @Test
+    public void find_d4BishopCanMoveCoordinatesWhenBlockedEveryDirectionsByEnemy() {
+        chessBoard.placePiece('d', 4, new Bishop(ChessGame.Division.White));
+        chessBoard.placePiece('c', 5, new Pawn(ChessGame.Division.Black));
+        chessBoard.placePiece('e', 5, new Pawn(ChessGame.Division.Black));
+        chessBoard.placePiece('c', 3, new Pawn(ChessGame.Division.Black));
+        chessBoard.placePiece('e', 3, new Pawn(ChessGame.Division.Black));
+
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
+        assertEquals(4, coordinates.size());
+        assertCoordinatesContains('c', 5, coordinates);
+        assertCoordinatesContains('e', 5, coordinates);
+        assertCoordinatesContains('c', 3, coordinates);
+        assertCoordinatesContains('e', 3, coordinates);
     }
 
     private void assertCoordinatesContains(char file, int rank, List<Coordinate> coordinates) {

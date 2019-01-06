@@ -90,8 +90,11 @@ public class ChessRuleManager {
             }
 
             case Rook: {
-                int pieceFileIndex = chessBoard.files.indexOf(file);
+                int pieceFileIndex = ChessBoard.files.indexOf(file);
                 int fileCount = ChessBoard.files.size();
+                int pieceRankIndex = ChessBoard.ranks.indexOf(rank);
+                int rankCount = ChessBoard.ranks.size();
+
                 List<Coordinate> leftCoordinates = new ArrayList<>();
                 for (char leftFile: ChessBoard.files.subList(0, pieceFileIndex)) {
                     leftCoordinates.add(new Coordinate(leftFile, rank));
@@ -105,9 +108,6 @@ public class ChessRuleManager {
                 }
                 findCoordinatesInCandidates(chessBoard, coordinates, rightCoordinates, piece.division);
 
-                int pieceRankIndex = ChessBoard.ranks.indexOf(rank);
-                int rankCount = ChessBoard.ranks.size();
-
                 List<Coordinate> upCoordinates = new ArrayList<>();
                 for (int upRank: ChessBoard.ranks.subList(0, pieceRankIndex)) {
                     upCoordinates.add(new Coordinate(file, upRank));
@@ -120,10 +120,48 @@ public class ChessRuleManager {
                     downCoordinates.add(new Coordinate(file, downRank));
                 }
                 findCoordinatesInCandidates(chessBoard, coordinates, downCoordinates, piece.division);
+
+                break;
+            }
+
+            case Bishop: {
+                int left = -1;
+                int right = 1;
+                int up = 1;
+                int down = -1;
+
+                List<Coordinate> leftUpCoordinates = findDiagonalCoordinates(file, rank, left , up);
+                findCoordinatesInCandidates(chessBoard, coordinates, leftUpCoordinates, division);
+
+                List<Coordinate> rightDownCoordinates = findDiagonalCoordinates(file, rank, right, down);
+                findCoordinatesInCandidates(chessBoard, coordinates, rightDownCoordinates, division);
+
+                List<Coordinate> leftDownCoordinates = findDiagonalCoordinates(file, rank, left, down);
+                findCoordinatesInCandidates(chessBoard, coordinates, leftDownCoordinates, division);
+
+                List<Coordinate> rightUpCoordinates = findDiagonalCoordinates(file, rank, right, up);
+                findCoordinatesInCandidates(chessBoard, coordinates, rightUpCoordinates, division);
             }
         }
 
         return coordinates;
+    }
+
+    private List<Coordinate> findDiagonalCoordinates(char atFile, int atRank, int fileDirection, int rankDirection) {
+        List<Coordinate> diagonalCoordinates = new ArrayList<>();
+        char currentFile = atFile;
+        int currentRank = atRank;
+
+        while (true) {
+            currentFile += fileDirection;
+            currentRank += rankDirection;
+            if (ChessBoard.isOutOfBoard(currentFile, currentRank)) {
+                break;
+            }
+            diagonalCoordinates.add(new Coordinate(currentFile, currentRank));
+        }
+
+        return diagonalCoordinates;
     }
 
     private boolean isEnemyPlaced(ChessBoard chessBoard, ChessGame.Division pieceDivision, char file, int rank) {
