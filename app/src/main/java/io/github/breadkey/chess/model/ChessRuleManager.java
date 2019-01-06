@@ -90,61 +90,75 @@ public class ChessRuleManager {
             }
 
             case Rook: {
-                int pieceFileIndex = ChessBoard.files.indexOf(file);
-                int fileCount = ChessBoard.files.size();
-                int pieceRankIndex = ChessBoard.ranks.indexOf(rank);
-                int rankCount = ChessBoard.ranks.size();
-
-                List<Coordinate> leftCoordinates = new ArrayList<>();
-                for (char leftFile: ChessBoard.files.subList(0, pieceFileIndex)) {
-                    leftCoordinates.add(new Coordinate(leftFile, rank));
-                }
-                Collections.reverse(leftCoordinates);
-                findCoordinatesInCandidates(chessBoard, coordinates, leftCoordinates, piece.division);
-
-                List<Coordinate> rightCoordinates = new ArrayList<>();
-                for (char rightFile: ChessBoard.files.subList(pieceFileIndex + 1, fileCount)) {
-                    rightCoordinates.add(new Coordinate(rightFile, rank));
-                }
-                findCoordinatesInCandidates(chessBoard, coordinates, rightCoordinates, piece.division);
-
-                List<Coordinate> upCoordinates = new ArrayList<>();
-                for (int upRank: ChessBoard.ranks.subList(0, pieceRankIndex)) {
-                    upCoordinates.add(new Coordinate(file, upRank));
-                }
-                Collections.reverse(upCoordinates);
-                findCoordinatesInCandidates(chessBoard, coordinates, upCoordinates, piece.division);
-
-                List<Coordinate> downCoordinates = new ArrayList<>();
-                for (int downRank: ChessBoard.ranks.subList(pieceRankIndex + 1, rankCount)) {
-                    downCoordinates.add(new Coordinate(file, downRank));
-                }
-                findCoordinatesInCandidates(chessBoard, coordinates, downCoordinates, piece.division);
-
+                findRookCoordinatesCanMove(chessBoard, coordinates, file, rank, division);
                 break;
             }
 
             case Bishop: {
-                int left = -1;
-                int right = 1;
-                int up = 1;
-                int down = -1;
+                findBishopCoordinatesCanMove(chessBoard, coordinates, file, rank, division);
+                break;
+            }
 
-                List<Coordinate> leftUpCoordinates = findDiagonalCoordinates(file, rank, left , up);
-                findCoordinatesInCandidates(chessBoard, coordinates, leftUpCoordinates, division);
-
-                List<Coordinate> rightDownCoordinates = findDiagonalCoordinates(file, rank, right, down);
-                findCoordinatesInCandidates(chessBoard, coordinates, rightDownCoordinates, division);
-
-                List<Coordinate> leftDownCoordinates = findDiagonalCoordinates(file, rank, left, down);
-                findCoordinatesInCandidates(chessBoard, coordinates, leftDownCoordinates, division);
-
-                List<Coordinate> rightUpCoordinates = findDiagonalCoordinates(file, rank, right, up);
-                findCoordinatesInCandidates(chessBoard, coordinates, rightUpCoordinates, division);
+            case Queen: {
+                findRookCoordinatesCanMove(chessBoard, coordinates, file, rank, division);
+                findBishopCoordinatesCanMove(chessBoard, coordinates, file, rank, division);
+                break;
             }
         }
 
         return coordinates;
+    }
+
+    private void findRookCoordinatesCanMove(ChessBoard chessBoard, List<Coordinate> destination, char file, int rank, ChessGame.Division division) {
+        int pieceFileIndex = ChessBoard.files.indexOf(file);
+        int fileCount = ChessBoard.files.size();
+        int pieceRankIndex = ChessBoard.ranks.indexOf(rank);
+        int rankCount = ChessBoard.ranks.size();
+
+        List<Coordinate> leftCoordinates = new ArrayList<>();
+        for (char leftFile: ChessBoard.files.subList(0, pieceFileIndex)) {
+            leftCoordinates.add(new Coordinate(leftFile, rank));
+        }
+        Collections.reverse(leftCoordinates);
+        findCoordinatesInCandidates(chessBoard, destination, leftCoordinates, division);
+
+        List<Coordinate> rightCoordinates = new ArrayList<>();
+        for (char rightFile: ChessBoard.files.subList(pieceFileIndex + 1, fileCount)) {
+            rightCoordinates.add(new Coordinate(rightFile, rank));
+        }
+        findCoordinatesInCandidates(chessBoard, destination, rightCoordinates, division);
+
+        List<Coordinate> upCoordinates = new ArrayList<>();
+        for (int upRank: ChessBoard.ranks.subList(0, pieceRankIndex)) {
+            upCoordinates.add(new Coordinate(file, upRank));
+        }
+        Collections.reverse(upCoordinates);
+        findCoordinatesInCandidates(chessBoard, destination, upCoordinates, division);
+
+        List<Coordinate> downCoordinates = new ArrayList<>();
+        for (int downRank: ChessBoard.ranks.subList(pieceRankIndex + 1, rankCount)) {
+            downCoordinates.add(new Coordinate(file, downRank));
+        }
+        findCoordinatesInCandidates(chessBoard, destination, downCoordinates, division);
+    }
+
+    private void findBishopCoordinatesCanMove(ChessBoard chessBoard, List<Coordinate> destination, char file, int rank, ChessGame.Division division) {
+        int left = -1;
+        int right = 1;
+        int up = 1;
+        int down = -1;
+
+        List<Coordinate> leftUpCoordinates = findDiagonalCoordinates(file, rank, left , up);
+        findCoordinatesInCandidates(chessBoard, destination, leftUpCoordinates, division);
+
+        List<Coordinate> rightDownCoordinates = findDiagonalCoordinates(file, rank, right, down);
+        findCoordinatesInCandidates(chessBoard, destination, rightDownCoordinates, division);
+
+        List<Coordinate> leftDownCoordinates = findDiagonalCoordinates(file, rank, left, down);
+        findCoordinatesInCandidates(chessBoard, destination, leftDownCoordinates, division);
+
+        List<Coordinate> rightUpCoordinates = findDiagonalCoordinates(file, rank, right, up);
+        findCoordinatesInCandidates(chessBoard, destination, rightUpCoordinates, division);
     }
 
     private List<Coordinate> findDiagonalCoordinates(char atFile, int atRank, int fileDirection, int rankDirection) {

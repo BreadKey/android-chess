@@ -8,6 +8,7 @@ import java.util.List;
 import io.github.breadkey.chess.model.chessPieces.Bishop;
 import io.github.breadkey.chess.model.chessPieces.Knight;
 import io.github.breadkey.chess.model.chessPieces.Pawn;
+import io.github.breadkey.chess.model.chessPieces.Queen;
 import io.github.breadkey.chess.model.chessPieces.Rook;
 
 import static org.junit.Assert.*;
@@ -193,6 +194,28 @@ public class ChessRuleManagerTest {
         assertCoordinatesContains('e', 5, coordinates);
         assertCoordinatesContains('c', 3, coordinates);
         assertCoordinatesContains('e', 3, coordinates);
+    }
+
+    @Test
+    public void find_a1QueenCanMoveCoordinates() {
+        chessBoard.placePiece('a', 1, new Queen(ChessGame.Division.White));
+
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'a', 1);
+
+        assertEquals(21, coordinates.size());
+
+        char[] rightFiles = {'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+        int[] upRanks = {2, 3, 4, 5, 6, 7, 8};
+
+        for (char rightFile: rightFiles) {
+            assertCoordinatesContains(rightFile, 1, coordinates);
+        }
+        for (int upRank: upRanks) {
+            assertCoordinatesContains('a', upRank, coordinates);
+        }
+        for (int diagonalIndex = 1; diagonalIndex < upRanks.length; diagonalIndex++) {
+            assertCoordinatesContains(rightFiles[diagonalIndex], upRanks[diagonalIndex], coordinates);
+        }
     }
 
     private void assertCoordinatesContains(char file, int rank, List<Coordinate> coordinates) {
