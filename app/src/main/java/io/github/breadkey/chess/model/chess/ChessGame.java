@@ -84,8 +84,13 @@ public class ChessGame {
         List coordinatesCanMove = ruleManager.findSquareCoordinateCanMove(chessBoard, fromFile, fromRank);
         if (isCoordinatesContain(coordinatesCanMove, toFile, toRank)) {
             ChessPiece pieceWillMove = getPieceAt(fromFile, fromRank);
-            if (getPieceAt(toFile, toRank) != null) {
+
+            ChessPiece pieceWillDead =  getPieceAt(toFile, toRank);
+            if (pieceWillDead != null) {
                 pieceWillMove.killScore++;
+                for (ChessGameObserver gameObserver : gameObservers) {
+                    gameObserver.killHappened(pieceWillMove, pieceWillDead, toFile, toRank);
+                }
             }
 
             chessBoard.placePiece(toFile, toRank, pieceWillMove);
@@ -102,6 +107,10 @@ public class ChessGame {
                 gameObserver.canNotMoveThatCoordinates(fromFile, toFile, fromRank, toRank);
             }
         }
+    }
+
+    public ChessBoard getChessBoard() {
+        return chessBoard;
     }
 
     private boolean isCoordinatesContain(List<Coordinate> coordinates, char file, int rank) {

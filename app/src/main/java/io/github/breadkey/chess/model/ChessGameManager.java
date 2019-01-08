@@ -1,10 +1,12 @@
 package io.github.breadkey.chess.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import io.github.breadkey.chess.model.chess.ChessBoard;
 import io.github.breadkey.chess.model.chess.ChessGame;
 import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.model.chess.Coordinate;
@@ -14,6 +16,7 @@ public abstract class ChessGameManager implements ChessGameObserver {
     private HashMap<ChessGame.Division, Player> players;
     private int moveCount;
     private List<Move> moves;
+    private List<KillLog> killLogs;
     private Coordinate currentSelectedCoordinate;
 
     public void startNewChess(Player player1, Player player2) {
@@ -21,6 +24,7 @@ public abstract class ChessGameManager implements ChessGameObserver {
         chessGame.attachGameObserver(this);
         decideDivision(player1, player2);
         moves = new ArrayList<>();
+        killLogs = new ArrayList<>();
     }
 
     private void decideDivision(Player player1, Player player2) {
@@ -38,15 +42,30 @@ public abstract class ChessGameManager implements ChessGameObserver {
         divisionDecided(players.get(ChessGame.Division.White), players.get(ChessGame.Division.Black));
     }
 
-    public void undoMove(ChessGame.Division divisionOfRequester) {
-        for (int moveIndex = moves.size() - 1; moveIndex <= 0; moveIndex--) {
-            ChessGame.Division divisionOfMove = moves.get(moveIndex).getDivision();
-            if (divisionOfMove == divisionOfRequester) {
-                moves = moves.subList(0, moveIndex - 1);
-                undoMoveAction();
-                break;
+    public void undoMove() {
+        Move lastMove = moves.remove(moves.size() - 1);
+        Coordinate currentCoordinate = lastMove.getToCoordinate();
+        Coordinate previousCoordinate = lastMove.getFromCoordinate();
+        ChessPiece piece = chessGame.getPieceAt(currentCoordinate.getFile(), currentCoordinate.getRank());
+
+        chessGame.getChessBoard().placePiece(previousCoordinate.getFile(), previousCoordinate.getRank(), piece);
+        chessGame.getChessBoard().placePiece(currentCoordinate.getFile(), currentCoordinate.getRank(), null);
+
+        for (KillLog killLog : killLogs) {
+            if (isKiller(piece, killLog, currentCoordinate)) {
+                piece.killScore--;
+                chessGame.getChessBoard().placePiece(currentCoordinate.getFile(), currentCoordinate.getRank(), killLog.dead);
             }
         }
+
+        undoMoveAction();
+    }
+
+    private boolean isKiller(ChessPiece piece, KillLog killLog, Coordinate atCoordinate) {
+        if (killLog.killer == piece && killLog.atFile == atCoordinate.getFile() && killLog.atRank == atCoordinate.getRank()) {
+            return true;
+        }
+        return false;
     }
 
     abstract void divisionDecided(Player whitePlayer, Player blackPlayer);
@@ -91,5 +110,24 @@ public abstract class ChessGameManager implements ChessGameObserver {
 
     public List<Move> getMoves() {
         return moves;
+    }
+
+    @Override
+    public void killHappened(ChessPiece killer, ChessPiece dead, char atFile, int atRank) {
+        killLogs.add(new KillLog(killer, dead, atFile, atRank));
+    }
+}
+
+class KillLog {
+    ChessPiece killer;
+    ChessPiece dead;
+    char atFile;
+    int atRank;
+
+    KillLog(ChessPiece killer, ChessPiece dead, char atFile, int atRank) {
+        this.killer = killer;
+        this.dead = dead;
+        this.atFile = atFile;
+        this.atRank = atRank;
     }
 }
