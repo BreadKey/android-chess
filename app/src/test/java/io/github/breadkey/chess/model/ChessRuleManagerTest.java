@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.util.List;
 
 import io.github.breadkey.chess.model.chessPieces.Bishop;
+import io.github.breadkey.chess.model.chessPieces.King;
 import io.github.breadkey.chess.model.chessPieces.Knight;
 import io.github.breadkey.chess.model.chessPieces.Pawn;
 import io.github.breadkey.chess.model.chessPieces.Queen;
@@ -48,7 +49,7 @@ public class ChessRuleManagerTest {
         chessBoard.placePiece('a', 3, new Pawn(ChessGame.Division.Black));
 
         List<Coordinate> canMoveCoordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'a', 2);
-
+        System.out.println(canMoveCoordinates);
         assertEquals(0, canMoveCoordinates.size());
     }
 
@@ -216,6 +217,29 @@ public class ChessRuleManagerTest {
         for (int diagonalIndex = 1; diagonalIndex < upRanks.length; diagonalIndex++) {
             assertCoordinatesContains(rightFiles[diagonalIndex], upRanks[diagonalIndex], coordinates);
         }
+    }
+
+    @Test
+    public void find_d4KingCanMoveCoordinates() {
+        chessBoard.placePiece('d', 4, new King(ChessGame.Division.White));
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
+
+        assertEquals(8, coordinates.size());
+        assertCoordinatesContains('c', 4, coordinates);
+        assertCoordinatesContains('c', 5, coordinates);
+        assertCoordinatesContains('d', 5, coordinates);
+        assertCoordinatesContains('e', 5, coordinates);
+        assertCoordinatesContains('e', 4, coordinates);
+        assertCoordinatesContains('e', 3, coordinates);
+        assertCoordinatesContains('d', 3, coordinates);
+        assertCoordinatesContains('c', 3, coordinates);
+    }
+
+    @Test
+    public void find_e1KingCanMoveCoordinatesWhenBoardInitialized() {
+        chessBoard = new ChessGame().chessBoard;
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'e', 1);
+        assertEquals(0, coordinates.size());
     }
 
     private void assertCoordinatesContains(char file, int rank, List<Coordinate> coordinates) {

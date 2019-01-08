@@ -29,30 +29,28 @@ public class ChessRuleManager {
                 if (division == ChessGame.Division.Black) {
                     forward = -1;
                 }
-                int forwardRank = rank + forward;
-                if (ChessBoard.ranks.contains(forwardRank)) {
-                    if (chessBoard.getPieceAt(file, forwardRank) == null) {
-                        coordinates.add(new Coordinate(file, forwardRank));
+                List<Coordinate> forwardLine = new ArrayList<>();
+                forwardLine.add(new Coordinate(file, rank + forward));
+                if (piece.moveCount == 0) {
+                    forwardLine.add(new Coordinate(file, rank + forward * 2));
+                }
+                forwardLine = filterOutOfBoard(forwardLine);
+                findCoordinatesInStraightLine(chessBoard, coordinates, forwardLine, division);
 
-                        if (piece.moveCount == 0) {
-                            coordinates.add(new Coordinate(file, forwardRank + forward));
-                        }
-                    }
+                for (Coordinate anotherPiecePlace: findAnotherPiecePlace(chessBoard, forwardLine)) {
+                    coordinates.remove(anotherPiecePlace);
+                }
 
-                    List<Character> sideFiles = new ArrayList<>();
-                    char leftFile = (char) (file - 1);
-                    char rightFile = (char) (file + 1);
-                    if (ChessBoard.files.contains(leftFile)) {
-                        sideFiles.add(leftFile);
-                    }
-                    if (ChessBoard.files.contains(rightFile)) {
-                        sideFiles.add(rightFile);
-                    }
+                List<Coordinate> sideForwardCoordinates = new ArrayList<>();
+                sideForwardCoordinates.add(new Coordinate((char) (file - 1), rank + forward));
+                sideForwardCoordinates.add(new Coordinate((char) (file + 1), rank + forward));
 
-                    for (char sideFile : sideFiles) {
-                        if (isEnemyPlaced(chessBoard, piece.division, sideFile, forwardRank)) {
-                            coordinates.add(new Coordinate(sideFile, forwardRank));
-                        }
+                sideForwardCoordinates = filterOutOfBoard(sideForwardCoordinates);
+                sideForwardCoordinates = findAnotherPiecePlace(chessBoard, sideForwardCoordinates);
+                for (Coordinate sideForwardCoordinate: sideForwardCoordinates) {
+                    ChessPiece anotherPiece = chessBoard.getPieceAt(sideForwardCoordinate.getFile(), sideForwardCoordinate.getRank());
+                    if (anotherPiece.division != division) {
+                        coordinates.add(sideForwardCoordinate);
                     }
                 }
                 break;
@@ -67,25 +65,9 @@ public class ChessRuleManager {
                 coordinates.add(new Coordinate((char) (file - 2), rank - 1));
                 coordinates.add(new Coordinate((char) (file + 2), rank + 1));
                 coordinates.add(new Coordinate((char) (file + 2), rank - 1));
-                List<Coordinate> filteredCoordinates = new ArrayList<>(coordinates);
 
-                for (Coordinate coordinate: coordinates) {
-                    if (chessBoard.isOutOfBoard(coordinate.getFile(), coordinate.getRank())) {
-                        filteredCoordinates.remove(coordinate);
-                    }
-                }
-
-                coordinates = new ArrayList<>(filteredCoordinates);
-                for (Coordinate coordinate: coordinates) {
-                    ChessPiece pieceOnSquare = chessBoard.getPieceAt(coordinate.getFile(), coordinate.getRank());
-                    if (pieceOnSquare != null) {
-                        if (pieceOnSquare.division == piece.division) {
-                            filteredCoordinates.remove(coordinate);
-                        }
-                    }
-                }
-
-                coordinates = filteredCoordinates;
+                coordinates = filterOutOfBoard(coordinates);
+                coordinates = filterAllyPiecePlaced(chessBoard, coordinates, division);
                 break;
             }
 
@@ -104,9 +86,59 @@ public class ChessRuleManager {
                 findBishopCoordinatesCanMove(chessBoard, coordinates, file, rank, division);
                 break;
             }
+
+            case King: {
+                coordinates.add(new Coordinate((char) (file - 1), rank));
+                coordinates.add(new Coordinate((char) (file - 1), rank + 1));
+                coordinates.add(new Coordinate(file, rank + 1));
+                coordinates.add(new Coordinate((char) (file + 1), rank + 1));
+                coordinates.add(new Coordinate((char) (file + 1), rank));
+                coordinates.add(new Coordinate((char) (file + 1), rank - 1));
+                coordinates.add(new Coordinate(file, rank - 1));
+                coordinates.add(new Coordinate((char) (file + -1), rank - 1));
+
+                coordinates = filterOutOfBoard(coordinates);
+                coordinates = filterAllyPiecePlaced(chessBoard, coordinates, division);
+                break;
+            }
         }
 
         return coordinates;
+    }
+
+    private List<Coordinate> findAnotherPiecePlace(ChessBoard chessBoard, List<Coordinate> coordinates) {
+        List<Coordinate> anotherPiecePlaceCoordinates = new ArrayList<>();
+        for (Coordinate coordinate: coordinates) {
+            if (chessBoard.getPieceAt(coordinate.getFile(), coordinate.getRank()) != null) {
+                anotherPiecePlaceCoordinates.add(coordinate);
+            }
+        }
+
+        return anotherPiecePlaceCoordinates;
+    }
+
+    private List<Coordinate> filterOutOfBoard(List<Coordinate> coordinates) {
+        List<Coordinate> filteredCoordinates = new ArrayList<>(coordinates);
+
+        for (Coordinate coordinate: coordinates) {
+            if (ChessBoard.isOutOfBoard(coordinate.getFile(), coordinate.getRank())) {
+                filteredCoordinates.remove(coordinate);
+            }
+        }
+
+        return filteredCoordinates;
+    }
+
+    private List<Coordinate> filterAllyPiecePlaced(ChessBoard chessBoard, List<Coordinate> coordinates, ChessGame.Division division) {
+        List<Coordinate> filteredCoordinates = new ArrayList<>(coordinates);
+
+        for (Coordinate anotherPiecePlace: findAnotherPiecePlace(chessBoard, coordinates)) {
+            if (chessBoard.getPieceAt(anotherPiecePlace.getFile(), anotherPiecePlace.getRank()).division == division) {
+                filteredCoordinates.remove(anotherPiecePlace);
+            }
+        }
+
+        return filteredCoordinates;
     }
 
     private void findRookCoordinatesCanMove(ChessBoard chessBoard, List<Coordinate> destination, char file, int rank, ChessGame.Division division) {
@@ -115,50 +147,45 @@ public class ChessRuleManager {
         int pieceRankIndex = ChessBoard.ranks.indexOf(rank);
         int rankCount = ChessBoard.ranks.size();
 
-        List<Coordinate> leftCoordinates = new ArrayList<>();
+        List<Coordinate> leftLine = new ArrayList<>();
         for (char leftFile: ChessBoard.files.subList(0, pieceFileIndex)) {
-            leftCoordinates.add(new Coordinate(leftFile, rank));
+            leftLine.add(new Coordinate(leftFile, rank));
         }
-        Collections.reverse(leftCoordinates);
-        findCoordinatesInCandidates(chessBoard, destination, leftCoordinates, division);
+        Collections.reverse(leftLine);
+        findCoordinatesInStraightLine(chessBoard, destination, leftLine, division);
 
-        List<Coordinate> rightCoordinates = new ArrayList<>();
+        List<Coordinate> rightLine = new ArrayList<>();
         for (char rightFile: ChessBoard.files.subList(pieceFileIndex + 1, fileCount)) {
-            rightCoordinates.add(new Coordinate(rightFile, rank));
+            rightLine.add(new Coordinate(rightFile, rank));
         }
-        findCoordinatesInCandidates(chessBoard, destination, rightCoordinates, division);
+        findCoordinatesInStraightLine(chessBoard, destination, rightLine, division);
 
-        List<Coordinate> upCoordinates = new ArrayList<>();
+        List<Coordinate> upLine = new ArrayList<>();
         for (int upRank: ChessBoard.ranks.subList(0, pieceRankIndex)) {
-            upCoordinates.add(new Coordinate(file, upRank));
+            upLine.add(new Coordinate(file, upRank));
         }
-        Collections.reverse(upCoordinates);
-        findCoordinatesInCandidates(chessBoard, destination, upCoordinates, division);
+        Collections.reverse(upLine);
+        findCoordinatesInStraightLine(chessBoard, destination, upLine, division);
 
-        List<Coordinate> downCoordinates = new ArrayList<>();
+        List<Coordinate> downLine = new ArrayList<>();
         for (int downRank: ChessBoard.ranks.subList(pieceRankIndex + 1, rankCount)) {
-            downCoordinates.add(new Coordinate(file, downRank));
+            downLine.add(new Coordinate(file, downRank));
         }
-        findCoordinatesInCandidates(chessBoard, destination, downCoordinates, division);
+        findCoordinatesInStraightLine(chessBoard, destination, downLine, division);
     }
 
     private void findBishopCoordinatesCanMove(ChessBoard chessBoard, List<Coordinate> destination, char file, int rank, ChessGame.Division division) {
-        int left = -1;
-        int right = 1;
-        int up = 1;
-        int down = -1;
+        List<Coordinate> leftUpLine = findDiagonalCoordinates(file, rank, -1 , 1);
+        findCoordinatesInStraightLine(chessBoard, destination, leftUpLine, division);
 
-        List<Coordinate> leftUpCoordinates = findDiagonalCoordinates(file, rank, left , up);
-        findCoordinatesInCandidates(chessBoard, destination, leftUpCoordinates, division);
+        List<Coordinate> rightDownLine = findDiagonalCoordinates(file, rank, 1, -1);
+        findCoordinatesInStraightLine(chessBoard, destination, rightDownLine, division);
 
-        List<Coordinate> rightDownCoordinates = findDiagonalCoordinates(file, rank, right, down);
-        findCoordinatesInCandidates(chessBoard, destination, rightDownCoordinates, division);
+        List<Coordinate> leftDownLine = findDiagonalCoordinates(file, rank, -1, -1);
+        findCoordinatesInStraightLine(chessBoard, destination, leftDownLine, division);
 
-        List<Coordinate> leftDownCoordinates = findDiagonalCoordinates(file, rank, left, down);
-        findCoordinatesInCandidates(chessBoard, destination, leftDownCoordinates, division);
-
-        List<Coordinate> rightUpCoordinates = findDiagonalCoordinates(file, rank, right, up);
-        findCoordinatesInCandidates(chessBoard, destination, rightUpCoordinates, division);
+        List<Coordinate> rightUpLine = findDiagonalCoordinates(file, rank, 1, 1);
+        findCoordinatesInStraightLine(chessBoard, destination, rightUpLine, division);
     }
 
     private List<Coordinate> findDiagonalCoordinates(char atFile, int atRank, int fileDirection, int rankDirection) {
@@ -187,8 +214,8 @@ public class ChessRuleManager {
         return false;
     }
 
-    private void findCoordinatesInCandidates(ChessBoard chessBoard, List<Coordinate> destination, List<Coordinate> candidates, ChessGame.Division division) {
-        for (Coordinate coordinate: candidates) {
+    private void findCoordinatesInStraightLine(ChessBoard chessBoard, List<Coordinate> destination, List<Coordinate> straightLine, ChessGame.Division division) {
+        for (Coordinate coordinate: straightLine) {
             ChessPiece pieceAlreadyPlaced = chessBoard.getPieceAt(coordinate.getFile(), coordinate.getRank());
             if (pieceAlreadyPlaced != null) {
                 if (pieceAlreadyPlaced.division != division) {
