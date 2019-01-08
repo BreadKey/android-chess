@@ -1,5 +1,7 @@
 package io.github.breadkey.chess.model;
 
+import java.util.List;
+
 import io.github.breadkey.chess.model.chessPieces.Bishop;
 import io.github.breadkey.chess.model.chessPieces.King;
 import io.github.breadkey.chess.model.chessPieces.Knight;
@@ -12,12 +14,15 @@ public class ChessGame {
         Black, White
     }
 
-    private ChessBoard chessBoard;
+    ChessBoard chessBoard;
+    private Division currentTurn;
+    private ChessRuleManager ruleManager = ChessRuleManager.getInstance();
 
     public ChessGame() {
         chessBoard = new ChessBoard();
 
         placePieces();
+        currentTurn = Division.White;
     }
 
     private void placePieces() {
@@ -69,5 +74,47 @@ public class ChessGame {
 
     public ChessPiece getPieceAt(char file, int rank) {
         return chessBoard.getPieceAt(file, rank);
+    }
+
+    public void move(char fromFile, int fromRank, char toFile, int toRank) {
+        List coordinatesCanMove = ruleManager.findSquareCoordinateCanMove(chessBoard, fromFile, fromRank);
+        if (isCoordinatesContain(coordinatesCanMove, toFile, toRank)) {
+            ChessPiece pieceWillMove = getPieceAt(fromFile, fromRank);
+            if (getPieceAt(toFile, toRank) != null) {
+                pieceWillMove.killScore++;
+            }
+
+            chessBoard.placePiece(toFile, toRank, pieceWillMove);
+            chessBoard.placePiece(fromFile, fromRank, null);
+            pieceWillMove.moveCount++;
+
+            changeTurn();
+        }
+    }
+
+    private boolean isCoordinatesContain(List<Coordinate> coordinates, char file, int rank) {
+        boolean isContain = false;
+
+        for (Coordinate coordinate: coordinates) {
+            if (coordinate.getFile() == file && coordinate.getRank() == rank) {
+                isContain = true;
+                break;
+            }
+        }
+
+        return isContain;
+    }
+
+    private void changeTurn() {
+        if (currentTurn == Division.Black) {
+            currentTurn = Division.White;
+        }
+        else {
+            currentTurn = Division.Black;
+        }
+    }
+
+    public Division getCurrentTurn() {
+        return currentTurn;
     }
 }
