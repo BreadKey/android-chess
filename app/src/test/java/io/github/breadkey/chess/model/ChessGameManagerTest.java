@@ -3,6 +3,8 @@ package io.github.breadkey.chess.model;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.github.breadkey.chess.model.chess.ChessGame;
+
 import static org.junit.Assert.*;
 
 public class ChessGameManagerTest {
@@ -28,5 +30,27 @@ public class ChessGameManagerTest {
         chessGameManager.select('b', 5);
 
         assertNull(chessGameManager.getChessGame().getPieceAt('b', 5));
+    }
+
+    @Test
+    public void kill_b7PawnWith_a2Pawn() {
+        chessGameManager.select('a', 2);
+        chessGameManager.select('a', 4);
+        chessGameManager.select('b', 7);
+        chessGameManager.select('b', 5);
+        chessGameManager.select('a', 4);
+        chessGameManager.select('b', 5);
+
+        assertEquals(ChessGame.Division.White, chessGameManager.getChessGame().getPieceAt('b', 5).division);
+        assertEquals(1, chessGameManager.getChessGame().getPieceAt('b', 5).killScore);
+    }
+
+    @Test
+    public void move_a2PawnTo_b3WhereCanNotGo() {
+        chessGameManager.select('a', 2);
+        chessGameManager.select('b',3);
+
+        assertNull(chessGameManager.getChessGame().getPieceAt('b', 3));
+        assertEquals(0, chessGameManager.getMoves().size());
     }
 }

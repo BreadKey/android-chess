@@ -88,4 +88,8 @@ public abstract class ChessGameManager implements ChessGameObserver {
             currentSelectedCoordinate = null;
         }
     }
+
+    public List<Move> getMoves() {
+        return moves;
+    }
 }
