@@ -2,8 +2,8 @@ package io.github.breadkey.chess;
 
 import android.widget.Button;
 
-import io.github.breadkey.chess.model.ChessGame;
-import io.github.breadkey.chess.model.ChessPiece;
+import io.github.breadkey.chess.model.chess.ChessGame;
+import io.github.breadkey.chess.model.chess.ChessPiece;
 
 public class ChessPieceImageFactory {
     public static int createPieceImage(ChessPiece piece) {

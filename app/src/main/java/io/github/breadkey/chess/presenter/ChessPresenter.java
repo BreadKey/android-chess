@@ -8,9 +8,9 @@ import android.widget.GridLayout;
 
 import io.github.breadkey.chess.ChessPieceImageFactory;
 import io.github.breadkey.chess.R;
-import io.github.breadkey.chess.model.ChessBoard;
-import io.github.breadkey.chess.model.ChessGame;
-import io.github.breadkey.chess.model.ChessPiece;
+import io.github.breadkey.chess.model.chess.ChessBoard;
+import io.github.breadkey.chess.model.chess.ChessGame;
+import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.view.ChessActivity;
 
 public class ChessPresenter {
