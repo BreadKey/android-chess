@@ -1,7 +1,9 @@
 package io.github.breadkey.chess.model.chess;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import io.github.breadkey.chess.model.ChessGameObserver;
 import io.github.breadkey.chess.model.chess.chessPieces.Bishop;
 import io.github.breadkey.chess.model.chess.chessPieces.King;
 import io.github.breadkey.chess.model.chess.chessPieces.Knight;
@@ -17,9 +19,11 @@ public class ChessGame {
     ChessBoard chessBoard;
     private Division currentTurn;
     private ChessRuleManager ruleManager = ChessRuleManager.getInstance();
+    private List<ChessGameObserver> gameObservers;
 
     public ChessGame() {
         chessBoard = new ChessBoard();
+        gameObservers = new ArrayList<>();
 
         placePieces();
         currentTurn = Division.White;
@@ -80,8 +84,13 @@ public class ChessGame {
         List coordinatesCanMove = ruleManager.findSquareCoordinateCanMove(chessBoard, fromFile, fromRank);
         if (isCoordinatesContain(coordinatesCanMove, toFile, toRank)) {
             ChessPiece pieceWillMove = getPieceAt(fromFile, fromRank);
-            if (getPieceAt(toFile, toRank) != null) {
+
+            ChessPiece pieceWillDead =  getPieceAt(toFile, toRank);
+            if (pieceWillDead != null) {
                 pieceWillMove.killScore++;
+                for (ChessGameObserver gameObserver : gameObservers) {
+                    gameObserver.killHappened(pieceWillMove, pieceWillDead, toFile, toRank);
+                }
             }
 
             chessBoard.placePiece(toFile, toRank, pieceWillMove);
@@ -89,7 +98,19 @@ public class ChessGame {
             pieceWillMove.moveCount++;
 
             changeTurn();
+            for (ChessGameObserver gameObserver : gameObservers) {
+                gameObserver.pieceMoved(fromFile, fromRank, toFile, toRank, pieceWillMove);
+            }
         }
+        else {
+            for (ChessGameObserver gameObserver : gameObservers) {
+                gameObserver.canNotMoveThatCoordinates(fromFile, toFile, fromRank, toRank);
+            }
+        }
+    }
+
+    public ChessBoard getChessBoard() {
+        return chessBoard;
     }
 
     private boolean isCoordinatesContain(List<Coordinate> coordinates, char file, int rank) {
@@ -116,5 +137,24 @@ public class ChessGame {
 
     public Division getCurrentTurn() {
         return currentTurn;
+    }
+
+    public void attachGameObserver(ChessGameObserver gameObserver) {
+        if (!gameObservers.contains(gameObserver)) {
+            gameObservers.add(gameObserver);
+        }
+    }
+
+    public void detachGameObserver(ChessGameObserver gameObserver) {
+        gameObservers.remove(gameObserver);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(chessBoard);
+        stringBuilder.append("\n현재 차례: " + currentTurn);
+
+        return stringBuilder.toString();
     }
 }
