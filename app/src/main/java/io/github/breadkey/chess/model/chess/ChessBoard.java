@@ -1,4 +1,4 @@
-package io.github.breadkey.chess.model;
+package io.github.breadkey.chess.model.chess;
 
 import java.util.Arrays;
 import java.util.List;

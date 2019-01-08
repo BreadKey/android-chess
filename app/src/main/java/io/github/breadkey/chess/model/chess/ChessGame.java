@@ -1,13 +1,13 @@
-package io.github.breadkey.chess.model;
+package io.github.breadkey.chess.model.chess;
 
 import java.util.List;
 
-import io.github.breadkey.chess.model.chessPieces.Bishop;
-import io.github.breadkey.chess.model.chessPieces.King;
-import io.github.breadkey.chess.model.chessPieces.Knight;
-import io.github.breadkey.chess.model.chessPieces.Pawn;
-import io.github.breadkey.chess.model.chessPieces.Queen;
-import io.github.breadkey.chess.model.chessPieces.Rook;
+import io.github.breadkey.chess.model.chess.chessPieces.Bishop;
+import io.github.breadkey.chess.model.chess.chessPieces.King;
+import io.github.breadkey.chess.model.chess.chessPieces.Knight;
+import io.github.breadkey.chess.model.chess.chessPieces.Pawn;
+import io.github.breadkey.chess.model.chess.chessPieces.Queen;
+import io.github.breadkey.chess.model.chess.chessPieces.Rook;
 
 public class ChessGame {
     public enum Division {

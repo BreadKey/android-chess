@@ -1,11 +1,11 @@
-package io.github.breadkey.chess.model;
+package io.github.breadkey.chess.model.chess;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
-
-import io.github.breadkey.chess.model.chessPieces.Pawn;
+import io.github.breadkey.chess.model.chess.ChessGame;
+import io.github.breadkey.chess.model.chess.ChessPiece;
+import io.github.breadkey.chess.model.chess.ChessRuleManager;
 
 import static org.junit.Assert.*;
 
