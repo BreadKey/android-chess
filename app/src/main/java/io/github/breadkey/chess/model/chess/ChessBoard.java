@@ -1,4 +1,4 @@
-package io.github.breadkey.chess.model;
+package io.github.breadkey.chess.model.chess;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,19 +50,67 @@ public  class ChessBoard {
         return count;
     }
 
-    private boolean isOutOfBoard(char file, int rank) {
+    static boolean isOutOfBoard(char file, int rank) {
         return !files.contains(file) || !ranks.contains(rank);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder chessBoard = new StringBuilder();
+
+        for(int rank: ranks) {
+            chessBoard.append(String.valueOf(rank) + "\t");
+            for(char file: files) {
+                ChessPiece piece = getPieceAt(file, rank);
+                if (piece != null) {
+                    chessBoard .append(piece.type.toString());
+                }
+                else {
+                    chessBoard.append("\t");
+                }
+                chessBoard.append("\t");
+            }
+            chessBoard.append("\n");
+        }
+        for(char file: files) {
+            chessBoard.append("\t" + file + "\t");
+        }
+
+        return chessBoard.toString();
     }
 }
 
 class Square {
     private ChessPiece pieceOnSquare;
 
-    public void setPieceOnSquare(ChessPiece pieceOnSquare) {
+    void setPieceOnSquare(ChessPiece pieceOnSquare) {
         this.pieceOnSquare = pieceOnSquare;
     }
 
-    public ChessPiece getPieceOnSquare() {
+    ChessPiece getPieceOnSquare() {
         return pieceOnSquare;
+    }
+}
+
+class Coordinate {
+    private char file;
+    private int rank;
+
+    Coordinate(char file, int rank) {
+        this.file = file;
+        this.rank = rank;
+    }
+
+    char getFile() {
+        return file;
+    }
+
+    int getRank() {
+        return rank;
+    }
+
+    @Override
+    public String toString() {
+        return getFile() + String.valueOf(getRank());
     }
 }
