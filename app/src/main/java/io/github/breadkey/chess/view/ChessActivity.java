@@ -9,7 +9,7 @@ import android.widget.FrameLayout;
 import android.widget.GridLayout;
 
 import io.github.breadkey.chess.R;
-import io.github.breadkey.chess.model.ChessBoard;
+import io.github.breadkey.chess.model.chess.ChessBoard;
 import io.github.breadkey.chess.presenter.ChessPresenter;
 
 public class ChessActivity extends AppCompatActivity {
