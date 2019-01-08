@@ -1,4 +1,4 @@
-package io.github.breadkey.chess.model;
+package io.github.breadkey.chess.model.chess;
 
 public abstract class ChessPiece {
     public int moveCount = 0;
