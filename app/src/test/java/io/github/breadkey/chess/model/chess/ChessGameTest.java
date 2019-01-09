@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import io.github.breadkey.chess.model.chess.chessPieces.Bishop;
 import io.github.breadkey.chess.model.chess.chessPieces.King;
+import io.github.breadkey.chess.model.chess.chessPieces.Knight;
 import io.github.breadkey.chess.model.chess.chessPieces.Rook;
 
 import static org.junit.Assert.*;
@@ -142,5 +143,35 @@ public class ChessGameTest {
         chessGame.tryMove('a', 1, 'b', 1);
         chessGame.tryMove('b', 8, 'a', 8);
         assertFalse(chessGame.kingHashMap.get(ChessGame.Division.Black).isChecked());
+    }
+
+    @Test
+    public void unCheckByMovingAnotherPieceAfterCheck() {
+        chessGame.clearChessBoard();
+        chessGame.placeNewPiece('d', 1, new King(ChessGame.Division.White));
+        chessGame.placeNewPiece('h', 1, new Rook(ChessGame.Division.White));
+        chessGame.placeNewPiece('e', 8, new King(ChessGame.Division.Black));
+        chessGame.placeNewPiece('f', 8, new Bishop(ChessGame.Division.Black));
+
+        chessGame.tryMove('h', 1, 'e', 1);
+        chessGame.tryMove('f', 8, 'e', 7);
+        assertFalse(chessGame.kingHashMap.get(ChessGame.Division.Black).isChecked());
+        assertEquals(ChessPiece.Type.Bishop, chessGame.getPieceAt('e', 7).type);
+    }
+
+    @Test
+    public void unCheckByKillEnemyPiece() {
+        chessGame.clearChessBoard();
+        chessGame.placeNewPiece('e', 1, new King(ChessGame.Division.White));
+        chessGame.placeNewPiece('f', 5, new Knight(ChessGame.Division.White));
+        chessGame.placeNewPiece('e', 8, new King(ChessGame.Division.Black));
+        chessGame.placeNewPiece('f', 8, new Bishop(ChessGame.Division.Black));
+
+        chessGame.tryMove('f', 5, 'g', 7);
+        chessGame.tryMove('f', 8, 'g', 7);
+        assertFalse(chessGame.kingHashMap.get(ChessGame.Division.Black).isChecked());
+        assertEquals(ChessPiece.Type.Bishop, chessGame.getPieceAt('g', 7).type);
+        assertEquals(1, chessGame.getPieceAt('g', 7).killScore);
+        assertEquals(1, chessGame.getPieces(ChessGame.Division.White).size());
     }
 }
