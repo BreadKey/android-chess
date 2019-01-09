@@ -33,11 +33,11 @@ public class ChessGame {
         piecesHashMap.put(Division.White, new ArrayList<ChessPiece>());
         piecesHashMap.put(Division.Black, new ArrayList<ChessPiece>());
 
-        placePieces();
+        setChessBoard();
         currentTurn = Division.White;
     }
 
-    private void placePieces() {
+    private void setChessBoard() {
         placePawns();
         placeRooks();
         placeKnights();
@@ -152,9 +152,8 @@ public class ChessGame {
 
     private boolean isCheck(ChessPiece movedPiece, char movedFile, int movedRank) {
         List<Coordinate> coordinatesCanMoveNextTurn = ruleManager.findSquareCoordinateCanMove(chessBoard, movedFile, movedRank);
-        King king = movedPiece.division == Division.White ? kingHashMap.get(Division.Black) : kingHashMap.get(Division.White);
-        if (isCoordinatesContain(coordinatesCanMoveNextTurn, king.getFile(), king.getRank())) {
-            king.setChecked(true);
+        King enemyKing = movedPiece.division == Division.White? kingHashMap.get(Division.Black) : kingHashMap.get(Division.White);
+        if (isCoordinatesContain(coordinatesCanMoveNextTurn, enemyKing.getFile(), enemyKing.getRank())) { ;
             return true;
         }
 
