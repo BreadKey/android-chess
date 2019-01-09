@@ -178,11 +178,6 @@ public class ChessGame {
         return false;
     }
 
-
-    public ChessBoard getChessBoard() {
-        return chessBoard;
-    }
-
     public ChessBoard getChessBoard() {
         return chessBoard;
     }
