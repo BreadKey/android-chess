@@ -18,12 +18,14 @@ public class ChessGame {
     }
 
     private ChessBoard chessBoard;
-    HashMap<Division, King> kingHashMap;
-    HashMap<Division, List<ChessPiece>> piecesHashMap;
+    private HashMap<Division, King> kingHashMap;
+    private HashMap<Division, List<ChessPiece>> piecesHashMap;
 
     private Division currentTurn;
     private ChessRuleManager ruleManager = ChessRuleManager.getInstance();
     private List<ChessGameObserver> gameObservers;
+
+    private Division winner;
 
     public ChessGame() {
         chessBoard = new ChessBoard();
@@ -126,12 +128,18 @@ public class ChessGame {
         pieceToMove.moveCount++;
 
         changeTurn();
-        if (isCheck(pieceToMove, toFile, toRank)) {
-
-        }
-
         for (ChessGameObserver gameObserver : gameObservers) {
             gameObserver.pieceMoved(fromFile, fromRank, toFile, toRank, pieceToMove);
+        }
+
+        Division enemyDivision = pieceToMove.division == Division.White? Division.Black : Division.White;
+
+        if (isCheckmate(enemyDivision)) {
+            endGame(pieceToMove.division);
+        }
+
+        else if (isCheck(toFile, toRank, enemyDivision)) {
+
         }
     }
 
@@ -197,15 +205,25 @@ public class ChessGame {
         }
     }
 
-    private boolean isCheck(ChessPiece movedPiece, char movedFile, int movedRank) {
+    private boolean isCheck(char movedFile, int movedRank, Division enemyDivision) {
         List<Coordinate> coordinatesCanMoveNextTurn = ruleManager.findSquareCoordinateCanMove(chessBoard, movedFile, movedRank);
-        King enemyKing = movedPiece.division == Division.White? kingHashMap.get(Division.Black) : kingHashMap.get(Division.White);
+        King enemyKing = kingHashMap.get(enemyDivision);
         if (isCoordinatesContain(coordinatesCanMoveNextTurn, enemyKing.getFile(), enemyKing.getRank())) {
             enemyKing.setChecked(true);
             return true;
         }
 
         return false;
+    }
+
+    private boolean isCheckmate(Division enemyDivision) {
+        List<Coordinate> coordinatesEnemyCanMove = new ArrayList<>();
+        for (ChessPiece enemyPiece: getPieces(enemyDivision)) {
+            coordinatesEnemyCanMove.addAll(ruleManager.findSquareCoordinateCanMove(chessBoard, enemyPiece.getFile(), enemyPiece.getRank()));
+            coordinatesEnemyCanMove = filterKingCanDead(coordinatesEnemyCanMove, enemyPiece);
+        }
+
+        return coordinatesEnemyCanMove.size() == 0;
     }
 
     public Division getCurrentTurn() {
@@ -251,5 +269,17 @@ public class ChessGame {
 
     public List<ChessPiece> getPieces(Division division) {
         return piecesHashMap.get(division);
+    }
+
+    public King getKing(Division division) {
+        return kingHashMap.get(division);
+    }
+
+    private void endGame(Division winner) {
+        this.winner = winner;
+    }
+
+    public Division getWinner() {
+        return winner;
     }
 }

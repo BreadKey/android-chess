@@ -6,6 +6,7 @@ import org.junit.Test;
 import io.github.breadkey.chess.model.chess.chessPieces.Bishop;
 import io.github.breadkey.chess.model.chess.chessPieces.King;
 import io.github.breadkey.chess.model.chess.chessPieces.Knight;
+import io.github.breadkey.chess.model.chess.chessPieces.Queen;
 import io.github.breadkey.chess.model.chess.chessPieces.Rook;
 
 import static org.junit.Assert.*;
@@ -80,7 +81,8 @@ public class ChessGameTest {
         chessGame.placeNewPiece('b', 8, new King(ChessGame.Division.Black));
 
         chessGame.tryMove('a', 1, 'b' ,1);
-        assertTrue(chessGame.kingHashMap.get(ChessGame.Division.Black).isChecked());
+        assertTrue(chessGame.getKing(ChessGame.Division.Black).isChecked());
+        assertNull(chessGame.getWinner());
     }
 
     @Test
@@ -142,7 +144,7 @@ public class ChessGameTest {
 
         chessGame.tryMove('a', 1, 'b', 1);
         chessGame.tryMove('b', 8, 'a', 8);
-        assertFalse(chessGame.kingHashMap.get(ChessGame.Division.Black).isChecked());
+        assertFalse(chessGame.getKing(ChessGame.Division.Black).isChecked());
     }
 
     @Test
@@ -155,7 +157,7 @@ public class ChessGameTest {
 
         chessGame.tryMove('h', 1, 'e', 1);
         chessGame.tryMove('f', 8, 'e', 7);
-        assertFalse(chessGame.kingHashMap.get(ChessGame.Division.Black).isChecked());
+        assertFalse(chessGame.getKing(ChessGame.Division.Black).isChecked());
         assertEquals(ChessPiece.Type.Bishop, chessGame.getPieceAt('e', 7).type);
     }
 
@@ -169,9 +171,46 @@ public class ChessGameTest {
 
         chessGame.tryMove('f', 5, 'g', 7);
         chessGame.tryMove('f', 8, 'g', 7);
-        assertFalse(chessGame.kingHashMap.get(ChessGame.Division.Black).isChecked());
+        assertFalse(chessGame.getKing(ChessGame.Division.Black).isChecked());
         assertEquals(ChessPiece.Type.Bishop, chessGame.getPieceAt('g', 7).type);
         assertEquals(1, chessGame.getPieceAt('g', 7).killScore);
         assertEquals(1, chessGame.getPieces(ChessGame.Division.White).size());
+    }
+
+    @Test
+    public void checkMate() {
+        chessGame.clearChessBoard();
+        chessGame.placeNewPiece('e', 1, new King(ChessGame.Division.White));
+        chessGame.placeNewPiece('b', 8, new King(ChessGame.Division.Black));
+        chessGame.placeNewPiece('a', 1, new Rook(ChessGame.Division.White));
+        chessGame.placeNewPiece('e', 7, new Queen(ChessGame.Division.White));
+
+        chessGame.tryMove('e', 7, 'd', 7);
+        assertEquals(ChessGame.Division.White, chessGame.getWinner());
+    }
+
+    @Test
+    public void checkMate2() {
+        chessGame.clearChessBoard();
+        chessGame.placeNewPiece('e', 1, new King(ChessGame.Division.White));
+        chessGame.placeNewPiece('a', 8, new King(ChessGame.Division.Black));
+        chessGame.placeNewPiece('a', 7, new Bishop(ChessGame.Division.White));
+        chessGame.placeNewPiece('c', 8, new Queen(ChessGame.Division.White));
+
+        chessGame.tryMove('c', 8, 'b', 8);
+        assertEquals(ChessGame.Division.White, chessGame.getWinner());
+    }
+
+    @Test
+    public void notCheckMate() {
+        chessGame.clearChessBoard();
+        chessGame.placeNewPiece('e', 1, new King(ChessGame.Division.White));
+        chessGame.placeNewPiece('b', 8, new King(ChessGame.Division.Black));
+        chessGame.placeNewPiece('a', 1, new Rook(ChessGame.Division.White));
+        chessGame.placeNewPiece('e', 7, new Queen(ChessGame.Division.White));
+        chessGame.placeNewPiece('c', 8, new Bishop(ChessGame.Division.Black));
+
+        chessGame.tryMove('e', 7, 'd', 7);
+        assertNull(chessGame.getWinner());
     }
 }
