@@ -51,7 +51,10 @@ public  class ChessBoard {
     }
 
     static boolean isOutOfBoard(char file, int rank) {
-        return !files.contains(file) || !ranks.contains(rank);
+        if (file < files.get(0) || file > files.get(files.size() - 1)) {
+            return true;
+        }
+        return rank > ranks.get(0) || rank < ranks.get(ranks.size() - 1);
     }
 
     @Override
