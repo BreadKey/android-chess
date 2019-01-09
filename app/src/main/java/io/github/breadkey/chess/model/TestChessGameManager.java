@@ -13,17 +13,26 @@ class TestChessGameManager extends ChessGameManager {
 
     @Override
     void pieceMoveAction(Move move) {
-        System.out.print(getChessGame());
-        System.out.println(" " + getCurrentPlayer().nickName);
+        printGameStatus();
     }
 
     @Override
     void canNotMoveAction(char fromFile, int fromRank, char toFile, int toRank) {
-
+        printGameStatus();
     }
 
     @Override
     void undoMoveAction() {
 
+    }
+
+    private void printGameStatus() {
+        System.out.print(getChessGame());
+        System.out.println(" " + getCurrentPlayer().nickName);
+        for (int moveIndex = 1; moveIndex < getMoves().size(); moveIndex += 2) {
+            Move whiteMove = getMoves().get(moveIndex - 1);
+            Move blackMove = getMoves().get(moveIndex);
+            System.out.println(String.valueOf(moveIndex % 2) + ". " + whiteMove + "\t" + blackMove);
+        }
     }
 }
