@@ -74,6 +74,7 @@ public class ChessGameTest {
     @Test
     public void check() {
         chessGame.clearChessBoard();
+        chessGame.placeNewPiece('a', 5, new King(ChessGame.Division.White));
         chessGame.placeNewPiece('a', 1, new Rook(ChessGame.Division.White));
         chessGame.placeNewPiece('b', 8, new King(ChessGame.Division.Black));
 
@@ -96,6 +97,7 @@ public class ChessGameTest {
     @Test
     public void tryMoveKingWhereCanDeadAfterCheck() {
         chessGame.clearChessBoard();
+        chessGame.placeNewPiece('a', 5, new King(ChessGame.Division.White));
         chessGame.placeNewPiece('a', 1, new Rook(ChessGame.Division.White));
         chessGame.placeNewPiece('b', 8, new King(ChessGame.Division.Black));
 
@@ -128,5 +130,17 @@ public class ChessGameTest {
         chessGame.tryMove('a', 2, 'b', 2);
         assertEquals(ChessPiece.Type.Bishop, chessGame.getPieceAt('b', 2).type);
         assertEquals(ChessPiece.Type.Rook, chessGame.getPieceAt('a', 2).type);
+    }
+
+    @Test
+    public void unCheckByMovingKingAfterCheck() {
+        chessGame.clearChessBoard();
+        chessGame.placeNewPiece('a', 5, new King(ChessGame.Division.White));
+        chessGame.placeNewPiece('a', 1, new Rook(ChessGame.Division.White));
+        chessGame.placeNewPiece('b', 8, new King(ChessGame.Division.Black));
+
+        chessGame.tryMove('a', 1, 'b', 1);
+        chessGame.tryMove('b', 8, 'a', 8);
+        assertFalse(chessGame.kingHashMap.get(ChessGame.Division.Black).isChecked());
     }
 }

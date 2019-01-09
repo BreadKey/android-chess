@@ -106,6 +106,9 @@ public class ChessGame {
     }
 
     private void move(ChessPiece pieceToMove, char toFile, int toRank) {
+        King king = kingHashMap.get(pieceToMove.division);
+        king.setChecked(false);
+
         ChessPiece pieceWillDead = getPieceAt(toFile, toRank);
         if (pieceWillDead != null) {
             pieceToMove.killScore++;
@@ -136,9 +139,7 @@ public class ChessGame {
         List<Coordinate> filteredCoordinates = new ArrayList<>(coordinatesCanMove);
 
         King king = kingHashMap.get(pieceWillMove.division);
-        if (king == null) {
-            return coordinatesCanMove;
-        }
+
         char currentPieceFile = pieceWillMove.getFile();
         int currentPieceRank = pieceWillMove.getRank();
         Division enemyDivision = pieceWillMove.division == Division.White? Division.Black : Division.White;
