@@ -230,6 +230,10 @@ public class ChessGame {
         return currentTurn;
     }
 
+    public void setCurrentTurn(Division division) {
+        currentTurn = division;
+    }
+
     public void attachGameObserver(ChessGameObserver gameObserver) {
         if (!gameObservers.contains(gameObserver)) {
             gameObservers.add(gameObserver);

@@ -41,10 +41,26 @@ public abstract class ChessGameManager implements ChessGameObserver {
         divisionDecided(players.get(ChessGame.Division.White), players.get(ChessGame.Division.Black));
     }
 
-    public void undoMove() {
-        Move lastMove = moves.remove(moves.size() - 1);
-        Coordinate currentCoordinate = lastMove.getToCoordinate();
-        Coordinate previousCoordinate = lastMove.getFromCoordinate();
+    public void undoMoves(ChessGame.Division requesterDivision) {
+        List<Move> reversedMoves = new ArrayList<>(moves);
+        Collections.reverse(reversedMoves);
+        int lastMoveIndex = 0;
+        for (Move lastMove: reversedMoves) {
+            if (lastMove.getDivision() == requesterDivision) {
+                lastMoveIndex = reversedMoves.indexOf(lastMove);
+                break;
+            }
+        }
+
+        List<Move> movesHaveToUndo = reversedMoves.subList(0, lastMoveIndex + 1);
+        for (Move moveHaveToUndo: movesHaveToUndo) {
+            undoMove(moveHaveToUndo);
+        }
+    }
+
+    public void undoMove(Move moveHaveToUndo) {
+        Coordinate currentCoordinate = moveHaveToUndo.getToCoordinate();
+        Coordinate previousCoordinate = moveHaveToUndo.getFromCoordinate();
         ChessPiece piece = chessGame.getPieceAt(currentCoordinate.getFile(), currentCoordinate.getRank());
 
         chessGame.getChessBoard().placePiece(previousCoordinate.getFile(), previousCoordinate.getRank(), piece);
@@ -60,6 +76,8 @@ public abstract class ChessGameManager implements ChessGameObserver {
                 break;
             }
         }
+        moves.remove(moveHaveToUndo);
+        chessGame.setCurrentTurn(moveHaveToUndo.getDivision());
 
         undoMoveAction();
     }
