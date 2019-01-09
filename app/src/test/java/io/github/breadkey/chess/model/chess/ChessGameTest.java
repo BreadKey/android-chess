@@ -3,9 +3,7 @@ package io.github.breadkey.chess.model.chess;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.github.breadkey.chess.model.chess.ChessGame;
-import io.github.breadkey.chess.model.chess.ChessPiece;
-import io.github.breadkey.chess.model.chess.ChessRuleManager;
+import io.github.breadkey.chess.model.chess.chessPieces.King;
 import io.github.breadkey.chess.model.chess.chessPieces.Rook;
 
 import static org.junit.Assert.*;
@@ -21,7 +19,7 @@ public class ChessGameTest {
 
     @Test
     public void boardIsInitializedCorrectly() {
-        printChessBoard();
+        System.out.println(chessGame);
     }
 
     @Test
@@ -30,7 +28,7 @@ public class ChessGameTest {
         assertEquals(ChessPiece.Type.Pawn, chessGame.getPieceAt('a', 4).type);
         assertNull(chessGame.getPieceAt('a', 2));
         assertEquals(ChessGame.Division.Black, chessGame.getCurrentTurn());
-        printChessBoard();
+        System.out.println(chessGame);
     }
 
     @Test
@@ -58,7 +56,7 @@ public class ChessGameTest {
         assertNull(chessGame.getPieceAt('a', 5));
         assertEquals(ChessPiece.Type.Pawn, chessGame.getPieceAt('a', 3).type);
         assertEquals(ChessGame.Division.White, chessGame.getCurrentTurn());
-        printChessBoard();
+        System.out.println(chessGame);
     }
 
     @Test
@@ -69,21 +67,16 @@ public class ChessGameTest {
 
         assertEquals(ChessGame.Division.White, chessGame.getPieceAt('b', 5).division);
         assertEquals(1, chessGame.getPieceAt('b', 5).killScore);
-        printChessBoard();
+        System.out.println(chessGame);
     }
 
     @Test
     public void check() {
-        chessGame.chessBoard = new ChessBoard();
-        chessGame.chessBoard.placePiece('a', 1, new Rook(ChessGame.Division.White));
-        chessGame.chessBoard.placePiece('b', 8,chessGame.kingHashMap.get(ChessGame.Division.Black));
+        chessGame.clearChessBoard();
+        chessGame.placeNewPiece('a', 1, new Rook(ChessGame.Division.White));
+        chessGame.placeNewPiece('b', 8, new King(ChessGame.Division.Black));
 
         chessGame.move('a', 1, 'b' ,1);
         assertTrue(chessGame.kingHashMap.get(ChessGame.Division.Black).isChecked());
-    }
-
-    private void printChessBoard() {
-        System.out.println(chessGame.chessBoard);
-        System.out.println("Current Turn: " + chessGame.getCurrentTurn());
     }
 }

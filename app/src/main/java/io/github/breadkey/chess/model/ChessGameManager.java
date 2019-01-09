@@ -55,7 +55,7 @@ public abstract class ChessGameManager implements ChessGameObserver {
         for (KillLog killLog : reversedKillLogs) {
             if (isKiller(piece, killLog, currentCoordinate)) {
                 piece.killScore--;
-                chessGame.getChessBoard().placePiece(currentCoordinate.getFile(), currentCoordinate.getRank(), killLog.dead);
+                chessGame.placeNewPiece(currentCoordinate.getFile(), currentCoordinate.getRank(), killLog.dead);
                 killLogs.remove(killLog);
                 break;
             }

@@ -17,8 +17,10 @@ public class ChessGame {
         Black, White
     }
 
-    ChessBoard chessBoard;
+    private ChessBoard chessBoard;
     HashMap<Division, King> kingHashMap;
+    HashMap<Division, List<ChessPiece>> piecesHashMap;
+
     private Division currentTurn;
     private ChessRuleManager ruleManager = ChessRuleManager.getInstance();
     private List<ChessGameObserver> gameObservers;
@@ -26,6 +28,10 @@ public class ChessGame {
     public ChessGame() {
         chessBoard = new ChessBoard();
         gameObservers = new ArrayList<>();
+        kingHashMap = new HashMap<>();
+        piecesHashMap = new HashMap<>();
+        piecesHashMap.put(Division.White, new ArrayList<ChessPiece>());
+        piecesHashMap.put(Division.Black, new ArrayList<ChessPiece>());
 
         placePieces();
         currentTurn = Division.White;
@@ -42,43 +48,40 @@ public class ChessGame {
 
     private void placePawns() {
         for (char file: ChessBoard.files) {
-            chessBoard.placePiece(file, 2, new Pawn(Division.White));
-            chessBoard.placePiece(file, 7, new Pawn(Division.Black));
+            placeNewPiece(file, 2, new Pawn(Division.White));
+            placeNewPiece(file, 7, new Pawn(Division.Black));
         }
     }
 
     private void placeRooks() {
-        chessBoard.placePiece('a', 1, new Rook(Division.White));
-        chessBoard.placePiece('h', 1, new Rook(Division.White));
-        chessBoard.placePiece('a', 8, new Rook(Division.Black));
-        chessBoard.placePiece('h', 8, new Rook(Division.Black));
+        placeNewPiece('a', 1, new Rook(Division.White));
+        placeNewPiece('h', 1, new Rook(Division.White));
+        placeNewPiece('a', 8, new Rook(Division.Black));
+        placeNewPiece('h', 8, new Rook(Division.Black));
     }
 
     private void placeKnights() {
-        chessBoard.placePiece('b', 1, new Knight(Division.White));
-        chessBoard.placePiece('g', 1, new Knight(Division.White));
-        chessBoard.placePiece('b', 8, new Knight(Division.Black));
-        chessBoard.placePiece('g', 8, new Knight(Division.Black));
+        placeNewPiece('b', 1, new Knight(Division.White));
+        placeNewPiece('g', 1, new Knight(Division.White));
+        placeNewPiece('b', 8, new Knight(Division.Black));
+        placeNewPiece('g', 8, new Knight(Division.Black));
     }
 
     private void placeBishops() {
-        chessBoard.placePiece('c', 1, new Bishop(Division.White));
-        chessBoard.placePiece('f', 1, new Bishop(Division.White));
-        chessBoard.placePiece('c', 8, new Bishop(Division.Black));
-        chessBoard.placePiece('f', 8, new Bishop(Division.Black));
+        placeNewPiece('c', 1, new Bishop(Division.White));
+        placeNewPiece('f', 1, new Bishop(Division.White));
+        placeNewPiece('c', 8, new Bishop(Division.Black));
+        placeNewPiece('f', 8, new Bishop(Division.Black));
     }
 
     private void placeQueens() {
-        chessBoard.placePiece('d', 1, new Queen(Division.White));
-        chessBoard.placePiece('d', 8, new Queen(Division.Black));
+        placeNewPiece('d', 1, new Queen(Division.White));
+        placeNewPiece('d', 8, new Queen(Division.Black));
     }
 
     private void placeKings() {
-        kingHashMap = new HashMap<>();
-        kingHashMap.put(Division.White, new King(Division.White));
-        kingHashMap.put(Division.Black, new King(Division.Black));
-        chessBoard.placePiece('e', 1, kingHashMap.get(Division.White));
-        chessBoard.placePiece('e', 8, kingHashMap.get(Division.Black));
+        placeNewPiece('e', 1, new King(Division.White));
+        placeNewPiece('e', 8, new King(Division.Black));
     }
 
     public ChessPiece getPieceAt(char file, int rank) {
@@ -86,13 +89,16 @@ public class ChessGame {
     }
 
     public void move(char fromFile, int fromRank, char toFile, int toRank) {
+        ChessPiece pieceWillMove = getPieceAt(fromFile, fromRank);
         List coordinatesCanMove = ruleManager.findSquareCoordinateCanMove(chessBoard, fromFile, fromRank);
+
         if (isCoordinatesContain(coordinatesCanMove, toFile, toRank)) {
-            ChessPiece pieceWillMove = getPieceAt(fromFile, fromRank);
+            pieceWillMove = getPieceAt(fromFile, fromRank);
 
             ChessPiece pieceWillDead =  getPieceAt(toFile, toRank);
             if (pieceWillDead != null) {
                 pieceWillMove.killScore++;
+                piecesHashMap.get(pieceWillDead.division).remove(pieceWillDead);
                 for (ChessGameObserver gameObserver : gameObservers) {
                     gameObserver.killHappened(pieceWillMove, pieceWillDead, toFile, toRank);
                 }
@@ -109,11 +115,12 @@ public class ChessGame {
             for (ChessGameObserver gameObserver : gameObservers) {
                 gameObserver.pieceMoved(fromFile, fromRank, toFile, toRank, pieceWillMove);
             }
+
+            return;
         }
-        else {
-            for (ChessGameObserver gameObserver : gameObservers) {
-                gameObserver.canNotMoveThatCoordinates(fromFile, toFile, fromRank, toRank);
-            }
+
+        for (ChessGameObserver gameObserver : gameObservers) {
+            gameObserver.canNotMoveThatCoordinates(fromFile, toFile, fromRank, toRank);
         }
     }
 
@@ -175,5 +182,23 @@ public class ChessGame {
         stringBuilder.append("\n현재 차례: " + currentTurn);
 
         return stringBuilder.toString();
+    }
+
+    public void clearChessBoard() {
+        chessBoard = new ChessBoard();
+        kingHashMap.clear();
+        piecesHashMap.get(Division.White).clear();
+        piecesHashMap.get(Division.Black).clear();
+    }
+
+    public void placeNewPiece(char file, int rank, ChessPiece piece) {
+        if (piece.type == ChessPiece.Type.King) {
+            kingHashMap.put(piece.division, (King) piece);
+        }
+
+        Division pieceDivision = piece.division;
+        piecesHashMap.get(pieceDivision).add(piece);
+
+        chessBoard.placePiece(file, rank, piece);
     }
 }
