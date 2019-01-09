@@ -30,10 +30,7 @@ public  class ChessBoard {
             return;
         }
         if (piece != null) {
-            if (piece.type == ChessPiece.Type.King) {
-                King king = (King) piece;
-                king.setCoordinate(file, rank);
-            }
+            piece.setCoordinate(file, rank);
         }
         squares[files.indexOf(file)][rank - 1].setPieceOnSquare(piece);
     }
