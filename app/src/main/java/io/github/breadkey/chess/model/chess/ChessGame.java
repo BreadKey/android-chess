@@ -183,6 +183,10 @@ public class ChessGame {
         return chessBoard;
     }
 
+    public ChessBoard getChessBoard() {
+        return chessBoard;
+    }
+
     private boolean isCoordinatesContain(List<Coordinate> coordinates, char file, int rank) {
         boolean isContain = false;
 
