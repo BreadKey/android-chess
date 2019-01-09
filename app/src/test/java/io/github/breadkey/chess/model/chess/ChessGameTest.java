@@ -3,6 +3,7 @@ package io.github.breadkey.chess.model.chess;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.github.breadkey.chess.model.chess.chessPieces.Bishop;
 import io.github.breadkey.chess.model.chess.chessPieces.King;
 import io.github.breadkey.chess.model.chess.chessPieces.Rook;
 
@@ -114,5 +115,18 @@ public class ChessGameTest {
         chessGame.tryMove('a', 2, 'b', 2);
         assertNull(chessGame.getPieceAt('b' ,2));
         assertEquals(ChessGame.Division.White, chessGame.getCurrentTurn());
+    }
+
+    @Test
+    public void isStatusUnchangedAfterFindCoordinatesWhereCanMakeKingDead() {
+        chessGame.clearChessBoard();
+        chessGame.placeNewPiece('a', 1, new King(ChessGame.Division.White));
+        chessGame.placeNewPiece('a', 2, new Rook(ChessGame.Division.White));
+        chessGame.placeNewPiece('a', 8, new Rook(ChessGame.Division.Black));
+        chessGame.placeNewPiece('b', 2, new Bishop(ChessGame.Division.Black));
+
+        chessGame.tryMove('a', 2, 'b', 2);
+        assertEquals(ChessPiece.Type.Bishop, chessGame.getPieceAt('b', 2).type);
+        assertEquals(ChessPiece.Type.Rook, chessGame.getPieceAt('a', 2).type);
     }
 }
