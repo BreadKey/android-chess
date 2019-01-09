@@ -106,7 +106,7 @@ public abstract class ChessGameManager implements ChessGameObserver {
             }
         }
         else {
-            chessGame.move(currentSelectedCoordinate.getFile(), currentSelectedCoordinate.getRank(), file, rank);
+            chessGame.tryMove(currentSelectedCoordinate.getFile(), currentSelectedCoordinate.getRank(), file, rank);
             currentSelectedCoordinate = null;
         }
     }
