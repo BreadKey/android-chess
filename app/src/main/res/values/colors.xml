@@ -3,4 +3,11 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="bread">#DEB887</color>
+    <color name="dough">#FFFFF0</color>
+    <color name="oatmeal">#F5DEB3</color>
+    <color name="whiteChocolate">#F5F5DC</color>
+    <color name="darkChocolate">#312123</color>
+    <color name="strawberry">#FF9191</color>
+    <color name="plate">#696969</color>
 </resources>
