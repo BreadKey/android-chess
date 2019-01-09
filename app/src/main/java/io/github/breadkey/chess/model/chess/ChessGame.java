@@ -1,6 +1,7 @@
 package io.github.breadkey.chess.model.chess;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.github.breadkey.chess.model.ChessGameObserver;
@@ -17,6 +18,7 @@ public class ChessGame {
     }
 
     ChessBoard chessBoard;
+    HashMap<Division, King> kingHashMap;
     private Division currentTurn;
     private ChessRuleManager ruleManager = ChessRuleManager.getInstance();
     private List<ChessGameObserver> gameObservers;
@@ -72,8 +74,11 @@ public class ChessGame {
     }
 
     private void placeKings() {
-        chessBoard.placePiece('e', 1, new King(Division.White));
-        chessBoard.placePiece('e', 8, new King(Division.Black));
+        kingHashMap = new HashMap<>();
+        kingHashMap.put(Division.White, new King(Division.White));
+        kingHashMap.put(Division.Black, new King(Division.Black));
+        chessBoard.placePiece('e', 1, kingHashMap.get(Division.White));
+        chessBoard.placePiece('e', 8, kingHashMap.get(Division.Black));
     }
 
     public ChessPiece getPieceAt(char file, int rank) {
@@ -98,6 +103,9 @@ public class ChessGame {
             pieceWillMove.moveCount++;
 
             changeTurn();
+            if (isCheck(pieceWillMove, toFile, toRank)) {
+
+            }
             for (ChessGameObserver gameObserver : gameObservers) {
                 gameObserver.pieceMoved(fromFile, fromRank, toFile, toRank, pieceWillMove);
             }
@@ -133,6 +141,17 @@ public class ChessGame {
         else {
             currentTurn = Division.Black;
         }
+    }
+
+    private boolean isCheck(ChessPiece movedPiece, char movedFile, int movedRank) {
+        List<Coordinate> coordinatesCanMoveNextTurn = ruleManager.findSquareCoordinateCanMove(chessBoard, movedFile, movedRank);
+        King king = movedPiece.division == Division.White ? kingHashMap.get(Division.Black) : kingHashMap.get(Division.White);
+        if (isCoordinatesContain(coordinatesCanMoveNextTurn, king.getFile(), king.getRank())) {
+            king.setChecked(true);
+            return true;
+        }
+
+        return false;
     }
 
     public Division getCurrentTurn() {

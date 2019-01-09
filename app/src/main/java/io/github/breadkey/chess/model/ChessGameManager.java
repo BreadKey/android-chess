@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-import io.github.breadkey.chess.model.chess.ChessBoard;
 import io.github.breadkey.chess.model.chess.ChessGame;
 import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.model.chess.Coordinate;

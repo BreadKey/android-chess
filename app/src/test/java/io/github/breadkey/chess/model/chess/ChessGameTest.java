@@ -6,6 +6,7 @@ import org.junit.Test;
 import io.github.breadkey.chess.model.chess.ChessGame;
 import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.model.chess.ChessRuleManager;
+import io.github.breadkey.chess.model.chess.chessPieces.Rook;
 
 import static org.junit.Assert.*;
 
@@ -69,6 +70,16 @@ public class ChessGameTest {
         assertEquals(ChessGame.Division.White, chessGame.getPieceAt('b', 5).division);
         assertEquals(1, chessGame.getPieceAt('b', 5).killScore);
         printChessBoard();
+    }
+
+    @Test
+    public void check() {
+        chessGame.chessBoard = new ChessBoard();
+        chessGame.chessBoard.placePiece('a', 1, new Rook(ChessGame.Division.White));
+        chessGame.chessBoard.placePiece('b', 8,chessGame.kingHashMap.get(ChessGame.Division.Black));
+
+        chessGame.move('a', 1, 'b' ,1);
+        assertTrue(chessGame.kingHashMap.get(ChessGame.Division.Black).isChecked());
     }
 
     private void printChessBoard() {
