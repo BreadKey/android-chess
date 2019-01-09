@@ -1,12 +1,16 @@
 package io.github.breadkey.chess.model.chess;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+
+import io.github.breadkey.chess.model.chess.chessPieces.King;
 
 public  class ChessBoard {
     public static final List<Character> files = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
     public static final List<Integer> ranks = Arrays.asList(8, 7, 6, 5, 4, 3, 2, 1);
     Square[][] squares;
+
     public ChessBoard() {
         createSquares();
     }
@@ -25,7 +29,9 @@ public  class ChessBoard {
         if (isOutOfBoard(file, rank)) {
             return;
         }
-
+        if (piece != null) {
+            piece.setCoordinate(file, rank);
+        }
         squares[files.indexOf(file)][rank - 1].setPieceOnSquare(piece);
     }
 
@@ -51,7 +57,10 @@ public  class ChessBoard {
     }
 
     static boolean isOutOfBoard(char file, int rank) {
-        return !files.contains(file) || !ranks.contains(rank);
+        if (file < files.get(0) || file > files.get(files.size() - 1)) {
+            return true;
+        }
+        return rank > ranks.get(0) || rank < ranks.get(ranks.size() - 1);
     }
 
     @Override

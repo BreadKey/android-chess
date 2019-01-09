@@ -42,21 +42,43 @@ public abstract class ChessGameManager implements ChessGameObserver {
         divisionDecided(players.get(ChessGame.Division.White), players.get(ChessGame.Division.Black));
     }
 
-    public void undoMove() {
-        Move lastMove = moves.remove(moves.size() - 1);
-        Coordinate currentCoordinate = lastMove.getToCoordinate();
-        Coordinate previousCoordinate = lastMove.getFromCoordinate();
+    public void undoMoves(ChessGame.Division requesterDivision) {
+        List<Move> reversedMoves = new ArrayList<>(moves);
+        Collections.reverse(reversedMoves);
+        int lastMoveIndex = 0;
+        for (Move lastMove: reversedMoves) {
+            if (lastMove.getDivision() == requesterDivision) {
+                lastMoveIndex = reversedMoves.indexOf(lastMove);
+                break;
+            }
+        }
+
+        List<Move> movesHaveToUndo = reversedMoves.subList(0, lastMoveIndex + 1);
+        for (Move moveHaveToUndo: movesHaveToUndo) {
+            undoMove(moveHaveToUndo);
+        }
+    }
+
+    public void undoMove(Move moveHaveToUndo) {
+        Coordinate currentCoordinate = moveHaveToUndo.getToCoordinate();
+        Coordinate previousCoordinate = moveHaveToUndo.getFromCoordinate();
         ChessPiece piece = chessGame.getPieceAt(currentCoordinate.getFile(), currentCoordinate.getRank());
 
         chessGame.getChessBoard().placePiece(previousCoordinate.getFile(), previousCoordinate.getRank(), piece);
         chessGame.getChessBoard().placePiece(currentCoordinate.getFile(), currentCoordinate.getRank(), null);
 
-        for (KillLog killLog : killLogs) {
+        List<KillLog> reversedKillLogs = new ArrayList<>(killLogs);
+        Collections.reverse(reversedKillLogs);
+        for (KillLog killLog : reversedKillLogs) {
             if (isKiller(piece, killLog, currentCoordinate)) {
                 piece.killScore--;
-                chessGame.getChessBoard().placePiece(currentCoordinate.getFile(), currentCoordinate.getRank(), killLog.dead);
+                chessGame.placeNewPiece(currentCoordinate.getFile(), currentCoordinate.getRank(), killLog.dead);
+                killLogs.remove(killLog);
+                break;
             }
         }
+        moves.remove(moveHaveToUndo);
+        chessGame.setCurrentTurn(moveHaveToUndo.getDivision());
 
         undoMoveAction();
     }
@@ -103,7 +125,7 @@ public abstract class ChessGameManager implements ChessGameObserver {
             }
         }
         else {
-            chessGame.move(currentSelectedCoordinate.getFile(), currentSelectedCoordinate.getRank(), file, rank);
+            chessGame.tryMove(currentSelectedCoordinate.getFile(), currentSelectedCoordinate.getRank(), file, rank);
             currentSelectedCoordinate = null;
         }
     }

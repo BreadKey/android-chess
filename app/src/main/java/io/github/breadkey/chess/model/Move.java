@@ -32,4 +32,20 @@ public class Move {
     public Coordinate getToCoordinate() {
         return toCoordinate;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        if (pieceType == ChessPiece.Type.Pawn) {
+        }
+        else if (pieceType == ChessPiece.Type.Knight) {
+            stringBuilder.append('N');
+        }
+        else {
+            stringBuilder.append(pieceType.toString().charAt(0));
+        }
+        stringBuilder.append(toCoordinate.getFile());
+        stringBuilder.append(toCoordinate.getRank());
+        return stringBuilder.toString();
+    }
 }

@@ -84,7 +84,7 @@ public class ChessRuleManagerTest {
     @Test
     public void find_b1KnightCanMoveCoordinatesWhenBoardInitialized() {
         ChessGame chessGame = new ChessGame();
-        chessBoard = chessGame.chessBoard;
+        chessBoard = chessGame.getChessBoard();
 
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'b', 1);
         assertEquals(2, coordinates.size());
@@ -241,7 +241,7 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_e1KingCanMoveCoordinatesWhenBoardInitialized() {
-        chessBoard = new ChessGame().chessBoard;
+        chessBoard = new ChessGame().getChessBoard();
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'e', 1);
         assertEquals(0, coordinates.size());
     }
