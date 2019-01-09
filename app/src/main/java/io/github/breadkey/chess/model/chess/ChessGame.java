@@ -201,4 +201,8 @@ public class ChessGame {
 
         chessBoard.placePiece(file, rank, piece);
     }
+
+    public List<ChessPiece> getPieces(Division division) {
+        return piecesHashMap.get(division);
+    }
 }

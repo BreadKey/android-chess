@@ -82,5 +82,6 @@ public class ChessGameManagerTest {
         assertEquals(ChessPiece.Type.Pawn, chessGameManager.getChessGame().getPieceAt('b', 5).type);
         assertEquals(ChessGame.Division.Black, chessGameManager.getChessGame().getPieceAt('b', 5).division);
         assertEquals(0, chessGameManager.getChessGame().getPieceAt('a' ,4).killScore);
+        assertEquals(16, chessGameManager.getChessGame().getPieces(ChessGame.Division.Black).size());
     }
 }
