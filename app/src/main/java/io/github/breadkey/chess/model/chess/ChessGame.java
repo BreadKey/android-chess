@@ -96,7 +96,7 @@ public class ChessGame {
             List coordinatesCanMove = ruleManager.findSquareCoordinateCanMove(chessBoard, fromFile, fromRank);
             coordinatesCanMove = filterKingCanDead(coordinatesCanMove, pieceWillMove);
 
-            if (isCoordinatesContain(coordinatesCanMove, toFile, toRank)) {
+            if (coordinatesCanMove.contains(new Coordinate(toFile, toRank))) {
                 move(pieceWillMove, toFile, toRank);
                 return;
             }
@@ -156,7 +156,7 @@ public class ChessGame {
         for (Coordinate coordinate : coordinatesCanMove) {
             ChessPiece pieceAlreadyPlace = getPieceAt(coordinate.getFile(), coordinate.getRank());
             chessBoard.placePiece(coordinate.getFile(), coordinate.getRank(), pieceWillMove);
-            if (isPiecesCanMove(enemyDivision, king.getFile(), king.getRank())) {
+            if (isPiecesCanMove(enemyDivision, king.getCoordinate())) {
                 filteredCoordinates.remove(coordinate);
             }
             chessBoard.placePiece(coordinate.getFile(), coordinate.getRank(), pieceAlreadyPlace);
@@ -166,11 +166,11 @@ public class ChessGame {
         return filteredCoordinates;
     }
 
-    boolean isPiecesCanMove(Division division, char file, int rank) {
+    boolean isPiecesCanMove(Division division, Coordinate coordinate) {
         List<ChessPiece> pieces = getPieces(division);
         for (ChessPiece piece : pieces) {
             List<Coordinate> coordinatesCanMove = ruleManager.findSquareCoordinateCanMove(chessBoard, piece.getFile(), piece.getRank());
-            if (isCoordinatesContain(coordinatesCanMove, file, rank)) {
+            if (coordinatesCanMove.contains(coordinate)) {
                 return true;
             }
         }
@@ -181,19 +181,6 @@ public class ChessGame {
 
     public ChessBoard getChessBoard() {
         return chessBoard;
-    }
-
-    private boolean isCoordinatesContain(List<Coordinate> coordinates, char file, int rank) {
-        boolean isContain = false;
-
-        for (Coordinate coordinate: coordinates) {
-            if (coordinate.getFile() == file && coordinate.getRank() == rank) {
-                isContain = true;
-                break;
-            }
-        }
-
-        return isContain;
     }
 
     private void changeTurn() {
@@ -208,7 +195,7 @@ public class ChessGame {
     private boolean isCheck(char movedFile, int movedRank, Division enemyDivision) {
         List<Coordinate> coordinatesCanMoveNextTurn = ruleManager.findSquareCoordinateCanMove(chessBoard, movedFile, movedRank);
         King enemyKing = kingHashMap.get(enemyDivision);
-        if (isCoordinatesContain(coordinatesCanMoveNextTurn, enemyKing.getFile(), enemyKing.getRank())) {
+        if (coordinatesCanMoveNextTurn.contains(enemyKing.getCoordinate())) {
             enemyKing.setChecked(true);
             return true;
         }
@@ -218,9 +205,15 @@ public class ChessGame {
 
     private boolean isCheckmate(Division enemyDivision) {
         List<Coordinate> coordinatesEnemyCanMove = new ArrayList<>();
-        for (ChessPiece enemyPiece: getPieces(enemyDivision)) {
-            coordinatesEnemyCanMove.addAll(ruleManager.findSquareCoordinateCanMove(chessBoard, enemyPiece.getFile(), enemyPiece.getRank()));
-            coordinatesEnemyCanMove = filterKingCanDead(coordinatesEnemyCanMove, enemyPiece);
+
+        for (ChessPiece enemyPiece : getPieces(enemyDivision)) {
+            List<Coordinate> enemyPieceCanMoveCoordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, enemyPiece.getFile(), enemyPiece.getRank());
+            for (Coordinate coordinate : coordinatesEnemyCanMove) {
+                if (enemyPieceCanMoveCoordinates.contains(coordinate)) {
+                    enemyPieceCanMoveCoordinates.remove(coordinate);
+                }
+            }
+            coordinatesEnemyCanMove.addAll(filterKingCanDead(enemyPieceCanMoveCoordinates,  enemyPiece));
         }
 
         return coordinatesEnemyCanMove.size() == 0;
