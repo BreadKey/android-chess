@@ -32,8 +32,8 @@ public class ChessGame {
         gameObservers = new ArrayList<>();
         kingHashMap = new HashMap<>();
         piecesHashMap = new HashMap<>();
-        piecesHashMap.put(Division.White, new ArrayList<ChessPiece>());
-        piecesHashMap.put(Division.Black, new ArrayList<ChessPiece>());
+        piecesHashMap.put(Division.White, new ArrayList<ChessPiece>(16));
+        piecesHashMap.put(Division.Black, new ArrayList<ChessPiece>(16));
 
         setChessBoard();
         currentTurn = Division.White;
