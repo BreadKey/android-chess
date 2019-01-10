@@ -28,6 +28,12 @@ public class ChessRuleManagerTest {
     }
 
     @Test
+    public void find_nullCanMoveCoordinates() {
+        List<Coordinate> canMoveCoordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'a', 1);
+        assertEquals(0, canMoveCoordinates.size());
+    }
+
+    @Test
     public void find_a2PawnCanMoveCoordinates() {
         chessBoard.placePiece('a', 2, new Pawn(ChessGame.Division.White));
 
