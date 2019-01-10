@@ -156,7 +156,7 @@ public class ChessGame {
         for (Coordinate coordinate : coordinatesCanMove) {
             ChessPiece pieceAlreadyPlace = getPieceAt(coordinate.getFile(), coordinate.getRank());
             chessBoard.placePiece(coordinate.getFile(), coordinate.getRank(), pieceWillMove);
-            if (isPiecesCanMove(enemyDivision, king.getCoordinate())) {
+            if (arePiecesCanMove(enemyDivision, king.getCoordinate())) {
                 filteredCoordinates.remove(coordinate);
             }
             chessBoard.placePiece(coordinate.getFile(), coordinate.getRank(), pieceAlreadyPlace);
@@ -166,7 +166,7 @@ public class ChessGame {
         return filteredCoordinates;
     }
 
-    boolean isPiecesCanMove(Division division, Coordinate coordinate) {
+    boolean arePiecesCanMove(Division division, Coordinate coordinate) {
         List<ChessPiece> pieces = getPieces(division);
         for (ChessPiece piece : pieces) {
             List<Coordinate> coordinatesCanMove = ruleManager.findSquareCoordinateCanMove(chessBoard, piece.getFile(), piece.getRank());

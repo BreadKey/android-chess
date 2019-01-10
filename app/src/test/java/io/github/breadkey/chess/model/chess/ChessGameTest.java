@@ -87,14 +87,14 @@ public class ChessGameTest {
 
     @Test
     public void isBlackPiecesCanMove_d5() {
-        assertTrue(chessGame.isPiecesCanMove(ChessGame.Division.Black, new Coordinate('d', 5)));
+        assertTrue(chessGame.arePiecesCanMove(ChessGame.Division.Black, new Coordinate('d', 5)));
     }
 
     @Test
     public void isWhitePiecesCanMove_b7WhenRookOn_a1() {
         chessGame.clearChessBoard();
         chessGame.placeNewPiece('a' ,1, new Rook(ChessGame.Division.White));
-        assertFalse(chessGame.isPiecesCanMove(ChessGame.Division.White, new Coordinate('b', 7)));
+        assertFalse(chessGame.arePiecesCanMove(ChessGame.Division.White, new Coordinate('b', 7)));
     }
 
     @Test
