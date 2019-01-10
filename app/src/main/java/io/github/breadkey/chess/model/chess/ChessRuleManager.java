@@ -205,15 +205,6 @@ public class ChessRuleManager {
         return diagonalCoordinates;
     }
 
-    private boolean isEnemyPlaced(ChessBoard chessBoard, ChessGame.Division pieceDivision, char file, int rank) {
-        ChessPiece pieceWillEnemy = chessBoard.getPieceAt(file, rank);
-        if (pieceWillEnemy != null) {
-            return pieceWillEnemy.division != pieceDivision;
-        }
-
-        return false;
-    }
-
     private void findCoordinatesInStraightLine(ChessBoard chessBoard, List<Coordinate> destination, List<Coordinate> straightLine, ChessGame.Division division) {
         for (Coordinate coordinate: straightLine) {
             ChessPiece pieceAlreadyPlaced = chessBoard.getPieceAt(coordinate.getFile(), coordinate.getRank());
