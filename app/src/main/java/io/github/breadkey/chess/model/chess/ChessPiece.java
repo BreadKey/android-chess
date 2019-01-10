@@ -3,9 +3,7 @@ package io.github.breadkey.chess.model.chess;
 public abstract class ChessPiece {
     public int moveCount = 0;
     public int killScore = 0;
-    private char file;
-    private  int rank;
-
+    private Coordinate coordinate;
     public enum Type {
         King,
         Queen,
@@ -27,15 +25,18 @@ public abstract class ChessPiece {
     }
 
     public void setCoordinate(char file, int rank) {
-        this.file = file;
-        this.rank = rank;
+        coordinate = new Coordinate(file, rank);
+    }
+
+    public Coordinate getCoordinate() {
+        return coordinate;
     }
 
     public char getFile() {
-        return file;
+        return coordinate.getFile();
     }
 
     public int getRank() {
-        return rank;
+        return coordinate.getRank();
     }
 }
