@@ -13,12 +13,12 @@ public abstract class ChessPiece {
         Pawn
     }
 
-    public ChessPiece(ChessGame.Division division) {
+    public ChessPiece(PlayChessService.Division division) {
         this.division = division;
     }
 
     public Type type;
-    public ChessGame.Division division;
+    public PlayChessService.Division division;
 
     public Type getType() {
         return type;

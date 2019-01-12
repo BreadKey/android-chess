@@ -21,12 +21,12 @@ public class ChessRuleManager {
         }
 
         List<Coordinate> coordinates = new ArrayList<>();
-        ChessGame.Division division = piece.division;
+        PlayChessService.Division division = piece.division;
 
         switch (piece.type) {
             case Pawn: {
                 int forward = 1;
-                if (division == ChessGame.Division.Black) {
+                if (division == PlayChessService.Division.Black) {
                     forward = -1;
                 }
                 List<Coordinate> forwardLine = new ArrayList<>();
@@ -129,7 +129,7 @@ public class ChessRuleManager {
         return filteredCoordinates;
     }
 
-    private List<Coordinate> filterAllyPiecePlaced(ChessBoard chessBoard, List<Coordinate> coordinates, ChessGame.Division division) {
+    private List<Coordinate> filterAllyPiecePlaced(ChessBoard chessBoard, List<Coordinate> coordinates, PlayChessService.Division division) {
         List<Coordinate> filteredCoordinates = new ArrayList<>(coordinates);
 
         for (Coordinate anotherPiecePlace: findAnotherPiecePlace(chessBoard, coordinates)) {
@@ -141,7 +141,7 @@ public class ChessRuleManager {
         return filteredCoordinates;
     }
 
-    private void findRookCoordinatesCanMove(ChessBoard chessBoard, List<Coordinate> destination, char file, int rank, ChessGame.Division division) {
+    private void findRookCoordinatesCanMove(ChessBoard chessBoard, List<Coordinate> destination, char file, int rank, PlayChessService.Division division) {
         int pieceFileIndex = ChessBoard.files.indexOf(file);
         int fileCount = ChessBoard.files.size();
         int pieceRankIndex = ChessBoard.ranks.indexOf(rank);
@@ -174,7 +174,7 @@ public class ChessRuleManager {
         findCoordinatesInStraightLine(chessBoard, destination, downLine, division);
     }
 
-    private void findBishopCoordinatesCanMove(ChessBoard chessBoard, List<Coordinate> destination, char file, int rank, ChessGame.Division division) {
+    private void findBishopCoordinatesCanMove(ChessBoard chessBoard, List<Coordinate> destination, char file, int rank, PlayChessService.Division division) {
         List<Coordinate> leftUpLine = findDiagonalCoordinates(file, rank, -1 , 1);
         findCoordinatesInStraightLine(chessBoard, destination, leftUpLine, division);
 
@@ -205,7 +205,7 @@ public class ChessRuleManager {
         return diagonalCoordinates;
     }
 
-    private void findCoordinatesInStraightLine(ChessBoard chessBoard, List<Coordinate> destination, List<Coordinate> straightLine, ChessGame.Division division) {
+    private void findCoordinatesInStraightLine(ChessBoard chessBoard, List<Coordinate> destination, List<Coordinate> straightLine, PlayChessService.Division division) {
         for (Coordinate coordinate: straightLine) {
             ChessPiece pieceAlreadyPlaced = chessBoard.getPieceAt(coordinate.getFile(), coordinate.getRank());
             if (pieceAlreadyPlaced != null) {

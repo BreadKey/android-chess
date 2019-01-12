@@ -1,8 +1,9 @@
 package io.github.breadkey.chess.model;
 
-import io.github.breadkey.chess.model.chess.ChessGame;
+import io.github.breadkey.chess.model.chess.Move;
+import io.github.breadkey.chess.model.chess.PlayChessService;
 
-class TestChessGameManager extends ChessGameManager {
+class TestPlayChessController extends PlayChessController {
     private Player mainPlayer;
 
     @Override
@@ -27,11 +28,12 @@ class TestChessGameManager extends ChessGameManager {
     }
 
     private void printGameStatus() {
-        System.out.print(getChessGame());
-        System.out.println(" " + getCurrentPlayer().nickName);
-        for (int moveIndex = 1; moveIndex < getMoves().size(); moveIndex += 2) {
-            Move whiteMove = getMoves().get(moveIndex - 1);
-            Move blackMove = getMoves().get(moveIndex);
+        PlayChessService playChessService = getPlayChessService();
+        System.out.print(playChessService);
+        System.out.println(" " + playChessService.getCurrentPlayer().nickName);
+        for (int moveIndex = 1; moveIndex < playChessService.getMoves().size(); moveIndex += 2) {
+            Move whiteMove = playChessService.getMoves().get(moveIndex - 1);
+            Move blackMove = playChessService.getMoves().get(moveIndex);
             System.out.println(String.valueOf(moveIndex % 2) + ". " + whiteMove + "\t" + blackMove);
         }
     }
