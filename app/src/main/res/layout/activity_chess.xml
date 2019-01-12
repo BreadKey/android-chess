@@ -132,7 +132,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/black_player_text"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/king_default_black" />
+                app:srcCompat="@drawable/pawn_default_black" />
 
             <TextView
                 android:id="@+id/black_player_text"
@@ -176,7 +176,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/white_player_text"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/king_default_white" />
+                app:srcCompat="@drawable/pawn_default_white" />
 
             <TextView
                 android:id="@+id/white_player_text"
