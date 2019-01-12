@@ -28,7 +28,7 @@ public class PlayChessService {
 
     private Division currentTurn;
     private ChessRuleManager ruleManager = ChessRuleManager.getInstance();
-    private List<ChessPlayObserver> gameObservers;
+    private List<ChessPlayObserver> chessPlayObservers;
 
     private List<Move> moves;
     private List<KillLog> killLogs;
@@ -37,7 +37,7 @@ public class PlayChessService {
 
     public void startNewGame(Player player1, Player player2) {
         chessBoard = new ChessBoard();
-        gameObservers = new ArrayList<>();
+        chessPlayObservers = new ArrayList<>();
         kingHashMap = new HashMap<>();
         piecesHashMap = new HashMap<>();
         piecesHashMap.put(Division.White, new ArrayList<ChessPiece>(16));
@@ -127,8 +127,8 @@ public class PlayChessService {
             }
         }
 
-        for (ChessPlayObserver gameObserver : gameObservers) {
-            gameObserver.canNotMoveThatCoordinates(fromFile, toFile, fromRank, toRank);
+        for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
+            chessPlayObserver.canNotMoveThatCoordinates(fromFile, toFile, fromRank, toRank);
         }
     }
 
@@ -140,10 +140,11 @@ public class PlayChessService {
         if (pieceWillDead != null) {
             pieceToMove.killScore++;
             piecesHashMap.get(pieceWillDead.division).remove(pieceWillDead);
-            for (ChessPlayObserver gameObserver : gameObservers) {
-                gameObserver.killHappened(pieceToMove, pieceWillDead, toFile, toRank);
-            }
             killLogs.add(new KillLog(pieceToMove, pieceWillDead, toFile, toRank));
+
+            for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
+                chessPlayObserver.killHappened(pieceToMove, pieceWillDead, toFile, toRank);
+            }
         }
 
         char fromFile = pieceToMove.getFile();
@@ -154,9 +155,6 @@ public class PlayChessService {
         pieceToMove.moveCount++;
 
         changeTurn();
-        for (ChessPlayObserver gameObserver : gameObservers) {
-            gameObserver.pieceMoved(fromFile, fromRank, toFile, toRank, pieceToMove);
-        }
         Move newMove = new Move(pieceToMove.division, pieceToMove.type, new Coordinate(fromFile, fromRank), new Coordinate(toFile, toRank));
 
         Division enemyDivision = pieceToMove.division == Division.White? Division.Black : Division.White;
@@ -170,6 +168,10 @@ public class PlayChessService {
         }
 
         moves.add(newMove);
+
+        for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
+            chessPlayObserver.pieceMoved(newMove);
+        }
     }
 
     private List filterKingCanDead(List<Coordinate> coordinatesCanMove, ChessPiece pieceWillMove) {
@@ -284,6 +286,7 @@ public class PlayChessService {
         }
         moves.remove(moveHaveToUndo);
         setCurrentTurn(moveHaveToUndo.getDivision());
+
     }
 
     private boolean isKiller(ChessPiece piece, KillLog killLog, Coordinate atCoordinate) {
@@ -302,13 +305,13 @@ public class PlayChessService {
     }
 
     public void attachGameObserver(ChessPlayObserver gameObserver) {
-        if (!gameObservers.contains(gameObserver)) {
-            gameObservers.add(gameObserver);
+        if (!chessPlayObservers.contains(gameObserver)) {
+            chessPlayObservers.add(gameObserver);
         }
     }
 
     public void detachGameObserver(ChessPlayObserver gameObserver) {
-        gameObservers.remove(gameObserver);
+        chessPlayObservers.remove(gameObserver);
     }
 
     @Override

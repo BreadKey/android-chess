@@ -3,6 +3,8 @@ package io.github.breadkey.chess.model.chess;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.github.breadkey.chess.mock.MockPlayerHJ;
+import io.github.breadkey.chess.mock.MockPlayerYK;
 import io.github.breadkey.chess.model.Player;
 import io.github.breadkey.chess.model.chess.chessPieces.Bishop;
 import io.github.breadkey.chess.model.chess.chessPieces.King;
@@ -19,7 +21,7 @@ public class PlayChessServiceTest {
     @Before
     public void setUp() {
         playChessService = new PlayChessService();
-        playChessService.startNewGame(new Player("영기"), new Player("현정"));
+        playChessService.startNewGame(new MockPlayerYK(), new MockPlayerHJ());
     }
 
     @Test

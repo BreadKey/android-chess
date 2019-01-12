@@ -10,20 +10,16 @@ import io.github.breadkey.chess.model.chess.Coordinate;
 public abstract class PlayChessController implements ChessPlayObserver {
     private Coordinate currentSelectedCoordinate;
     private PlayChessService playChessService;
+    private PlayerMatcher playerMatcher;
+    private Player player;
+    private Player enemy;
 
-    abstract void divisionDecided(Player whitePlayer, Player blackPlayer);
-    abstract void pieceMoveAction(Move move);
-    abstract void canNotMoveAction(char fromFile, int fromRank, char toFile, int toRank);
-    abstract void undoMoveAction();
-
-    @Override
-    public void pieceMoved(char fromFile, int fromRank, char toFile, int toRank, ChessPiece movedPiece) {
-
+    public PlayChessController() {
+        playChessService = new PlayChessService();
     }
 
-    @Override
-    public void canNotMoveThatCoordinates(char fromFile, char toFile, int fromRank, int toRank) {
-        canNotMoveAction(fromFile, fromRank, toFile, toRank);
+    public void startNewGame() {
+        playChessService.startNewGame(player, enemy);
     }
 
     public void select(char file, int rank) {
@@ -41,13 +37,33 @@ public abstract class PlayChessController implements ChessPlayObserver {
         }
     }
 
-    @Override
-    public void killHappened(ChessPiece killer, ChessPiece dead, char atFile, int atRank) {
-
-    }
-
     public PlayChessService getPlayChessService() {
         return playChessService;
     }
-}
 
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setEnemy(Player enemy) {
+        this.enemy = enemy;
+    }
+
+    public Player getEnemy() {
+        return enemy;
+    }
+
+    public void setPlayerMatcher(PlayerMatcher playerMatcher) {
+        this.playerMatcher = playerMatcher;
+    }
+
+    public PlayerMatcher getPlayerMatcher() {
+        return playerMatcher;
+    }
+
+    public abstract void findEnemy();
+}

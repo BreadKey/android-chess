@@ -3,17 +3,20 @@ package io.github.breadkey.chess.model;
 import org.junit.Before;
 import org.junit.Test;
 
+import io.github.breadkey.chess.mock.*;
 import io.github.breadkey.chess.model.chess.PlayChessService;
-import io.github.breadkey.chess.model.chess.ChessPiece;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class PlayChessControllerTest {
-    PlayChessController playChessController = new TestPlayChessController();
+    PlayChessController playChessController = new MockPlayChessController();
     @Before
     public void setUp() {
-
+        playChessController.setPlayer(new MockPlayerYK());
+        playChessController.setPlayerMatcher(new MockPlayerMatcher());
+        playChessController.findEnemy();
+        playChessController.startNewGame();
     }
 
     @Test
