@@ -2,24 +2,23 @@ package io.github.breadkey.chess.presenter;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.util.AttributeSet;
 import android.widget.Button;
 import android.widget.GridLayout;
 
 import io.github.breadkey.chess.ChessPieceImageFactory;
 import io.github.breadkey.chess.R;
 import io.github.breadkey.chess.model.chess.ChessBoard;
-import io.github.breadkey.chess.model.chess.ChessGame;
+import io.github.breadkey.chess.model.chess.PlayChessService;
 import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.view.ChessActivity;
 
 public class ChessPresenter {
     ChessActivity view;
-    ChessGame chessGame;
+    PlayChessService playChessService;
 
     public ChessPresenter(ChessActivity view) {
         this.view = view;
-        chessGame = new ChessGame();
+        playChessService = new PlayChessService();
         createSquareButtons();
     }
 
@@ -27,7 +26,7 @@ public class ChessPresenter {
         GridLayout chessSquareLayout = view.findViewById(R.id.chess_square_layout);
         for(int rank: ChessBoard.ranks) {
             for(char file: ChessBoard.files) {
-                ChessPiece piece = chessGame.getPieceAt(file, rank);
+                ChessPiece piece = playChessService.getPieceAt(file, rank);
                 SquareButton squareButton = new SquareButton(view, file, rank);
                 if (piece != null) {
                     squareButton.setBackgroundResource(ChessPieceImageFactory.createPieceImage(piece));

@@ -1,10 +1,13 @@
 package io.github.breadkey.chess.model.chess;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
-import io.github.breadkey.chess.model.ChessGameObserver;
+import io.github.breadkey.chess.model.ChessPlayObserver;
+import io.github.breadkey.chess.model.Player;
 import io.github.breadkey.chess.model.chess.chessPieces.Bishop;
 import io.github.breadkey.chess.model.chess.chessPieces.King;
 import io.github.breadkey.chess.model.chess.chessPieces.Knight;
@@ -12,10 +15,12 @@ import io.github.breadkey.chess.model.chess.chessPieces.Pawn;
 import io.github.breadkey.chess.model.chess.chessPieces.Queen;
 import io.github.breadkey.chess.model.chess.chessPieces.Rook;
 
-public class ChessGame {
+public class PlayChessService {
     public enum Division {
         Black, White
     }
+
+    private HashMap<PlayChessService.Division, Player> players;
 
     private ChessBoard chessBoard;
     private HashMap<Division, King> kingHashMap;
@@ -23,20 +28,40 @@ public class ChessGame {
 
     private Division currentTurn;
     private ChessRuleManager ruleManager = ChessRuleManager.getInstance();
-    private List<ChessGameObserver> gameObservers;
+    private List<ChessPlayObserver> chessPlayObservers;
+
+    private List<Move> moves;
+    private List<KillLog> killLogs;
 
     private Division winner;
 
-    public ChessGame() {
+    public void startNewGame(Player player1, Player player2) {
         chessBoard = new ChessBoard();
-        gameObservers = new ArrayList<>();
+        chessPlayObservers = new ArrayList<>();
         kingHashMap = new HashMap<>();
         piecesHashMap = new HashMap<>();
-        piecesHashMap.put(Division.White, new ArrayList<ChessPiece>());
-        piecesHashMap.put(Division.Black, new ArrayList<ChessPiece>());
+        piecesHashMap.put(Division.White, new ArrayList<ChessPiece>(16));
+        piecesHashMap.put(Division.Black, new ArrayList<ChessPiece>(16));
 
         setChessBoard();
         currentTurn = Division.White;
+        decideDivision(player1, player2);
+        moves = new ArrayList<>();
+        killLogs = new ArrayList<>();
+    }
+
+    private void decideDivision(Player player1, Player player2) {
+        int dice = new Random().nextInt(2);
+        if (dice == 0) {
+            players = new HashMap<>();
+            players.put(PlayChessService.Division.White, player1);
+            players.put(PlayChessService.Division.Black, player2);
+        }
+        else {
+            players = new HashMap<>();
+            players.put(PlayChessService.Division.White, player2);
+            players.put(PlayChessService.Division.Black, player1);
+        }
     }
 
     private void setChessBoard() {
@@ -102,8 +127,8 @@ public class ChessGame {
             }
         }
 
-        for (ChessGameObserver gameObserver : gameObservers) {
-            gameObserver.canNotMoveThatCoordinates(fromFile, toFile, fromRank, toRank);
+        for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
+            chessPlayObserver.canNotMoveThatCoordinates(fromFile, toFile, fromRank, toRank);
         }
     }
 
@@ -115,8 +140,10 @@ public class ChessGame {
         if (pieceWillDead != null) {
             pieceToMove.killScore++;
             piecesHashMap.get(pieceWillDead.division).remove(pieceWillDead);
-            for (ChessGameObserver gameObserver : gameObservers) {
-                gameObserver.killHappened(pieceToMove, pieceWillDead, toFile, toRank);
+            killLogs.add(new KillLog(pieceToMove, pieceWillDead, toFile, toRank));
+
+            for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
+                chessPlayObserver.killHappened(pieceToMove, pieceWillDead, toFile, toRank);
             }
         }
 
@@ -128,9 +155,7 @@ public class ChessGame {
         pieceToMove.moveCount++;
 
         changeTurn();
-        for (ChessGameObserver gameObserver : gameObservers) {
-            gameObserver.pieceMoved(fromFile, fromRank, toFile, toRank, pieceToMove);
-        }
+        Move newMove = new Move(pieceToMove.division, pieceToMove.type, new Coordinate(fromFile, fromRank), new Coordinate(toFile, toRank));
 
         Division enemyDivision = pieceToMove.division == Division.White? Division.Black : Division.White;
 
@@ -140,6 +165,12 @@ public class ChessGame {
 
         else if (isCheck(toFile, toRank, enemyDivision)) {
 
+        }
+
+        moves.add(newMove);
+
+        for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
+            chessPlayObserver.pieceMoved(newMove);
         }
     }
 
@@ -156,7 +187,7 @@ public class ChessGame {
         for (Coordinate coordinate : coordinatesCanMove) {
             ChessPiece pieceAlreadyPlace = getPieceAt(coordinate.getFile(), coordinate.getRank());
             chessBoard.placePiece(coordinate.getFile(), coordinate.getRank(), pieceWillMove);
-            if (isPiecesCanMove(enemyDivision, king.getCoordinate())) {
+            if (arePiecesCanMove(enemyDivision, king.getCoordinate())) {
                 filteredCoordinates.remove(coordinate);
             }
             chessBoard.placePiece(coordinate.getFile(), coordinate.getRank(), pieceAlreadyPlace);
@@ -166,7 +197,7 @@ public class ChessGame {
         return filteredCoordinates;
     }
 
-    boolean isPiecesCanMove(Division division, Coordinate coordinate) {
+    boolean arePiecesCanMove(Division division, Coordinate coordinate) {
         List<ChessPiece> pieces = getPieces(division);
         for (ChessPiece piece : pieces) {
             List<Coordinate> coordinatesCanMove = ruleManager.findSquareCoordinateCanMove(chessBoard, piece.getFile(), piece.getRank());
@@ -219,6 +250,53 @@ public class ChessGame {
         return coordinatesEnemyCanMove.size() == 0;
     }
 
+    public void undoMoves(PlayChessService.Division requesterDivision) {
+        List<Move> reversedMoves = new ArrayList<>(moves);
+        Collections.reverse(reversedMoves);
+        int lastMoveIndex = 0;
+        for (Move lastMove: reversedMoves) {
+            if (lastMove.getDivision() == requesterDivision) {
+                lastMoveIndex = reversedMoves.indexOf(lastMove);
+                break;
+            }
+        }
+
+        List<Move> movesHaveToUndo = reversedMoves.subList(0, lastMoveIndex + 1);
+        for (Move moveHaveToUndo: movesHaveToUndo) {
+            undoMove(moveHaveToUndo);
+        }
+    }
+
+    public void undoMove(Move moveHaveToUndo) {
+        Coordinate currentCoordinate = moveHaveToUndo.getToCoordinate();
+        Coordinate previousCoordinate = moveHaveToUndo.getFromCoordinate();
+        ChessPiece piece = getPieceAt(currentCoordinate.getFile(), currentCoordinate.getRank());
+
+        getChessBoard().placePiece(previousCoordinate.getFile(), previousCoordinate.getRank(), piece);
+        getChessBoard().placePiece(currentCoordinate.getFile(), currentCoordinate.getRank(), null);
+
+        List<KillLog> reversedKillLogs = new ArrayList<>(killLogs);
+        Collections.reverse(reversedKillLogs);
+        for (KillLog killLog : reversedKillLogs) {
+            if (isKiller(piece, killLog, currentCoordinate)) {
+                piece.killScore--;
+                placeNewPiece(currentCoordinate.getFile(), currentCoordinate.getRank(), killLog.dead);
+                killLogs.remove(killLog);
+                break;
+            }
+        }
+        moves.remove(moveHaveToUndo);
+        setCurrentTurn(moveHaveToUndo.getDivision());
+
+    }
+
+    private boolean isKiller(ChessPiece piece, KillLog killLog, Coordinate atCoordinate) {
+        if (killLog.killer == piece && killLog.atFile == atCoordinate.getFile() && killLog.atRank == atCoordinate.getRank()) {
+            return true;
+        }
+        return false;
+    }
+
     public Division getCurrentTurn() {
         return currentTurn;
     }
@@ -227,14 +305,14 @@ public class ChessGame {
         currentTurn = division;
     }
 
-    public void attachGameObserver(ChessGameObserver gameObserver) {
-        if (!gameObservers.contains(gameObserver)) {
-            gameObservers.add(gameObserver);
+    public void attachGameObserver(ChessPlayObserver gameObserver) {
+        if (!chessPlayObservers.contains(gameObserver)) {
+            chessPlayObservers.add(gameObserver);
         }
     }
 
-    public void detachGameObserver(ChessGameObserver gameObserver) {
-        gameObservers.remove(gameObserver);
+    public void detachGameObserver(ChessPlayObserver gameObserver) {
+        chessPlayObservers.remove(gameObserver);
     }
 
     @Override
@@ -278,5 +356,27 @@ public class ChessGame {
 
     public Division getWinner() {
         return winner;
+    }
+
+    public List<Move> getMoves() {
+        return moves;
+    }
+
+    public Player getCurrentPlayer() {
+        return players.get(currentTurn);
+    }
+}
+
+class KillLog {
+    ChessPiece killer;
+    ChessPiece dead;
+    char atFile;
+    int atRank;
+
+    KillLog(ChessPiece killer, ChessPiece dead, char atFile, int atRank) {
+        this.killer = killer;
+        this.dead = dead;
+        this.atFile = atFile;
+        this.atRank = atRank;
     }
 }

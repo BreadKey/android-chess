@@ -5,10 +5,6 @@ import org.junit.Test;
 
 import java.util.List;
 
-import io.github.breadkey.chess.model.chess.ChessBoard;
-import io.github.breadkey.chess.model.chess.ChessGame;
-import io.github.breadkey.chess.model.chess.ChessRuleManager;
-import io.github.breadkey.chess.model.chess.Coordinate;
 import io.github.breadkey.chess.model.chess.chessPieces.Bishop;
 import io.github.breadkey.chess.model.chess.chessPieces.King;
 import io.github.breadkey.chess.model.chess.chessPieces.Knight;
@@ -28,8 +24,14 @@ public class ChessRuleManagerTest {
     }
 
     @Test
+    public void find_nullCanMoveCoordinates() {
+        List<Coordinate> canMoveCoordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'a', 1);
+        assertEquals(0, canMoveCoordinates.size());
+    }
+
+    @Test
     public void find_a2PawnCanMoveCoordinates() {
-        chessBoard.placePiece('a', 2, new Pawn(ChessGame.Division.White));
+        chessBoard.placePiece('a', 2, new Pawn(PlayChessService.Division.White));
 
         List<Coordinate> canMoveCoordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'a', 2);;
 
@@ -39,7 +41,7 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_a7PawnCanMoveCoordinates() {
-        chessBoard.placePiece('a', 7, new Pawn(ChessGame.Division.Black));
+        chessBoard.placePiece('a', 7, new Pawn(PlayChessService.Division.Black));
 
         List<Coordinate> canMoveCoordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'a', 7);
 
@@ -49,8 +51,8 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_a2PawnCanMoveCoordinatesWhenAnotherPieceIsExistInFront() {
-        chessBoard.placePiece('a', 2, new Pawn(ChessGame.Division.White));
-        chessBoard.placePiece('a', 3, new Pawn(ChessGame.Division.Black));
+        chessBoard.placePiece('a', 2, new Pawn(PlayChessService.Division.White));
+        chessBoard.placePiece('a', 3, new Pawn(PlayChessService.Division.Black));
 
         List<Coordinate> canMoveCoordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'a', 2);
         System.out.println(canMoveCoordinates);
@@ -59,8 +61,8 @@ public class ChessRuleManagerTest {
 
     @Test
     public void findWhitePawnCoordinateWhereCanKillEnemyPiece() {
-        chessBoard.placePiece('a', 2, new Pawn(ChessGame.Division.White));
-        chessBoard.placePiece('b', 3, new Pawn(ChessGame.Division.Black));
+        chessBoard.placePiece('a', 2, new Pawn(PlayChessService.Division.White));
+        chessBoard.placePiece('b', 3, new Pawn(PlayChessService.Division.Black));
 
         List<Coordinate> canMoveCoordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'a', 2);
         assertCoordinatesContains('b', 3, canMoveCoordinates);
@@ -68,7 +70,7 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_d4KnightCanMoveCoordinates() {
-        chessBoard.placePiece('d', 4, new Knight(ChessGame.Division.White));
+        chessBoard.placePiece('d', 4, new Knight(PlayChessService.Division.White));
 
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
         assertCoordinatesContains('c', 6, coordinates);
@@ -83,8 +85,8 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_b1KnightCanMoveCoordinatesWhenBoardInitialized() {
-        ChessGame chessGame = new ChessGame();
-        chessBoard = chessGame.getChessBoard();
+        PlayChessService playChessService = new PlayChessService();
+        chessBoard = playChessService.getChessBoard();
 
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'b', 1);
         assertEquals(2, coordinates.size());
@@ -94,8 +96,8 @@ public class ChessRuleManagerTest {
 
     @Test
     public void canNotMove_b1KnightTo_a3BecauseAlly() {
-        chessBoard.placePiece('b', 1, new Knight(ChessGame.Division.White));
-        chessBoard.placePiece('a', 3, new Pawn(ChessGame.Division.White));
+        chessBoard.placePiece('b', 1, new Knight(PlayChessService.Division.White));
+        chessBoard.placePiece('a', 3, new Pawn(PlayChessService.Division.White));
 
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard,'b', 1);
         assertEquals(2, coordinates.size());
@@ -104,8 +106,8 @@ public class ChessRuleManagerTest {
 
     @Test
     public void canMove_b1KnightTo_a3WhereEnemyPlaced() {
-        chessBoard.placePiece('b', 1, new Knight(ChessGame.Division.White));
-        chessBoard.placePiece('a', 3, new Pawn(ChessGame.Division.Black));
+        chessBoard.placePiece('b', 1, new Knight(PlayChessService.Division.White));
+        chessBoard.placePiece('a', 3, new Pawn(PlayChessService.Division.Black));
 
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'b', 1);
         assertEquals(3, coordinates.size());
@@ -114,7 +116,7 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_d4RookCanMoveCoordinates() {
-        chessBoard.placePiece('d', 4, new Rook(ChessGame.Division.White));
+        chessBoard.placePiece('d', 4, new Rook(PlayChessService.Division.White));
 
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
         for (char file: ChessBoard.files) {
@@ -130,11 +132,11 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_d4RookCanMoveCoordinatesWhenIsBlockedEveryDirections() {
-        chessBoard.placePiece('d', 4, new Rook(ChessGame.Division.White));
-        chessBoard.placePiece('d', 3, new Pawn(ChessGame.Division.White));
-        chessBoard.placePiece('d', 5, new Pawn(ChessGame.Division.White));
-        chessBoard.placePiece('c', 4, new Pawn(ChessGame.Division.White));
-        chessBoard.placePiece('e', 4, new Pawn(ChessGame.Division.White));
+        chessBoard.placePiece('d', 4, new Rook(PlayChessService.Division.White));
+        chessBoard.placePiece('d', 3, new Pawn(PlayChessService.Division.White));
+        chessBoard.placePiece('d', 5, new Pawn(PlayChessService.Division.White));
+        chessBoard.placePiece('c', 4, new Pawn(PlayChessService.Division.White));
+        chessBoard.placePiece('e', 4, new Pawn(PlayChessService.Division.White));
 
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
         assertEquals(0, coordinates.size());
@@ -142,11 +144,11 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_d4RookCanMoveCoordinatesWhenIsBlockedEveryDirectionsByEnemy() {
-        chessBoard.placePiece('d', 4, new Rook(ChessGame.Division.White));
-        chessBoard.placePiece('d', 3, new Pawn(ChessGame.Division.Black));
-        chessBoard.placePiece('d', 5, new Pawn(ChessGame.Division.Black));
-        chessBoard.placePiece('c', 4, new Pawn(ChessGame.Division.Black));
-        chessBoard.placePiece('e', 4, new Pawn(ChessGame.Division.Black));
+        chessBoard.placePiece('d', 4, new Rook(PlayChessService.Division.White));
+        chessBoard.placePiece('d', 3, new Pawn(PlayChessService.Division.Black));
+        chessBoard.placePiece('d', 5, new Pawn(PlayChessService.Division.Black));
+        chessBoard.placePiece('c', 4, new Pawn(PlayChessService.Division.Black));
+        chessBoard.placePiece('e', 4, new Pawn(PlayChessService.Division.Black));
 
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
         assertEquals(4, coordinates.size());
@@ -158,7 +160,7 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_d4BishopCanMoveCoordinates() {
-        chessBoard.placePiece('d', 4, new Bishop(ChessGame.Division.White));
+        chessBoard.placePiece('d', 4, new Bishop(PlayChessService.Division.White));
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
 
         char[] rightDownDiagonalFileRange = {'a', 'b', 'c', 'e', 'f', 'g'};
@@ -175,11 +177,11 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_d4BishopCanMoveCoordinatesWhenBlockedEveryDirections() {
-        chessBoard.placePiece('d', 4, new Bishop(ChessGame.Division.White));
-        chessBoard.placePiece('c', 5, new Pawn(ChessGame.Division.White));
-        chessBoard.placePiece('e', 5, new Pawn(ChessGame.Division.White));
-        chessBoard.placePiece('c', 3, new Pawn(ChessGame.Division.White));
-        chessBoard.placePiece('e', 3, new Pawn(ChessGame.Division.White));
+        chessBoard.placePiece('d', 4, new Bishop(PlayChessService.Division.White));
+        chessBoard.placePiece('c', 5, new Pawn(PlayChessService.Division.White));
+        chessBoard.placePiece('e', 5, new Pawn(PlayChessService.Division.White));
+        chessBoard.placePiece('c', 3, new Pawn(PlayChessService.Division.White));
+        chessBoard.placePiece('e', 3, new Pawn(PlayChessService.Division.White));
 
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
         assertEquals(0, coordinates.size());
@@ -187,11 +189,11 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_d4BishopCanMoveCoordinatesWhenBlockedEveryDirectionsByEnemy() {
-        chessBoard.placePiece('d', 4, new Bishop(ChessGame.Division.White));
-        chessBoard.placePiece('c', 5, new Pawn(ChessGame.Division.Black));
-        chessBoard.placePiece('e', 5, new Pawn(ChessGame.Division.Black));
-        chessBoard.placePiece('c', 3, new Pawn(ChessGame.Division.Black));
-        chessBoard.placePiece('e', 3, new Pawn(ChessGame.Division.Black));
+        chessBoard.placePiece('d', 4, new Bishop(PlayChessService.Division.White));
+        chessBoard.placePiece('c', 5, new Pawn(PlayChessService.Division.Black));
+        chessBoard.placePiece('e', 5, new Pawn(PlayChessService.Division.Black));
+        chessBoard.placePiece('c', 3, new Pawn(PlayChessService.Division.Black));
+        chessBoard.placePiece('e', 3, new Pawn(PlayChessService.Division.Black));
 
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
         assertEquals(4, coordinates.size());
@@ -203,7 +205,7 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_a1QueenCanMoveCoordinates() {
-        chessBoard.placePiece('a', 1, new Queen(ChessGame.Division.White));
+        chessBoard.placePiece('a', 1, new Queen(PlayChessService.Division.White));
 
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'a', 1);
 
@@ -225,7 +227,7 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_d4KingCanMoveCoordinates() {
-        chessBoard.placePiece('d', 4, new King(ChessGame.Division.White));
+        chessBoard.placePiece('d', 4, new King(PlayChessService.Division.White));
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
 
         assertEquals(8, coordinates.size());
@@ -241,7 +243,7 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_e1KingCanMoveCoordinatesWhenBoardInitialized() {
-        chessBoard = new ChessGame().getChessBoard();
+        chessBoard = new PlayChessService().getChessBoard();
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'e', 1);
         assertEquals(0, coordinates.size());
     }
