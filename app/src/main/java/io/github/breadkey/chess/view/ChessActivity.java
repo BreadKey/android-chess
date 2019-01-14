@@ -1,5 +1,6 @@
 package io.github.breadkey.chess.view;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ public class ChessActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        startActivity(new Intent(this, LoadingActivity.class));
         setContentView(R.layout.activity_chess);
         chessSquareLayout = findViewById(R.id.chess_square_layout);
         presenter = new ChessPresenter(this);
