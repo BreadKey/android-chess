@@ -358,6 +358,9 @@ public class PlayChessService {
 
     private void endGame(Division winner) {
         this.winner = winner;
+        for (ChessPlayObserver observer : chessPlayObservers) {
+            observer.gameEnded(winner);
+        }
     }
 
     public Division getWinner() {
@@ -372,8 +375,8 @@ public class PlayChessService {
         return players.get(currentTurn);
     }
 
-    public void addObserver(ChessPlayObserver observer) {
-        chessPlayObservers.add(observer);
+    public List<ChessPlayObserver> getChessPlayObservers() {
+        return chessPlayObservers;
     }
 }
 

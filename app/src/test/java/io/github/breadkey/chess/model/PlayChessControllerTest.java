@@ -56,4 +56,10 @@ public class PlayChessControllerTest {
         assertNull(playChessController.getPlayChessService().getPieceAt('b', 3));
         assertEquals(0, playChessController.getPlayChessService().getMoves().size());
     }
+
+    @Test
+    public void gameAfterGame() {
+        playChessController.startNewGame();
+        assertEquals(1, playChessController.getPlayChessService().getChessPlayObservers().size());
+    }
 }

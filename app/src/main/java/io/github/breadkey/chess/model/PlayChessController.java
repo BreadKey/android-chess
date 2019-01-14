@@ -20,7 +20,7 @@ public abstract class PlayChessController implements ChessPlayObserver {
     }
 
     public void startNewGame() {
-        playChessService.addObserver(this);
+        playChessService.attachGameObserver(this);
         playChessService.startNewGame(player, enemy);
     }
 
