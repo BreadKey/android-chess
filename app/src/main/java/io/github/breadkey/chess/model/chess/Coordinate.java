@@ -55,4 +55,9 @@ public class Coordinate implements Comparable<Coordinate> {
         Coordinate other = (Coordinate) obj;
         return file == other.file && rank == other.rank;
     }
+
+    @Override
+    public int hashCode() {
+        return (file << 16) + rank;
+    }
 }
