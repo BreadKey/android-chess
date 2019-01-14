@@ -19,7 +19,7 @@ public class ChessPresenter {
     public ChessPresenter(ChessActivity view) {
         this.view = view;
         playChessService = new PlayChessService();
-        createSquareButtons();
+        // createSquareButtons();
     }
 
     private void createSquareButtons() {

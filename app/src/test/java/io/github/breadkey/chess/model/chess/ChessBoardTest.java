@@ -17,7 +17,7 @@ public class ChessBoardTest {
 
     @Test
     public void squaresAreCreated() {
-        Square firstSquare = chessBoard.squares[0][0];
+        Square firstSquare = chessBoard.squares.get(new Coordinate('a', 1));
 
         assertNotEquals(null, firstSquare);
     }
