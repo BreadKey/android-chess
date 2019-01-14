@@ -1,57 +1,30 @@
 package io.github.breadkey.chess.presenter;
 
-import android.content.Context;
-import android.graphics.Color;
+import android.view.View;
 import android.widget.Button;
-import android.widget.GridLayout;
 
-import io.github.breadkey.chess.ChessPieceImageFactory;
 import io.github.breadkey.chess.R;
-import io.github.breadkey.chess.model.chess.ChessBoard;
 import io.github.breadkey.chess.model.chess.PlayChessService;
-import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.view.ChessActivity;
 
 public class ChessPresenter {
     ChessActivity view;
+    View matchPlayerLatour;
     PlayChessService playChessService;
 
     public ChessPresenter(ChessActivity view) {
         this.view = view;
+        matchPlayerLatour = view.findViewById(R.id.match_player_layout);
         playChessService = new PlayChessService();
-        createSquareButtons();
+        initView();
     }
 
-    private void createSquareButtons() {
-        GridLayout chessSquareLayout = view.findViewById(R.id.chess_square_layout);
-        for(int rank: ChessBoard.ranks) {
-            for(char file: ChessBoard.files) {
-                ChessPiece piece = playChessService.getPieceAt(file, rank);
-                SquareButton squareButton = new SquareButton(view, file, rank);
-                if (piece != null) {
-                    squareButton.setBackgroundResource(ChessPieceImageFactory.createPieceImage(piece));
-                }
-                else {
-                    squareButton.setBackgroundColor(Color.TRANSPARENT);
-                }
-
-                chessSquareLayout.addView(squareButton);
+    private void initView() {
+        view.findViewById(R.id.play_in_real_button).setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                matchPlayerLatour.setVisibility(View.GONE);
             }
-        }
-    }
-}
-
-class SquareButton extends Button {
-    char file;
-    int rank;
-    public SquareButton(Context context, char file, int rank) {
-        super(context);
-        this.file = file;
-        this.rank = rank;
-        float dp = context.getResources().getDisplayMetrics().density;
-        GridLayout.LayoutParams layoutParams = new GridLayout.LayoutParams();
-        layoutParams.width = (int) (40 * dp);
-        layoutParams.height = (int) (40 * dp);
-        setLayoutParams(layoutParams);
+        });
     }
 }
