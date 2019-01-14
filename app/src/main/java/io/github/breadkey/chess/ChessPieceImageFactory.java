@@ -5,9 +5,12 @@ import io.github.breadkey.chess.model.chess.ChessPiece;
 
 public class ChessPieceImageFactory {
     public static int createPieceImage(ChessPiece piece) {
-        PlayChessService.Division division = piece.division;
+        return createPieceImage(piece.type, piece.division);
+    }
 
-        switch (piece.type) {
+    public static int createPieceImage(ChessPiece.Type type, PlayChessService.Division division) {
+
+        switch (type) {
             case Pawn: {
                 if (division == PlayChessService.Division.White) {
                     return R.drawable.pawn_default_white;

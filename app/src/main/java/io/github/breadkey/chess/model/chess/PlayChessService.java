@@ -19,7 +19,6 @@ public class PlayChessService {
     public enum Division {
         Black, White
     }
-
     private HashMap<PlayChessService.Division, Player> players;
 
     private ChessBoard chessBoard;
@@ -35,9 +34,12 @@ public class PlayChessService {
 
     private Division winner;
 
+    public PlayChessService() {
+        chessPlayObservers = new ArrayList<>();
+    }
+
     public void startNewGame(Player player1, Player player2) {
         chessBoard = new ChessBoard();
-        chessPlayObservers = new ArrayList<>();
         kingHashMap = new HashMap<>();
         piecesHashMap = new HashMap<>();
         piecesHashMap.put(Division.White, new ArrayList<ChessPiece>(16));
@@ -61,6 +63,10 @@ public class PlayChessService {
             players = new HashMap<>();
             players.put(PlayChessService.Division.White, player2);
             players.put(PlayChessService.Division.Black, player1);
+        }
+
+        for (ChessPlayObserver observer: chessPlayObservers) {
+            observer.divisionDecided(players.get(Division.White), players.get(Division.Black));
         }
     }
 
@@ -364,6 +370,10 @@ public class PlayChessService {
 
     public Player getCurrentPlayer() {
         return players.get(currentTurn);
+    }
+
+    public void addObserver(ChessPlayObserver observer) {
+        chessPlayObservers.add(observer);
     }
 }
 

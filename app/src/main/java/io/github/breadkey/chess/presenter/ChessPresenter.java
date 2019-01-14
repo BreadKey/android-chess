@@ -1,57 +1,136 @@
 package io.github.breadkey.chess.presenter;
 
-import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.widget.Button;
-import android.widget.GridLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.github.breadkey.chess.ChessPieceImageFactory;
 import io.github.breadkey.chess.R;
-import io.github.breadkey.chess.model.chess.ChessBoard;
-import io.github.breadkey.chess.model.chess.PlayChessService;
+import io.github.breadkey.chess.model.PlayChessController;
+import io.github.breadkey.chess.model.Player;
 import io.github.breadkey.chess.model.chess.ChessPiece;
+import io.github.breadkey.chess.model.chess.Coordinate;
+import io.github.breadkey.chess.model.chess.Move;
+import io.github.breadkey.chess.model.chess.PlayChessService;
 import io.github.breadkey.chess.view.ChessActivity;
+import io.github.breadkey.chess.view.SquareLayout;
 
-public class ChessPresenter {
+public class ChessPresenter extends PlayChessController {
     ChessActivity view;
-    PlayChessService playChessService;
+    View matchPlayerLayout;
+    List<Coordinate> coordinatesPieceCanMoveCache;
 
     public ChessPresenter(ChessActivity view) {
         this.view = view;
-        playChessService = new PlayChessService();
-        // createSquareButtons();
+        matchPlayerLayout = view.findViewById(R.id.match_player_layout);
+        coordinatesPieceCanMoveCache = new ArrayList<>();
+        initView();
     }
 
-    private void createSquareButtons() {
-        GridLayout chessSquareLayout = view.findViewById(R.id.chess_square_layout);
-        for(int rank: ChessBoard.ranks) {
-            for(char file: ChessBoard.files) {
-                ChessPiece piece = playChessService.getPieceAt(file, rank);
-                SquareButton squareButton = new SquareButton(view, file, rank);
-                if (piece != null) {
-                    squareButton.setBackgroundResource(ChessPieceImageFactory.createPieceImage(piece));
-                }
-                else {
-                    squareButton.setBackgroundColor(Color.TRANSPARENT);
-                }
+    private void initView() {
+        view.findViewById(R.id.play_in_real_button).setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                matchPlayerLayout.setVisibility(View.GONE);
+                playChessGameInReal();
+            }
+        });
+    }
 
-                chessSquareLayout.addView(squareButton);
+    private void playChessGameInReal() {
+        setPlayer(new Player("Player1"));
+        setEnemy(new Player("Player2"));
+        startNewGame();
+        updateChessBoard();
+    }
+
+    private void updateChessBoard() {
+        for (ChessPiece whitePiece : getPlayChessService().getPieces(PlayChessService.Division.White)) {
+            SquareLayout squareLayout = view.getSquareLayout(whitePiece.getCoordinate());
+            squareLayout.getPieceButton().setBackgroundResource(ChessPieceImageFactory.createPieceImage(whitePiece));
+        }
+
+        for (ChessPiece blackPiece : getPlayChessService().getPieces(PlayChessService.Division.Black)) {
+            SquareLayout squareLayout = view.getSquareLayout(blackPiece.getCoordinate());
+            squareLayout.getPieceButton().setBackgroundResource(ChessPieceImageFactory.createPieceImage(blackPiece));
+        }
+    }
+
+    public void coordinateSelected(Coordinate coordinate) {
+        select(coordinate.getFile(), coordinate.getRank());
+    }
+
+    @Override
+    public void findEnemy() {
+
+    }
+
+    @Override
+    public void divisionDecided(Player whitePlayer, Player blackPlayer) {
+        TextView whitePlayerNameTextView = view.findViewById(R.id.white_player_text);
+        ImageView whitePlayerTierIconImageView = view.findViewById(R.id.white_player_tier_icon);
+        whitePlayerNameTextView.setText(whitePlayer.nickName);
+        whitePlayerTierIconImageView.setImageResource(ChessPieceImageFactory.createPieceImage(ChessPiece.Type.Pawn, PlayChessService.Division.White));
+
+        TextView blackPlayerNameTextView = view.findViewById(R.id.black_player_text);
+        ImageView blackPlayerTierIconImageView = view.findViewById(R.id.black_player_tier_icon);
+        blackPlayerNameTextView.setText(blackPlayer.nickName);
+        blackPlayerTierIconImageView.setImageResource(ChessPieceImageFactory.createPieceImage(ChessPiece.Type.Pawn, PlayChessService.Division.Black));
+    }
+
+    @Override
+    public void pieceMoved(Move move) {
+        unShowCanMoveCoordinates();
+
+        SquareLayout fromSquare = view.getSquareLayout(move.getFromCoordinate());
+        SquareLayout toSquare = view.getSquareLayout(move.getToCoordinate());
+
+        Drawable pieceBackground = fromSquare.getPieceButton().getBackground();
+        fromSquare.getPieceButton().setBackgroundColor(Color.TRANSPARENT);
+        toSquare.getPieceButton().setBackgroundDrawable(pieceBackground);
+    }
+
+    @Override
+    public void canNotMoveThatCoordinates(char fromFile, char toFile, int fromRank, int toRank) {
+        Toast.makeText(view.getApplicationContext(), "그 곳으로 움직일 수 없습니다", Toast.LENGTH_SHORT).show();
+        unShowCanMoveCoordinates();
+    }
+
+    @Override
+    public void moveUndid(Move move) {
+
+    }
+
+    @Override
+    public void killHappened(ChessPiece pieceWillMove, ChessPiece pieceWillDead, char toFile, int toRank) {
+
+    }
+
+    @Override
+    public void coordinatesPieceCanMoveFounded(List<Coordinate> coordinates) {
+        unShowCanMoveCoordinates();
+        coordinatesPieceCanMoveCache = coordinates;
+        for (Coordinate coordinate : coordinates) {
+            ChessPiece enemyPiece = getPlayChessService().getPieceAt(coordinate.getFile(), coordinate.getRank());
+            if (enemyPiece != null) {
+                view.getSquareLayout(coordinate).setBackgroundColor(Color.argb(127, 255, 0, 0));
+            }
+            else {
+                view.getSquareLayout(coordinate).setBackgroundColor(Color.argb(127, 0, 255, 0));
             }
         }
     }
-}
 
-class SquareButton extends Button {
-    char file;
-    int rank;
-    public SquareButton(Context context, char file, int rank) {
-        super(context);
-        this.file = file;
-        this.rank = rank;
-        float dp = context.getResources().getDisplayMetrics().density;
-        GridLayout.LayoutParams layoutParams = new GridLayout.LayoutParams();
-        layoutParams.width = (int) (40 * dp);
-        layoutParams.height = (int) (40 * dp);
-        setLayoutParams(layoutParams);
+    private void unShowCanMoveCoordinates() {
+        for (Coordinate coordinate : coordinatesPieceCanMoveCache) {
+            view.getSquareLayout(coordinate).setBackgroundColor(Color.TRANSPARENT);
+        }
     }
 }
