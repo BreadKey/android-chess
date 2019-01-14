@@ -209,6 +209,7 @@ public class PlayChessService {
         return false;
     }
 
+
     public ChessBoard getChessBoard() {
         return chessBoard;
     }
