@@ -34,9 +34,12 @@ public class PlayChessService {
 
     private Division winner;
 
+    public PlayChessService() {
+        chessPlayObservers = new ArrayList<>();
+    }
+
     public void startNewGame(Player player1, Player player2) {
         chessBoard = new ChessBoard();
-        chessPlayObservers = new ArrayList<>();
         kingHashMap = new HashMap<>();
         piecesHashMap = new HashMap<>();
         piecesHashMap.put(Division.White, new ArrayList<ChessPiece>(16));

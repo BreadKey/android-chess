@@ -13,6 +13,7 @@ import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.model.chess.Move;
 import io.github.breadkey.chess.model.chess.PlayChessService;
 import io.github.breadkey.chess.view.ChessActivity;
+import io.github.breadkey.chess.view.SquareLayout;
 
 public class ChessPresenter extends PlayChessController {
     ChessActivity view;
@@ -38,6 +39,19 @@ public class ChessPresenter extends PlayChessController {
         setPlayer(new Player("Player1"));
         setEnemy(new Player("Player2"));
         startNewGame();
+        updateChessBoard();
+    }
+
+    private void updateChessBoard() {
+        for (ChessPiece whitePiece : getPlayChessService().getPieces(PlayChessService.Division.White)) {
+            SquareLayout squareLayout = view.getSquareLayout(whitePiece.getCoordinate());
+            squareLayout.getPieceButton().setBackgroundResource(ChessPieceImageFactory.createPieceImage(whitePiece));
+        }
+
+        for (ChessPiece blackPiece : getPlayChessService().getPieces(PlayChessService.Division.Black)) {
+            SquareLayout squareLayout = view.getSquareLayout(blackPiece.getCoordinate());
+            squareLayout.getPieceButton().setBackgroundResource(ChessPieceImageFactory.createPieceImage(blackPiece));
+        }
     }
 
     @Override

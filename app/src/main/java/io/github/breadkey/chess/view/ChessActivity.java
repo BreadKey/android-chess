@@ -1,24 +1,22 @@
 package io.github.breadkey.chess.view;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.AppCompatButton;
-import android.view.View;
-import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.GridLayout;
 
-import io.github.breadkey.chess.ChessPieceImageFactory;
+import java.util.HashMap;
+
 import io.github.breadkey.chess.R;
 import io.github.breadkey.chess.model.chess.ChessBoard;
-import io.github.breadkey.chess.model.chess.ChessPiece;
+import io.github.breadkey.chess.model.chess.Coordinate;
 import io.github.breadkey.chess.presenter.ChessPresenter;
 
 public class ChessActivity extends AppCompatActivity {
     ChessPresenter presenter;
     GridLayout chessSquareLayout;
+    HashMap<Coordinate, SquareLayout> squareButtonHashMap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,28 +27,21 @@ public class ChessActivity extends AppCompatActivity {
     }
 
     private void createSquareButtons() {
+        squareButtonHashMap = new HashMap<>();
+
         for(int rank: ChessBoard.ranks) {
             for(char file: ChessBoard.files) {
-                SquareButton squareButton = new SquareButton(this, file, rank);
-                squareButton.setBackgroundColor(Color.TRANSPARENT);
+                SquareLayout squareLayout = new SquareLayout(this, file, rank);
+                squareLayout.setBackgroundColor(Color.TRANSPARENT);
 
-                chessSquareLayout.addView(squareButton);
+                squareButtonHashMap.put(new Coordinate(file, rank), squareLayout);
+                chessSquareLayout.addView(squareLayout);
             }
         }
     }
-}
 
-class SquareButton extends AppCompatButton {
-    char file;
-    int rank;
-    public SquareButton(Context context, char file, int rank) {
-        super(context);
-        this.file = file;
-        this.rank = rank;
-        float dp = context.getResources().getDisplayMetrics().density;
-        GridLayout.LayoutParams layoutParams = new GridLayout.LayoutParams();
-        layoutParams.width = (int) (40 * dp);
-        layoutParams.height = (int) (40 * dp);
-        setLayoutParams(layoutParams);
+    public SquareLayout getSquareLayout(Coordinate coordinate) {
+        return squareButtonHashMap.get(coordinate);
     }
 }
+
