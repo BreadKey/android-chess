@@ -8,14 +8,10 @@ import android.widget.GridLayout;
 import android.widget.ImageView;
 
 public class SquareLayout extends ConstraintLayout {
-    private char file;
-    private int rank;
     private AppCompatButton pieceButton;
 
-    public SquareLayout(Context context, char file, int rank) {
+    public SquareLayout(Context context) {
         super(context);
-        this.file = file;
-        this.rank = rank;
         float dp = context.getResources().getDisplayMetrics().density;
         GridLayout.LayoutParams layoutParams = new GridLayout.LayoutParams();
         layoutParams.width = (int) (40 * dp);

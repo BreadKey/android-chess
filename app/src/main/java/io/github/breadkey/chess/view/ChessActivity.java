@@ -3,6 +3,7 @@ package io.github.breadkey.chess.view;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.GridLayout;
 
 import java.util.HashMap;
@@ -22,8 +23,8 @@ public class ChessActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chess);
         chessSquareLayout = findViewById(R.id.chess_square_layout);
-        createSquareButtons();
         presenter = new ChessPresenter(this);
+        createSquareButtons();
     }
 
     private void createSquareButtons() {
@@ -31,10 +32,16 @@ public class ChessActivity extends AppCompatActivity {
 
         for(int rank: ChessBoard.ranks) {
             for(char file: ChessBoard.files) {
-                SquareLayout squareLayout = new SquareLayout(this, file, rank);
+                SquareLayout squareLayout = new SquareLayout(this);
                 squareLayout.setBackgroundColor(Color.TRANSPARENT);
-
-                squareButtonHashMap.put(new Coordinate(file, rank), squareLayout);
+                final Coordinate coordinate = new Coordinate(file, rank);
+                squareButtonHashMap.put(coordinate, squareLayout);
+                squareLayout.getPieceButton().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        presenter.coordinateSelected(coordinate);
+                    }
+                });
                 chessSquareLayout.addView(squareLayout);
             }
         }

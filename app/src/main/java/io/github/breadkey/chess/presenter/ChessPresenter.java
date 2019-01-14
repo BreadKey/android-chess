@@ -1,5 +1,7 @@
 package io.github.breadkey.chess.presenter;
 
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -10,6 +12,7 @@ import io.github.breadkey.chess.R;
 import io.github.breadkey.chess.model.PlayChessController;
 import io.github.breadkey.chess.model.Player;
 import io.github.breadkey.chess.model.chess.ChessPiece;
+import io.github.breadkey.chess.model.chess.Coordinate;
 import io.github.breadkey.chess.model.chess.Move;
 import io.github.breadkey.chess.model.chess.PlayChessService;
 import io.github.breadkey.chess.view.ChessActivity;
@@ -54,6 +57,10 @@ public class ChessPresenter extends PlayChessController {
         }
     }
 
+    public void coordinateSelected(Coordinate coordinate) {
+        select(coordinate.getFile(), coordinate.getRank());
+    }
+
     @Override
     public void findEnemy() {
 
@@ -74,7 +81,12 @@ public class ChessPresenter extends PlayChessController {
 
     @Override
     public void pieceMoved(Move move) {
+        SquareLayout fromSquare = view.getSquareLayout(move.getFromCoordinate());
+        SquareLayout toSquare = view.getSquareLayout(move.getToCoordinate());
 
+        Drawable pieceBackground = fromSquare.getPieceButton().getBackground();
+        fromSquare.getPieceButton().setBackgroundColor(Color.TRANSPARENT);
+        toSquare.getPieceButton().setBackgroundDrawable(pieceBackground);
     }
 
     @Override
