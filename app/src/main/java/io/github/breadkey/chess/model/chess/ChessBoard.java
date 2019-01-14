@@ -8,7 +8,7 @@ import io.github.breadkey.chess.model.chess.chessPieces.King;
 
 public  class ChessBoard {
     public static final List<Character> files = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
-    public static final List<Integer> ranks = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8);
+    public static final List<Integer> ranks = Arrays.asList(8, 7, 6, 5, 4, 3, 2, 1);
     HashMap<Coordinate, Square> squares;
 
     public ChessBoard() {
@@ -60,7 +60,7 @@ public  class ChessBoard {
         if (file < files.get(0) || file > files.get(files.size() - 1)) {
             return true;
         }
-        return rank < ranks.get(0) || rank > ranks.get(ranks.size() - 1);
+        return rank > ranks.get(0) || rank < ranks.get(ranks.size() - 1);
     }
 
     @Override
