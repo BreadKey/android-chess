@@ -64,7 +64,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <Button
+            <io.github.breadkey.chess.view.PlayChessButton
                 android:id="@+id/play_in_real_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -72,25 +72,19 @@
                 android:layout_marginTop="2dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginBottom="2dp"
-                android:background="@color/plate"
-                android:text="vs 옆사람"
-                android:textColor="@color/dough"
-                android:textColorHighlight="@color/bread" />
+                android:text="vs 옆사람" />
 
-            <Button
+            <io.github.breadkey.chess.view.PlayChessButton
                 android:id="@+id/play_with_cpu_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="2dp"
-                android:layout_marginRight="5dp"
                 android:layout_marginBottom="2dp"
-                android:background="@color/plate"
-                android:text="vs cpu"
-                android:textColor="@color/dough"
-                android:textColorHighlight="@color/bread" />
+                android:layout_marginRight="5dp"
+                android:text="vs cpu" />
 
-            <Button
+            <io.github.breadkey.chess.view.PlayChessButton
                 android:id="@+id/play_on_line_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -98,10 +92,7 @@
                 android:layout_marginTop="2dp"
                 android:layout_marginRight="5dp"
                 android:layout_marginBottom="2dp"
-                android:background="@color/plate"
-                android:text="vs 온라인"
-                android:textColor="@color/dough"
-                android:textColorHighlight="@color/bread" />
+                android:text="vs 온라인" />
         </LinearLayout>
     </android.support.constraint.ConstraintLayout>
 
