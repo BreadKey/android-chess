@@ -19,7 +19,6 @@ public class PlayChessService {
     public enum Division {
         Black, White
     }
-    private ChessPlayObserver observer;
     private HashMap<PlayChessService.Division, Player> players;
 
     private ChessBoard chessBoard;
@@ -63,7 +62,9 @@ public class PlayChessService {
             players.put(PlayChessService.Division.Black, player1);
         }
 
-        observer.divisionDecided(players.get(Division.White), players.get(Division.Black));
+        for (ChessPlayObserver observer: chessPlayObservers) {
+            observer.divisionDecided(players.get(Division.White), players.get(Division.Black));
+        }
     }
 
     private void setChessBoard() {
@@ -369,7 +370,7 @@ public class PlayChessService {
     }
 
     public void addObserver(ChessPlayObserver observer) {
-        this.observer = observer;
+        chessPlayObservers.add(observer);
     }
 }
 
