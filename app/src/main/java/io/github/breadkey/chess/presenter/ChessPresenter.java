@@ -6,6 +6,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.github.breadkey.chess.ChessPieceImageFactory;
 import io.github.breadkey.chess.R;
@@ -21,10 +25,12 @@ import io.github.breadkey.chess.view.SquareLayout;
 public class ChessPresenter extends PlayChessController {
     ChessActivity view;
     View matchPlayerLayout;
+    List<Coordinate> coordinatesPieceCanMoveCache;
 
     public ChessPresenter(ChessActivity view) {
         this.view = view;
         matchPlayerLayout = view.findViewById(R.id.match_player_layout);
+        coordinatesPieceCanMoveCache = new ArrayList<>();
         initView();
     }
 
@@ -81,6 +87,8 @@ public class ChessPresenter extends PlayChessController {
 
     @Override
     public void pieceMoved(Move move) {
+        unShowCanMoveCoordinates();
+
         SquareLayout fromSquare = view.getSquareLayout(move.getFromCoordinate());
         SquareLayout toSquare = view.getSquareLayout(move.getToCoordinate());
 
@@ -91,7 +99,8 @@ public class ChessPresenter extends PlayChessController {
 
     @Override
     public void canNotMoveThatCoordinates(char fromFile, char toFile, int fromRank, int toRank) {
-
+        Toast.makeText(view.getApplicationContext(), "그 곳으로 움직일 수 없습니다", Toast.LENGTH_SHORT).show();
+        unShowCanMoveCoordinates();
     }
 
     @Override
@@ -102,5 +111,26 @@ public class ChessPresenter extends PlayChessController {
     @Override
     public void killHappened(ChessPiece pieceWillMove, ChessPiece pieceWillDead, char toFile, int toRank) {
 
+    }
+
+    @Override
+    public void coordinatesPieceCanMoveFounded(List<Coordinate> coordinates) {
+        unShowCanMoveCoordinates();
+        coordinatesPieceCanMoveCache = coordinates;
+        for (Coordinate coordinate : coordinates) {
+            ChessPiece enemyPiece = getPlayChessService().getPieceAt(coordinate.getFile(), coordinate.getRank());
+            if (enemyPiece != null) {
+                view.getSquareLayout(coordinate).setBackgroundColor(Color.argb(127, 255, 0, 0));
+            }
+            else {
+                view.getSquareLayout(coordinate).setBackgroundColor(Color.argb(127, 0, 255, 0));
+            }
+        }
+    }
+
+    private void unShowCanMoveCoordinates() {
+        for (Coordinate coordinate : coordinatesPieceCanMoveCache) {
+            view.getSquareLayout(coordinate).setBackgroundColor(Color.TRANSPARENT);
+        }
     }
 }
