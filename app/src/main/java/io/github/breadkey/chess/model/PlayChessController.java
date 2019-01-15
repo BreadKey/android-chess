@@ -7,6 +7,7 @@ import io.github.breadkey.chess.model.chess.PlayChessService;
 import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.model.chess.Coordinate;
 import io.github.breadkey.chess.model.match.PlayerMatcher;
+import io.github.breadkey.chess.model.match.PlayerMatcherFactory;
 
 public abstract class PlayChessController implements ChessPlayObserver {
     private Coordinate currentSelectedCoordinate;
@@ -17,9 +18,11 @@ public abstract class PlayChessController implements ChessPlayObserver {
 
     public PlayChessController() {
         playChessService = new PlayChessService();
+        player = new Player("player1");
     }
 
     public void startNewGame() {
+        setEnemy(playerMatcher.getEnemy());
         playChessService.attachGameObserver(this);
         playChessService.startNewGame(player, enemy);
     }
@@ -81,10 +84,9 @@ public abstract class PlayChessController implements ChessPlayObserver {
         return playerMatcher;
     }
 
-    public void playChessGameInReal() {
-        setPlayer(new Player("Player1"));
-        setEnemy(new Player("Player2"));
-        startNewGame();
+    public void startFindEnemy(PlayerMatcherFactory.PlayerMatcherKey matcherKey) {
+        playerMatcher = PlayerMatcherFactory.createPlayerMatcher(matcherKey);
+        playerMatcher.startFindEnemy(player);
     }
 
     public abstract void findEnemy();

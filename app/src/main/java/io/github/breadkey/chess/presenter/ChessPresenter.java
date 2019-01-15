@@ -20,6 +20,7 @@ import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.model.chess.Coordinate;
 import io.github.breadkey.chess.model.chess.Move;
 import io.github.breadkey.chess.model.chess.PlayChessService;
+import io.github.breadkey.chess.model.match.PlayerMatcherFactory;
 import io.github.breadkey.chess.view.BakeryInformation;
 import io.github.breadkey.chess.view.ChessActivity;
 import io.github.breadkey.chess.view.InformationActionListener;
@@ -42,7 +43,28 @@ public class ChessPresenter extends PlayChessController {
             @Override
             public void onClick(View v) {
                 matchPlayerLayout.setVisibility(View.GONE);
-                playChessGameInReal();
+                startFindEnemy(PlayerMatcherFactory.PlayerMatcherKey.VsInReal);
+                startNewGame();
+                updateChessBoard();
+            }
+        });
+
+        view.findViewById(R.id.play_with_cpu_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                matchPlayerLayout.setVisibility(View.GONE);
+                startFindEnemy(PlayerMatcherFactory.PlayerMatcherKey.VsCPU);
+                startNewGame();
+                updateChessBoard();
+            }
+        });
+
+        view.findViewById(R.id.play_on_line_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                matchPlayerLayout.setVisibility(View.GONE);
+                startFindEnemy(PlayerMatcherFactory.PlayerMatcherKey.VsOnline);
+                startNewGame();
                 updateChessBoard();
             }
         });
