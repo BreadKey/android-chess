@@ -81,6 +81,12 @@ public abstract class PlayChessController implements ChessPlayObserver {
         return playerMatcher;
     }
 
+    public void playChessGameInReal() {
+        setPlayer(new Player("Player1"));
+        setEnemy(new Player("Player2"));
+        startNewGame();
+    }
+
     public abstract void findEnemy();
     public abstract void coordinatesPieceCanMoveFounded(List<Coordinate> coordinates);
 }

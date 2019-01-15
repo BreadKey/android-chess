@@ -40,18 +40,14 @@ public class ChessPresenter extends PlayChessController {
             public void onClick(View v) {
                 matchPlayerLayout.setVisibility(View.GONE);
                 playChessGameInReal();
+                updateChessBoard();
             }
         });
     }
 
-    private void playChessGameInReal() {
-        setPlayer(new Player("Player1"));
-        setEnemy(new Player("Player2"));
-        startNewGame();
-        updateChessBoard();
-    }
-
     private void updateChessBoard() {
+        view.clearSquares();
+
         for (ChessPiece whitePiece : getPlayChessService().getPieces(PlayChessService.Division.White)) {
             SquareLayout squareLayout = view.getSquareLayout(whitePiece.getCoordinate());
             squareLayout.getPieceButton().setBackgroundResource(ChessPieceImageFactory.createPieceImage(whitePiece));
@@ -126,6 +122,11 @@ public class ChessPresenter extends PlayChessController {
                 view.getSquareLayout(coordinate).setBackgroundColor(Color.argb(127, 0, 255, 0));
             }
         }
+    }
+
+    @Override
+    public void gameEnded(PlayChessService.Division winner) {
+        matchPlayerLayout.setVisibility(View.VISIBLE);
     }
 
     private void unShowCanMoveCoordinates() {
