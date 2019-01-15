@@ -3,6 +3,7 @@ package io.github.breadkey.chess.presenter;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,7 +20,9 @@ import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.model.chess.Coordinate;
 import io.github.breadkey.chess.model.chess.Move;
 import io.github.breadkey.chess.model.chess.PlayChessService;
+import io.github.breadkey.chess.view.BakeryInformation;
 import io.github.breadkey.chess.view.ChessActivity;
+import io.github.breadkey.chess.view.InformationActionListener;
 import io.github.breadkey.chess.view.SquareLayout;
 
 public class ChessPresenter extends PlayChessController {
@@ -40,18 +43,14 @@ public class ChessPresenter extends PlayChessController {
             public void onClick(View v) {
                 matchPlayerLayout.setVisibility(View.GONE);
                 playChessGameInReal();
+                updateChessBoard();
             }
         });
     }
 
-    private void playChessGameInReal() {
-        setPlayer(new Player("Player1"));
-        setEnemy(new Player("Player2"));
-        startNewGame();
-        updateChessBoard();
-    }
-
     private void updateChessBoard() {
+        view.clearSquares();
+
         for (ChessPiece whitePiece : getPlayChessService().getPieces(PlayChessService.Division.White)) {
             SquareLayout squareLayout = view.getSquareLayout(whitePiece.getCoordinate());
             squareLayout.getPieceButton().setBackgroundResource(ChessPieceImageFactory.createPieceImage(whitePiece));
@@ -126,6 +125,20 @@ public class ChessPresenter extends PlayChessController {
                 view.getSquareLayout(coordinate).setBackgroundColor(Color.argb(127, 0, 255, 0));
             }
         }
+    }
+
+    @Override
+    public void gameEnded(PlayChessService.Division winner) {
+        InformationActionListener listener = new InformationActionListener() {
+            @Override
+            public void action() {
+                matchPlayerLayout.setVisibility(View.VISIBLE);
+            }
+        };
+
+        String titleString = "체크메이트! ";
+        String informationString = getPlayChessService().getCurrentPlayer().nickName + "의 승리!";
+        BakeryInformation.showInformation((ViewGroup) view.findViewById(R.id.main), titleString, informationString,  listener, listener);
     }
 
     private void unShowCanMoveCoordinates() {

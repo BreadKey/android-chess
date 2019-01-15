@@ -12,7 +12,7 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".view.ChessActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
@@ -20,7 +20,7 @@
         </activity>
         <activity
             android:name=".view.LoadingActivity"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            android:theme="@style/AppTheme">
         </activity>
     </application>
 

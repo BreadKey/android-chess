@@ -1,8 +1,11 @@
 package io.github.breadkey.chess.mock;
 
+import java.util.List;
+
 import io.github.breadkey.chess.model.PlayChessController;
 import io.github.breadkey.chess.model.Player;
 import io.github.breadkey.chess.model.chess.ChessPiece;
+import io.github.breadkey.chess.model.chess.Coordinate;
 import io.github.breadkey.chess.model.chess.Move;
 import io.github.breadkey.chess.model.chess.PlayChessService;
 
@@ -33,6 +36,11 @@ public class MockPlayChessController extends PlayChessController {
         printGameStatus();
     }
 
+    @Override
+    public void gameEnded(PlayChessService.Division winner) {
+
+    }
+
     private void printGameStatus() {
         PlayChessService playChessService = getPlayChessService();
         System.out.print(playChessService);
@@ -48,5 +56,10 @@ public class MockPlayChessController extends PlayChessController {
     public void findEnemy() {
         getPlayerMatcher().startFindEnemy(getPlayer());
         setEnemy(getPlayerMatcher().getEnemy());
+    }
+
+    @Override
+    public void coordinatesPieceCanMoveFounded(List<Coordinate> coordinates) {
+
     }
 }

@@ -160,24 +160,24 @@ public class PlayChessService {
         chessBoard.placePiece(fromFile, fromRank, null);
         pieceToMove.moveCount++;
 
-        changeTurn();
         Move newMove = new Move(pieceToMove.division, pieceToMove.type, new Coordinate(fromFile, fromRank), new Coordinate(toFile, toRank));
-
-        Division enemyDivision = pieceToMove.division == Division.White? Division.Black : Division.White;
-
-        if (isCheckmate(enemyDivision)) {
-            endGame(pieceToMove.division);
-        }
-
-        else if (isCheck(toFile, toRank, enemyDivision)) {
-
-        }
-
         moves.add(newMove);
 
         for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
             chessPlayObserver.pieceMoved(newMove);
         }
+
+        Division enemyDivision = pieceToMove.division == Division.White? Division.Black : Division.White;
+
+        if (isCheckmate(enemyDivision)) {
+            endGame(pieceToMove.division);
+            return;
+        }
+
+        else if (isCheck(toFile, toRank, enemyDivision)) {
+
+        }
+        changeTurn();
     }
 
     private List filterKingCanDead(List<Coordinate> coordinatesCanMove, ChessPiece pieceWillMove) {
@@ -358,6 +358,9 @@ public class PlayChessService {
 
     private void endGame(Division winner) {
         this.winner = winner;
+        for (ChessPlayObserver observer : chessPlayObservers) {
+            observer.gameEnded(winner);
+        }
     }
 
     public Division getWinner() {
@@ -372,8 +375,8 @@ public class PlayChessService {
         return players.get(currentTurn);
     }
 
-    public void addObserver(ChessPlayObserver observer) {
-        chessPlayObservers.add(observer);
+    public List<ChessPlayObserver> getChessPlayObservers() {
+        return chessPlayObservers;
     }
 }
 

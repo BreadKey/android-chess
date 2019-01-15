@@ -17,7 +17,7 @@ import io.github.breadkey.chess.presenter.ChessPresenter;
 public class ChessActivity extends AppCompatActivity {
     ChessPresenter presenter;
     GridLayout chessSquareLayout;
-    HashMap<Coordinate, SquareLayout> squareButtonHashMap;
+    HashMap<Coordinate, SquareLayout> squareLayoutHashMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,14 +30,14 @@ public class ChessActivity extends AppCompatActivity {
     }
 
     private void createSquareButtons() {
-        squareButtonHashMap = new HashMap<>();
+        squareLayoutHashMap = new HashMap<>();
 
         for(int rank: ChessBoard.ranks) {
             for(char file: ChessBoard.files) {
                 SquareLayout squareLayout = new SquareLayout(this);
                 squareLayout.setBackgroundColor(Color.TRANSPARENT);
                 final Coordinate coordinate = new Coordinate(file, rank);
-                squareButtonHashMap.put(coordinate, squareLayout);
+                squareLayoutHashMap.put(coordinate, squareLayout);
                 squareLayout.getPieceButton().setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -50,7 +50,13 @@ public class ChessActivity extends AppCompatActivity {
     }
 
     public SquareLayout getSquareLayout(Coordinate coordinate) {
-        return squareButtonHashMap.get(coordinate);
+        return squareLayoutHashMap.get(coordinate);
+    }
+
+    public void clearSquares() {
+        for (SquareLayout squareLayout: squareLayoutHashMap.values()) {
+            squareLayout.getPieceButton().setBackgroundColor(Color.TRANSPARENT);
+        }
     }
 }
 

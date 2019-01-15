@@ -20,7 +20,7 @@ public abstract class PlayChessController implements ChessPlayObserver {
     }
 
     public void startNewGame() {
-        playChessService.addObserver(this);
+        playChessService.attachGameObserver(this);
         playChessService.startNewGame(player, enemy);
     }
 
@@ -79,6 +79,12 @@ public abstract class PlayChessController implements ChessPlayObserver {
 
     public PlayerMatcher getPlayerMatcher() {
         return playerMatcher;
+    }
+
+    public void playChessGameInReal() {
+        setPlayer(new Player("Player1"));
+        setEnemy(new Player("Player2"));
+        startNewGame();
     }
 
     public abstract void findEnemy();
