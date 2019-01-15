@@ -3,6 +3,7 @@ package io.github.breadkey.chess.presenter;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,7 +20,9 @@ import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.model.chess.Coordinate;
 import io.github.breadkey.chess.model.chess.Move;
 import io.github.breadkey.chess.model.chess.PlayChessService;
+import io.github.breadkey.chess.view.BakeryInformation;
 import io.github.breadkey.chess.view.ChessActivity;
+import io.github.breadkey.chess.view.InformationActionListener;
 import io.github.breadkey.chess.view.SquareLayout;
 
 public class ChessPresenter extends PlayChessController {
@@ -30,7 +33,6 @@ public class ChessPresenter extends PlayChessController {
     public ChessPresenter(ChessActivity view) {
         this.view = view;
         matchPlayerLayout = view.findViewById(R.id.match_player_layout);
-        matchPlayerLayout.setClickable(true);
         coordinatesPieceCanMoveCache = new ArrayList<>();
         initView();
     }
@@ -127,7 +129,16 @@ public class ChessPresenter extends PlayChessController {
 
     @Override
     public void gameEnded(PlayChessService.Division winner) {
-        matchPlayerLayout.setVisibility(View.VISIBLE);
+        InformationActionListener listener = new InformationActionListener() {
+            @Override
+            public void action() {
+                matchPlayerLayout.setVisibility(View.VISIBLE);
+            }
+        };
+
+        String titleString = "체크메이트! ";
+        String informationString = getPlayChessService().getCurrentPlayer().nickName + "의 승리!";
+        BakeryInformation.showInformation((ViewGroup) view.findViewById(R.id.main), titleString, informationString,  listener, listener);
     }
 
     private void unShowCanMoveCoordinates() {
