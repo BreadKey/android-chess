@@ -30,6 +30,7 @@ public class ChessPresenter extends PlayChessController {
     public ChessPresenter(ChessActivity view) {
         this.view = view;
         matchPlayerLayout = view.findViewById(R.id.match_player_layout);
+        matchPlayerLayout.setClickable(true);
         coordinatesPieceCanMoveCache = new ArrayList<>();
         initView();
     }
