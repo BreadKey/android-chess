@@ -89,8 +89,9 @@ public class ChessPresenter extends PlayChessController {
     }
 
     @Override
-    public void findEnemy() {
-
+    public void enemyFounded(PlayerMatcherFactory.PlayerMatcherKey key) {
+        super.enemyFounded(key);
+        updateChessBoard();
     }
 
     @Override
@@ -151,6 +152,7 @@ public class ChessPresenter extends PlayChessController {
 
     @Override
     public void gameEnded(PlayChessService.Division winner) {
+        super.gameEnded(winner);
         InformationActionListener listener = new InformationActionListener() {
             @Override
             public void action() {
@@ -158,9 +160,15 @@ public class ChessPresenter extends PlayChessController {
             }
         };
 
+        Player winnerPlayer = getPlayChessService().getCurrentPlayer();
         String titleString = "체크메이트! ";
-        String informationString = getPlayChessService().getCurrentPlayer().nickName + "의 승리!";
+        String informationString = winnerPlayer.nickName + "의 승리!";
         BakeryInformation.showInformation((ViewGroup) view.findViewById(R.id.main), titleString, informationString,  listener, listener);
+    }
+
+    @Override
+    public boolean requestPlayerAcceptPlay() {
+        return true;
     }
 
     private void unShowCanMoveCoordinates() {

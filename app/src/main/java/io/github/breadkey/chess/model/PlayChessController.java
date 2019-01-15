@@ -6,10 +6,11 @@ import io.github.breadkey.chess.model.chess.ChessRuleManager;
 import io.github.breadkey.chess.model.chess.PlayChessService;
 import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.model.chess.Coordinate;
+import io.github.breadkey.chess.model.match.MatchPlayerObserver;
 import io.github.breadkey.chess.model.match.PlayerMatcher;
 import io.github.breadkey.chess.model.match.PlayerMatcherFactory;
 
-public abstract class PlayChessController implements ChessPlayObserver {
+public abstract class PlayChessController implements ChessPlayObserver, MatchPlayerObserver {
     private Coordinate currentSelectedCoordinate;
     private PlayChessService playChessService;
     private PlayerMatcher playerMatcher;
@@ -76,19 +77,38 @@ public abstract class PlayChessController implements ChessPlayObserver {
         return enemy;
     }
 
-    public void setPlayerMatcher(PlayerMatcher playerMatcher) {
-        this.playerMatcher = playerMatcher;
+    public void startFindEnemy(PlayerMatcherFactory.PlayerMatcherKey matcherKey) {
+        playerMatcher = PlayerMatcherFactory.createPlayerMatcher(matcherKey);
+        playerMatcher.attachObserver(this);
+        playerMatcher.startFindEnemy(player);
     }
 
     public PlayerMatcher getPlayerMatcher() {
         return playerMatcher;
     }
 
-    public void startFindEnemy(PlayerMatcherFactory.PlayerMatcherKey matcherKey) {
-        playerMatcher = PlayerMatcherFactory.createPlayerMatcher(matcherKey);
-        playerMatcher.startFindEnemy(player);
+    @Override
+    public void gameEnded(PlayChessService.Division winner) {
+        playerMatcher.gameEnded(playChessService.getCurrentPlayer());
     }
 
-    public abstract void findEnemy();
+    @Override
+    public void enemyFounded(PlayerMatcherFactory.PlayerMatcherKey key) {
+        switch (key) {
+            case VsInReal:
+                setEnemy(playerMatcher.getEnemy());
+                startNewGame();
+                break;
+            case VsOnline:
+                if (requestPlayerAcceptPlay()) {
+                    if (playerMatcher.getResponseEnemyAcceptPlay()) {
+                        setEnemy(playerMatcher.getEnemy());
+                        startNewGame();
+                        break;
+                    }
+                }
+        }
+    }
     public abstract void coordinatesPieceCanMoveFounded(List<Coordinate> coordinates);
+    public abstract boolean requestPlayerAcceptPlay();
 }
