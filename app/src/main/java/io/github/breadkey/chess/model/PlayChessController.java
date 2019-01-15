@@ -3,10 +3,10 @@ package io.github.breadkey.chess.model;
 import java.util.List;
 
 import io.github.breadkey.chess.model.chess.ChessRuleManager;
-import io.github.breadkey.chess.model.chess.Move;
 import io.github.breadkey.chess.model.chess.PlayChessService;
 import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.model.chess.Coordinate;
+import io.github.breadkey.chess.model.match.PlayerMatcher;
 
 public abstract class PlayChessController implements ChessPlayObserver {
     private Coordinate currentSelectedCoordinate;

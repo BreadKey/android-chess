@@ -1,7 +1,7 @@
 package io.github.breadkey.chess.mock;
 
 import io.github.breadkey.chess.model.Player;
-import io.github.breadkey.chess.model.PlayerMatcher;
+import io.github.breadkey.chess.model.match.PlayerMatcher;
 
 public class MockPlayerMatcher implements PlayerMatcher {
     private Player enemy;
