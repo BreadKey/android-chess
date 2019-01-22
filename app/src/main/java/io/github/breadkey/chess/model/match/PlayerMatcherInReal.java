@@ -1,26 +1,23 @@
-package io.github.breadkey.chess.mock;
+package io.github.breadkey.chess.model.match;
 
 import io.github.breadkey.chess.model.Player;
-import io.github.breadkey.chess.model.match.MatchPlayerObserver;
-import io.github.breadkey.chess.model.match.PlayerMatcher;
 
-public class MockPlayerMatcher implements PlayerMatcher {
-    private Player enemy;
+public class PlayerMatcherInReal implements PlayerMatcher {
     private MatchPlayerObserver observer;
 
     @Override
     public void startFindEnemy(Player playerWantToPlay) {
-        enemy = new MockPlayerHJ();
+    observer.enemyFounded(PlayerMatcherFactory.PlayerMatcherKey.VsInReal);
     }
 
     @Override
     public Player getEnemy() {
-        return enemy;
+    return new Player("player2");
     }
 
     @Override
     public void attachObserver(MatchPlayerObserver observer) {
-        this.observer = observer;
+    this.observer = observer;
     }
 
     @Override
