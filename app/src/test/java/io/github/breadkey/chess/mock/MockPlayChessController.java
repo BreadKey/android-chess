@@ -8,6 +8,7 @@ import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.model.chess.Coordinate;
 import io.github.breadkey.chess.model.chess.Move;
 import io.github.breadkey.chess.model.chess.PlayChessService;
+import io.github.breadkey.chess.model.match.PlayerMatcherFactory;
 
 public class MockPlayChessController extends PlayChessController {
     @Override
@@ -53,9 +54,17 @@ public class MockPlayChessController extends PlayChessController {
     }
 
     @Override
-    public void findEnemy() {
-        getPlayerMatcher().startFindEnemy(getPlayer());
-        setEnemy(getPlayerMatcher().getEnemy());
+    public void enemyFounded(PlayerMatcherFactory.PlayerMatcherKey key) {
+    }
+
+    @Override
+    public void coordinatesPieceCanMoveFounded(List<Coordinate> coordinates) {
+
+    }
+
+    @Override
+    public boolean requestPlayerAcceptPlay() {
+        return true;
     }
 
     @Override

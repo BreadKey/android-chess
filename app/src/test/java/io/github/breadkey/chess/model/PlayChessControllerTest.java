@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import io.github.breadkey.chess.mock.*;
 import io.github.breadkey.chess.model.chess.PlayChessService;
+import io.github.breadkey.chess.model.match.PlayerMatcherFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -14,8 +15,8 @@ public class PlayChessControllerTest {
     @Before
     public void setUp() {
         playChessController.setPlayer(new MockPlayerYK());
-        playChessController.setPlayerMatcher(new MockPlayerMatcher());
-        playChessController.findEnemy();
+        playChessController.startFindEnemy(PlayerMatcherFactory.PlayerMatcherKey.VsInReal);
+        playChessController.setEnemy(new MockPlayerHJ());
         playChessController.startNewGame();
     }
 
