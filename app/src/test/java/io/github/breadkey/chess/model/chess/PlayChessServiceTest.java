@@ -255,6 +255,30 @@ public class PlayChessServiceTest {
         assertEquals(PlayChessService.Division.Black, playChessService.getCurrentTurn());
     }
 
+    @Test
+    public void kingSideCastling() {
+        playChessService.clearChessBoard();
+        playChessService.placeNewPiece('e', 1, new King(PlayChessService.Division.White));
+        playChessService.placeNewPiece('h', 1, new Rook(PlayChessService.Division.White));
+        playChessService.placeNewPiece('e', 8, new King(PlayChessService.Division.Black));
+
+        playChessService.tryMove('e', 1, 'g', 1);
+        assertEquals(ChessPiece.Type.King, playChessService.getPieceAt('g', 1).getType());
+        assertEquals(ChessPiece.Type.Rook, playChessService.getPieceAt('f', 1).getType());
+    }
+
+    @Test
+    public void queenSideCastling() {
+        playChessService.clearChessBoard();
+        playChessService.placeNewPiece('e', 1, new King(PlayChessService.Division.White));
+        playChessService.placeNewPiece('a', 1, new Rook(PlayChessService.Division.White));
+        playChessService.placeNewPiece('e', 8, new King(PlayChessService.Division.Black));
+
+        playChessService.tryMove('e', 1, 'c', 1);
+        assertEquals(ChessPiece.Type.King, playChessService.getPieceAt('c', 1).getType());
+        assertEquals(ChessPiece.Type.Rook, playChessService.getPieceAt('d', 1).getType());
+    }
+
     public void kill_b7PawnWith_a2Pawn() {
         playChessService.tryMove('a', 2, 'a', 4);
         playChessService.tryMove('b', 7, 'b', 5);

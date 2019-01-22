@@ -111,10 +111,23 @@ public class PlayChessService {
                 case Check: {
                     King enemyKing = chessBoard.getKing(enemyDivision);
                     enemyKing.setChecked(true);
+                    break;
                 }
-
                 case Checkmate: {
                     endGame(pieceToMove.division);
+                    break;
+                }
+                case KingSideCastling: {
+                    char kingSideRookFile = ChessBoard.files.get(ChessBoard.files.size() - 1);
+                    ChessPiece kingSideRook = getPieceAt(kingSideRookFile, toRank);
+                    chessBoard.placePiece((char) (toFile - 1), toRank, kingSideRook);
+                    break;
+                }
+                case QueenSideCastling: {
+                    char queenSideRookFile = ChessBoard.files.get(0);
+                    ChessPiece queenSideRook = getPieceAt(queenSideRookFile, toRank);
+                    chessBoard.placePiece((char) (toFile + 1), toRank, queenSideRook);
+                    break;
                 }
             }
         }
