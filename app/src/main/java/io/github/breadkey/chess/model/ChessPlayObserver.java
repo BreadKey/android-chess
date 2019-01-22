@@ -1,7 +1,5 @@
 package io.github.breadkey.chess.model;
 
-import java.util.Observer;
-
 import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.model.chess.Move;
 import io.github.breadkey.chess.model.chess.PlayChessService;

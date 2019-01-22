@@ -103,7 +103,7 @@ public class PlayChessService {
 
         Move newMove = new Move(pieceToMove.division, pieceToMove.type, new Coordinate(fromFile, fromRank), new Coordinate(toFile, toRank));
         List<ChessRuleManager.Rule> rules = ruleManager.findRules(chessBoard, newMove);
-
+        newMove.setRules(rules);
         Division enemyDivision = pieceToMove.division == Division.White? Division.Black : Division.White;
 
         for (ChessRuleManager.Rule rule : rules) {
