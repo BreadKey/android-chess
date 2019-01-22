@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.github.breadkey.chess.model.chess.chessPieces.King;
+
 public class ChessRuleManager {
     private static final ChessRuleManager ourInstance = new ChessRuleManager();
     public enum Rule {
+        Check,
+        Checkmate,
         KingSideCastling,
         QueenSideCastling,
         EnPassant
@@ -250,13 +254,15 @@ public class ChessRuleManager {
         }
     }
 
-    public List<Rule> findRules(char fromFile, int fromRank, char toFile, int toRank, ChessPiece pieceToMove) {
+    public List<Rule> findRules(ChessBoard chessBoard, Move newMove) {
         List<Rule> rules = new ArrayList<>();
-        int moveDistance = Math.abs(toFile - fromFile) + Math.abs(toRank - fromRank);
+        Coordinate fromCoordinate = newMove.getFromCoordinate();
+        Coordinate toCoordinate = newMove.getToCoordinate();
+        int moveDistance = Math.abs(toCoordinate.getFile() - fromCoordinate.getFile()) + Math.abs(toCoordinate.getRank() - fromCoordinate.getRank());
 
-        if (pieceToMove.getType() == ChessPiece.Type.King) {
+        if (newMove.getPieceType() == ChessPiece.Type.King) {
             if (moveDistance == 2) {
-                if (toFile > fromFile) {
+                if (toCoordinate.getFile() > fromCoordinate.getFile()) {
                     rules.add(Rule.KingSideCastling);
                 }
                 else {
@@ -265,6 +271,23 @@ public class ChessRuleManager {
             }
         }
 
+
+        if (isCheck(chessBoard, newMove)) {
+            rules.add(Rule.Check);
+        }
+
         return rules;
+    }
+
+    private boolean isCheck(ChessBoard chessBoard, Move newMove) {
+        Coordinate movedCoordinate = newMove.getToCoordinate();
+        PlayChessService.Division enemyDivision = newMove.getDivision() == PlayChessService.Division.White? PlayChessService.Division.Black : PlayChessService.Division.White;
+        List<Coordinate> coordinatesCanMoveNextTurn = findSquareCoordinateCanMove(chessBoard, movedCoordinate.getFile(), movedCoordinate.getRank());
+        King enemyKing = chessBoard.kingHashMap.get(enemyDivision);
+        if (coordinatesCanMoveNextTurn.contains(enemyKing.getCoordinate())) {
+            return true;
+        }
+
+        return false;
     }
 }

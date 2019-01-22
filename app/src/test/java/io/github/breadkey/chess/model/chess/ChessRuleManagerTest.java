@@ -253,10 +253,16 @@ public class ChessRuleManagerTest {
     }
 
     @Test
-    public void findKingSideCastling() {
-        List<ChessRuleManager.Rule> rules = ruleManager.findRules('e', 1, 'g', 1, new King(PlayChessService.Division.White));
+    public void check() {
+        chessBoard.placeNewPiece('a', 5, new King(PlayChessService.Division.White));
+        chessBoard.placeNewPiece('b', 8, new King(PlayChessService.Division.Black));
 
-        assertTrue(rules.contains(ChessRuleManager.Rule.KingSideCastling));
+        chessBoard.placeNewPiece('b', 1, new Rook(PlayChessService.Division.White));
+
+        Move move = new Move(PlayChessService.Division.White, ChessPiece.Type.Rook, new Coordinate('a', 1), new Coordinate('b', 1));
+        List<ChessRuleManager.Rule> rules = ruleManager.findRules(chessBoard, move);
+
+        assertTrue(rules.contains(ChessRuleManager.Rule.Check));
     }
 
     @Test

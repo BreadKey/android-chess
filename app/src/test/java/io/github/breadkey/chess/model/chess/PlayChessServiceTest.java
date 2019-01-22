@@ -5,14 +5,16 @@ import org.junit.Test;
 
 import io.github.breadkey.chess.mock.MockPlayerHJ;
 import io.github.breadkey.chess.mock.MockPlayerYK;
-import io.github.breadkey.chess.model.Player;
 import io.github.breadkey.chess.model.chess.chessPieces.Bishop;
 import io.github.breadkey.chess.model.chess.chessPieces.King;
 import io.github.breadkey.chess.model.chess.chessPieces.Knight;
 import io.github.breadkey.chess.model.chess.chessPieces.Queen;
 import io.github.breadkey.chess.model.chess.chessPieces.Rook;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class PlayChessServiceTest {
     PlayChessService playChessService;
@@ -73,18 +75,6 @@ public class PlayChessServiceTest {
         assertEquals(PlayChessService.Division.White, playChessService.getPieceAt('b', 5).division);
         assertEquals(1, playChessService.getPieceAt('b', 5).killScore);
         System.out.println(playChessService);
-    }
-
-    @Test
-    public void check() {
-        playChessService.clearChessBoard();
-        playChessService.placeNewPiece('a', 5, new King(PlayChessService.Division.White));
-        playChessService.placeNewPiece('a', 1, new Rook(PlayChessService.Division.White));
-        playChessService.placeNewPiece('b', 8, new King(PlayChessService.Division.Black));
-
-        playChessService.tryMove('a', 1, 'b' ,1);
-        assertTrue(playChessService.getKing(PlayChessService.Division.Black).isChecked());
-        assertNull(playChessService.getWinner());
     }
 
     @Test

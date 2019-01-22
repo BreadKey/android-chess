@@ -154,20 +154,25 @@ public class PlayChessService {
         chessBoard.placePiece(fromFile, fromRank, null);
         pieceToMove.moveCount++;
 
-        List<ChessRuleManager.Rule> rules = ruleManager.findRules(fromFile, fromRank, toFile, toRank, pieceToMove);
+        Move newMove = new Move(pieceToMove.division, pieceToMove.type, new Coordinate(fromFile, fromRank), new Coordinate(toFile, toRank));
+        List<ChessRuleManager.Rule> rules = ruleManager.findRules(chessBoard, newMove);
 
         Division enemyDivision = pieceToMove.division == Division.White? Division.Black : Division.White;
+
+        for (ChessRuleManager.Rule rule : rules) {
+            switch (rule) {
+                case Check: {
+                    King enemyKing = chessBoard.kingHashMap.get(enemyDivision);
+                    enemyKing.setChecked(true);
+                }
+            }
+        }
 
         if (isCheckmate(enemyDivision)) {
             endGame(pieceToMove.division);
             return;
         }
 
-        else if (isCheck(toFile, toRank, enemyDivision)) {
-
-        }
-
-        Move newMove = new Move(pieceToMove.division, pieceToMove.type, new Coordinate(fromFile, fromRank), new Coordinate(toFile, toRank));
         moves.add(newMove);
 
         for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
@@ -224,17 +229,6 @@ public class PlayChessService {
         else {
             currentTurn = Division.Black;
         }
-    }
-
-    private boolean isCheck(char movedFile, int movedRank, Division enemyDivision) {
-        List<Coordinate> coordinatesCanMoveNextTurn = ruleManager.findSquareCoordinateCanMove(chessBoard, movedFile, movedRank);
-        King enemyKing = chessBoard.kingHashMap.get(enemyDivision);
-        if (coordinatesCanMoveNextTurn.contains(enemyKing.getCoordinate())) {
-            enemyKing.setChecked(true);
-            return true;
-        }
-
-        return false;
     }
 
     private boolean isCheckmate(Division enemyDivision) {
@@ -332,14 +326,7 @@ public class PlayChessService {
     }
 
     public void placeNewPiece(char file, int rank, ChessPiece piece) {
-        if (piece.type == ChessPiece.Type.King) {
-            chessBoard.kingHashMap.put(piece.division, (King) piece);
-        }
-
-        Division pieceDivision = piece.division;
-        chessBoard.piecesHashMap.get(pieceDivision).add(piece);
-
-        chessBoard.placePiece(file, rank, piece);
+        chessBoard.placeNewPiece(file, rank, piece);
     }
 
     public List<ChessPiece> getPieces(Division division) {

@@ -94,6 +94,17 @@ public  class ChessBoard {
 
         return chessBoard.toString();
     }
+
+    public void placeNewPiece(char file, int rank, ChessPiece piece) {
+        if (piece.type == ChessPiece.Type.King) {
+            kingHashMap.put(piece.division, (King) piece);
+        }
+
+        PlayChessService.Division pieceDivision = piece.division;
+        piecesHashMap.get(pieceDivision).add(piece);
+
+        placePiece(file, rank, piece);
+    }
 }
 
 class Square {
