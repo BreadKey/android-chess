@@ -14,11 +14,9 @@ import io.github.breadkey.chess.model.chess.chessPieces.Rook;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 public class PlayChessServiceTest {
     PlayChessService playChessService;
-    ChessRuleManager ruleManager = ChessRuleManager.getInstance();
 
     @Before
     public void setUp() {
@@ -75,18 +73,6 @@ public class PlayChessServiceTest {
         assertEquals(PlayChessService.Division.White, playChessService.getPieceAt('b', 5).division);
         assertEquals(1, playChessService.getPieceAt('b', 5).killScore);
         System.out.println(playChessService);
-    }
-
-    @Test
-    public void isBlackPiecesCanMove_d5() {
-        assertTrue(playChessService.arePiecesCanMove(PlayChessService.Division.Black, new Coordinate('d', 5)));
-    }
-
-    @Test
-    public void isWhitePiecesCanMove_b7WhenRookOn_a1() {
-        playChessService.clearChessBoard();
-        playChessService.placeNewPiece('a' ,1, new Rook(PlayChessService.Division.White));
-        assertFalse(playChessService.arePiecesCanMove(PlayChessService.Division.White, new Coordinate('b', 7)));
     }
 
     @Test

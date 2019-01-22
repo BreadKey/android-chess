@@ -85,9 +85,7 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_b1KnightCanMoveCoordinatesWhenBoardInitialized() {
-        PlayChessService playChessService = new PlayChessService();
-        playChessService.setChessBoard();
-        chessBoard = playChessService.getChessBoard();
+        chessBoard.setChessBoard();
 
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'b', 1);
         assertEquals(2, coordinates.size());
@@ -245,9 +243,7 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_e1KingCanMoveCoordinatesWhenBoardInitialized() {
-        PlayChessService playChessService = new PlayChessService();
-        playChessService.setChessBoard();
-        chessBoard = playChessService.getChessBoard();
+        chessBoard.setChessBoard();
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'e', 1);
         assertEquals(0, coordinates.size());
     }
@@ -263,6 +259,18 @@ public class ChessRuleManagerTest {
         List<ChessRuleManager.Rule> rules = ruleManager.findRules(chessBoard, move);
 
         assertTrue(rules.contains(ChessRuleManager.Rule.Check));
+    }
+
+    @Test
+    public void isBlackPiecesCanMove_d5() {
+        chessBoard.setChessBoard();
+        assertTrue(ruleManager.arePiecesCanMove(chessBoard, PlayChessService.Division.Black, new Coordinate('d', 5)));
+    }
+
+    @Test
+    public void isWhitePiecesCanMove_b7WhenRookOn_a1() {
+        chessBoard.placeNewPiece('a' ,1, new Rook(PlayChessService.Division.White));
+        assertFalse(ruleManager.arePiecesCanMove(chessBoard, PlayChessService.Division.White, new Coordinate('b', 7)));
     }
 
     @Test

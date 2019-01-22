@@ -8,12 +8,7 @@ import java.util.Random;
 
 import io.github.breadkey.chess.model.ChessPlayObserver;
 import io.github.breadkey.chess.model.Player;
-import io.github.breadkey.chess.model.chess.chessPieces.Bishop;
 import io.github.breadkey.chess.model.chess.chessPieces.King;
-import io.github.breadkey.chess.model.chess.chessPieces.Knight;
-import io.github.breadkey.chess.model.chess.chessPieces.Pawn;
-import io.github.breadkey.chess.model.chess.chessPieces.Queen;
-import io.github.breadkey.chess.model.chess.chessPieces.Rook;
 
 public class PlayChessService {
     public enum Division {
@@ -37,7 +32,8 @@ public class PlayChessService {
     }
 
     public void startNewGame(Player player1, Player player2) {
-        setChessBoard();
+        clearChessBoard();
+        chessBoard.setChessBoard();
         currentTurn = Division.White;
         decideDivision(player1, player2);
         moves = new ArrayList<>();
@@ -62,55 +58,6 @@ public class PlayChessService {
         }
     }
 
-    public void setChessBoard() {
-        chessBoard = new ChessBoard();
-
-        placePawns();
-        placeRooks();
-        placeKnights();
-        placeBishops();
-        placeQueens();
-        placeKings();
-    }
-
-    private void placePawns() {
-        for (char file: ChessBoard.files) {
-            placeNewPiece(file, 2, new Pawn(Division.White));
-            placeNewPiece(file, 7, new Pawn(Division.Black));
-        }
-    }
-
-    private void placeRooks() {
-        placeNewPiece('a', 1, new Rook(Division.White));
-        placeNewPiece('h', 1, new Rook(Division.White));
-        placeNewPiece('a', 8, new Rook(Division.Black));
-        placeNewPiece('h', 8, new Rook(Division.Black));
-    }
-
-    private void placeKnights() {
-        placeNewPiece('b', 1, new Knight(Division.White));
-        placeNewPiece('g', 1, new Knight(Division.White));
-        placeNewPiece('b', 8, new Knight(Division.Black));
-        placeNewPiece('g', 8, new Knight(Division.Black));
-    }
-
-    private void placeBishops() {
-        placeNewPiece('c', 1, new Bishop(Division.White));
-        placeNewPiece('f', 1, new Bishop(Division.White));
-        placeNewPiece('c', 8, new Bishop(Division.Black));
-        placeNewPiece('f', 8, new Bishop(Division.Black));
-    }
-
-    private void placeQueens() {
-        placeNewPiece('d', 1, new Queen(Division.White));
-        placeNewPiece('d', 8, new Queen(Division.Black));
-    }
-
-    private void placeKings() {
-        placeNewPiece('e', 1, new King(Division.White));
-        placeNewPiece('e', 8, new King(Division.Black));
-    }
-
     public ChessPiece getPieceAt(char file, int rank) {
         return chessBoard.getPieceAt(file, rank);
     }
@@ -119,7 +66,7 @@ public class PlayChessService {
         ChessPiece pieceWillMove = getPieceAt(fromFile, fromRank);
         if (pieceWillMove != null) {
             List coordinatesCanMove = ruleManager.findSquareCoordinateCanMove(chessBoard, fromFile, fromRank);
-            coordinatesCanMove = filterKingCanDead(coordinatesCanMove, pieceWillMove);
+            coordinatesCanMove = ruleManager.filterKingCanDead(chessBoard, coordinatesCanMove, pieceWillMove);
 
             if (coordinatesCanMove.contains(new Coordinate(toFile, toRank))) {
                 move(pieceWillMove, toFile, toRank);
@@ -133,13 +80,13 @@ public class PlayChessService {
     }
 
     private void move(ChessPiece pieceToMove, char toFile, int toRank) {
-        King king = chessBoard.kingHashMap.get(pieceToMove.division);
+        King king = chessBoard.getKing(pieceToMove.division);
         king.setChecked(false);
 
         ChessPiece pieceWillDead = getPieceAt(toFile, toRank);
         if (pieceWillDead != null) {
             pieceToMove.killScore++;
-            chessBoard.piecesHashMap.get(pieceWillDead.division).remove(pieceWillDead);
+            chessBoard.getPieces(pieceWillDead.division).remove(pieceWillDead);
             killLogs.add(new KillLog(pieceToMove, pieceWillDead, toFile, toRank));
 
             for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
@@ -162,15 +109,14 @@ public class PlayChessService {
         for (ChessRuleManager.Rule rule : rules) {
             switch (rule) {
                 case Check: {
-                    King enemyKing = chessBoard.kingHashMap.get(enemyDivision);
+                    King enemyKing = chessBoard.getKing(enemyDivision);
                     enemyKing.setChecked(true);
                 }
-            }
-        }
 
-        if (isCheckmate(enemyDivision)) {
-            endGame(pieceToMove.division);
-            return;
+                case Checkmate: {
+                    endGame(pieceToMove.division);
+                }
+            }
         }
 
         moves.add(newMove);
@@ -181,42 +127,6 @@ public class PlayChessService {
 
         changeTurn();
     }
-
-    private List filterKingCanDead(List<Coordinate> coordinatesCanMove, ChessPiece pieceWillMove) {
-        List<Coordinate> filteredCoordinates = new ArrayList<>(coordinatesCanMove);
-
-        King king = chessBoard.kingHashMap.get(pieceWillMove.division);
-
-        char currentPieceFile = pieceWillMove.getFile();
-        int currentPieceRank = pieceWillMove.getRank();
-        Division enemyDivision = pieceWillMove.division == Division.White? Division.Black : Division.White;
-
-        chessBoard.placePiece(currentPieceFile, currentPieceRank, null);
-        for (Coordinate coordinate : coordinatesCanMove) {
-            ChessPiece pieceAlreadyPlace = getPieceAt(coordinate.getFile(), coordinate.getRank());
-            chessBoard.placePiece(coordinate.getFile(), coordinate.getRank(), pieceWillMove);
-            if (arePiecesCanMove(enemyDivision, king.getCoordinate())) {
-                filteredCoordinates.remove(coordinate);
-            }
-            chessBoard.placePiece(coordinate.getFile(), coordinate.getRank(), pieceAlreadyPlace);
-        }
-        chessBoard.placePiece(currentPieceFile, currentPieceRank, pieceWillMove);
-
-        return filteredCoordinates;
-    }
-
-    boolean arePiecesCanMove(Division division, Coordinate coordinate) {
-        List<ChessPiece> pieces = getPieces(division);
-        for (ChessPiece piece : pieces) {
-            List<Coordinate> coordinatesCanMove = ruleManager.findSquareCoordinateCanMove(chessBoard, piece.getFile(), piece.getRank());
-            if (coordinatesCanMove.contains(coordinate)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
 
     public ChessBoard getChessBoard() {
         return chessBoard;
@@ -229,22 +139,6 @@ public class PlayChessService {
         else {
             currentTurn = Division.Black;
         }
-    }
-
-    private boolean isCheckmate(Division enemyDivision) {
-        List<Coordinate> coordinatesEnemyCanMove = new ArrayList<>();
-
-        for (ChessPiece enemyPiece : getPieces(enemyDivision)) {
-            List<Coordinate> enemyPieceCanMoveCoordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, enemyPiece.getFile(), enemyPiece.getRank());
-            for (Coordinate coordinate : coordinatesEnemyCanMove) {
-                if (enemyPieceCanMoveCoordinates.contains(coordinate)) {
-                    enemyPieceCanMoveCoordinates.remove(coordinate);
-                }
-            }
-            coordinatesEnemyCanMove.addAll(filterKingCanDead(enemyPieceCanMoveCoordinates,  enemyPiece));
-        }
-
-        return coordinatesEnemyCanMove.size() == 0;
     }
 
     public void undoMoves(PlayChessService.Division requesterDivision) {
@@ -330,11 +224,11 @@ public class PlayChessService {
     }
 
     public List<ChessPiece> getPieces(Division division) {
-        return chessBoard.piecesHashMap.get(division);
+        return chessBoard.getPieces(division);
     }
 
     public King getKing(Division division) {
-        return chessBoard.kingHashMap.get(division);
+        return chessBoard.getKing(division);
     }
 
     private void endGame(Division winner) {

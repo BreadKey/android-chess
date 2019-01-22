@@ -271,21 +271,75 @@ public class ChessRuleManager {
             }
         }
 
+        PlayChessService.Division enemyDivision = newMove.getDivision() == PlayChessService.Division.White? PlayChessService.Division.Black : PlayChessService.Division.White;
+        if (isCheckmate(chessBoard, enemyDivision)) {
+            rules.add(Rule.Checkmate);
+        }
 
-        if (isCheck(chessBoard, newMove)) {
+        else if (isCheck(chessBoard, newMove, enemyDivision)) {
             rules.add(Rule.Check);
         }
 
         return rules;
     }
 
-    private boolean isCheck(ChessBoard chessBoard, Move newMove) {
+    private boolean isCheck(ChessBoard chessBoard, Move newMove, PlayChessService.Division enemyDivision) {
         Coordinate movedCoordinate = newMove.getToCoordinate();
-        PlayChessService.Division enemyDivision = newMove.getDivision() == PlayChessService.Division.White? PlayChessService.Division.Black : PlayChessService.Division.White;
         List<Coordinate> coordinatesCanMoveNextTurn = findSquareCoordinateCanMove(chessBoard, movedCoordinate.getFile(), movedCoordinate.getRank());
-        King enemyKing = chessBoard.kingHashMap.get(enemyDivision);
+        King enemyKing = chessBoard.getKing(enemyDivision);
         if (coordinatesCanMoveNextTurn.contains(enemyKing.getCoordinate())) {
             return true;
+        }
+
+        return false;
+    }
+
+    private boolean isCheckmate(ChessBoard chessBoard, PlayChessService.Division enemyDivision) {
+        List<Coordinate> coordinatesEnemyCanMove = new ArrayList<>();
+
+        for (ChessPiece enemyPiece : chessBoard.getPieces(enemyDivision)) {
+            List<Coordinate> enemyPieceCanMoveCoordinates = findSquareCoordinateCanMove(chessBoard, enemyPiece.getFile(), enemyPiece.getRank());
+            for (Coordinate coordinate : coordinatesEnemyCanMove) {
+                if (enemyPieceCanMoveCoordinates.contains(coordinate)) {
+                    enemyPieceCanMoveCoordinates.remove(coordinate);
+                }
+            }
+            coordinatesEnemyCanMove.addAll(filterKingCanDead(chessBoard, enemyPieceCanMoveCoordinates,  enemyPiece));
+        }
+
+        return coordinatesEnemyCanMove.size() == 0;
+    }
+
+    public List filterKingCanDead(ChessBoard chessBoard, List<Coordinate> coordinatesCanMove, ChessPiece pieceWillMove) {
+        List<Coordinate> filteredCoordinates = new ArrayList<>(coordinatesCanMove);
+
+        King king = chessBoard.getKing(pieceWillMove.division);
+
+        char currentPieceFile = pieceWillMove.getFile();
+        int currentPieceRank = pieceWillMove.getRank();
+        PlayChessService.Division enemyDivision = pieceWillMove.division == PlayChessService.Division.White? PlayChessService.Division.Black : PlayChessService.Division.White;
+
+        chessBoard.placePiece(currentPieceFile, currentPieceRank, null);
+        for (Coordinate coordinate : coordinatesCanMove) {
+            ChessPiece pieceAlreadyPlace = chessBoard.getPieceAt(coordinate.getFile(), coordinate.getRank());
+            chessBoard.placePiece(coordinate.getFile(), coordinate.getRank(), pieceWillMove);
+            if (arePiecesCanMove(chessBoard, enemyDivision, king.getCoordinate())) {
+                filteredCoordinates.remove(coordinate);
+            }
+            chessBoard.placePiece(coordinate.getFile(), coordinate.getRank(), pieceAlreadyPlace);
+        }
+        chessBoard.placePiece(currentPieceFile, currentPieceRank, pieceWillMove);
+
+        return filteredCoordinates;
+    }
+
+    boolean arePiecesCanMove(ChessBoard chessBoard, PlayChessService.Division division, Coordinate coordinate) {
+        List<ChessPiece> pieces = chessBoard.getPieces(division);
+        for (ChessPiece piece : pieces) {
+            List<Coordinate> coordinatesCanMove = findSquareCoordinateCanMove(chessBoard, piece.getFile(), piece.getRank());
+            if (coordinatesCanMove.contains(coordinate)) {
+                return true;
+            }
         }
 
         return false;
