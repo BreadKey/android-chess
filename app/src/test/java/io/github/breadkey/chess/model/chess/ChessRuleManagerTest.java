@@ -286,9 +286,9 @@ public class ChessRuleManagerTest {
 
     @Test
     public void canNotCastlingBecauseCheck() {
-        chessBoard.placePiece('e', 1, new King(PlayChessService.Division.White));
-        chessBoard.placePiece('h', 1, new Rook(PlayChessService.Division.White));
-        chessBoard.placePiece('f', 8, new Rook(PlayChessService.Division.Black));
+        chessBoard.placeNewPiece('e', 1, new King(PlayChessService.Division.White));
+        chessBoard.placeNewPiece('h', 1, new Rook(PlayChessService.Division.White));
+        chessBoard.placeNewPiece('f', 8, new Rook(PlayChessService.Division.Black));
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'e', 1);
 
         assertFalse(coordinates.contains(new Coordinate('g', 1)));

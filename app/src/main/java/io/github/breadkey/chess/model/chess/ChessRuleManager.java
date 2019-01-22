@@ -134,8 +134,10 @@ public class ChessRuleManager {
             for (ChessPiece rook : rooks) {
                 if (rook != null && rook.moveCount == 0) {
                     if (lineCoordinates.contains(rook.getCoordinate())) {
-                        char sideFile = rook.getFile() > file? (char) (file + 2) : (char) (file - 2);
-                        destination.add(new Coordinate(sideFile, rank));
+                        int side = rook.getFile() > file? 1 : -1;
+                        if (!arePiecesCanMove(chessBoard, enemyDivision, new Coordinate((char) (file + side), rank))) {
+                            destination.add(new Coordinate((char) (file + side * 2), rank));
+                        }
                     }
                 }
             }
