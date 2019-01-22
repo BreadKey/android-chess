@@ -85,8 +85,7 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_b1KnightCanMoveCoordinatesWhenBoardInitialized() {
-        PlayChessService playChessService = new PlayChessService();
-        chessBoard = playChessService.getChessBoard();
+        chessBoard.setChessBoard();
 
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'b', 1);
         assertEquals(2, coordinates.size());
@@ -101,7 +100,7 @@ public class ChessRuleManagerTest {
 
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard,'b', 1);
         assertEquals(2, coordinates.size());
-        assertCoordinatesNotContains('a', 3, coordinates);
+        assertFalse(coordinates.contains(new Coordinate('a', 3)));
     }
 
     @Test
@@ -127,7 +126,7 @@ public class ChessRuleManagerTest {
             if (rank == 4) { continue; }
             assertCoordinatesContains('d', rank, coordinates);
         }
-        assertCoordinatesNotContains('d', 4, coordinates);
+        assertTrue(coordinates.contains(new Coordinate('a', 4)));
     }
 
     @Test
@@ -231,6 +230,7 @@ public class ChessRuleManagerTest {
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
 
         assertEquals(8, coordinates.size());
+        assertTrue(coordinates.contains(new Coordinate('c', 4)));
         assertCoordinatesContains('c', 4, coordinates);
         assertCoordinatesContains('c', 5, coordinates);
         assertCoordinatesContains('d', 5, coordinates);
@@ -243,29 +243,58 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_e1KingCanMoveCoordinatesWhenBoardInitialized() {
-        chessBoard = new PlayChessService().getChessBoard();
+        chessBoard.setChessBoard();
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'e', 1);
         assertEquals(0, coordinates.size());
     }
 
+    @Test
+    public void check() {
+        chessBoard.placeNewPiece('a', 5, new King(PlayChessService.Division.White));
+        chessBoard.placeNewPiece('b', 8, new King(PlayChessService.Division.Black));
+
+        chessBoard.placeNewPiece('b', 1, new Rook(PlayChessService.Division.White));
+
+        Move move = new Move(PlayChessService.Division.White, ChessPiece.Type.Rook, new Coordinate('a', 1), new Coordinate('b', 1));
+        List<ChessRuleManager.Rule> rules = ruleManager.findRules(chessBoard, move);
+
+        assertTrue(rules.contains(ChessRuleManager.Rule.Check));
+    }
+
+    @Test
+    public void isBlackPiecesCanMove_d5() {
+        chessBoard.setChessBoard();
+        assertTrue(ruleManager.arePiecesCanMove(chessBoard, PlayChessService.Division.Black, new Coordinate('d', 5)));
+    }
+
+    @Test
+    public void isWhitePiecesCanMove_b7WhenRookOn_a1() {
+        chessBoard.placeNewPiece('a' ,1, new Rook(PlayChessService.Division.White));
+        assertFalse(ruleManager.arePiecesCanMove(chessBoard, PlayChessService.Division.White, new Coordinate('b', 7)));
+    }
+
+    @Test
+    public void findCastlingCoordinate() {
+        chessBoard.placePiece('e', 1, new King(PlayChessService.Division.White));
+        chessBoard.placePiece('h', 1, new Rook(PlayChessService.Division.White));
+        chessBoard.placePiece('a', 1, new Rook(PlayChessService.Division.White));
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'e', 1);
+
+        assertTrue(coordinates.contains(new Coordinate('g', 1)));
+        assertTrue(coordinates.contains(new Coordinate('c', 1)));
+    }
+
+    @Test
+    public void canNotCastlingBecauseCheck() {
+        chessBoard.placeNewPiece('e', 1, new King(PlayChessService.Division.White));
+        chessBoard.placeNewPiece('h', 1, new Rook(PlayChessService.Division.White));
+        chessBoard.placeNewPiece('f', 8, new Rook(PlayChessService.Division.Black));
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'e', 1);
+
+        assertFalse(coordinates.contains(new Coordinate('g', 1)));
+    }
+
     private void assertCoordinatesContains(char file, int rank, List<Coordinate> coordinates) {
-        assertTrue(isContain(file, rank, coordinates));
-    }
-
-    private void assertCoordinatesNotContains(char file, int rank, List<Coordinate> coordinates) {
-        assertTrue(!isContain(file, rank, coordinates));
-    }
-
-    private boolean isContain(char file, int rank, List<Coordinate> coordinates) {
-        boolean isContain = false;
-
-        for (Coordinate coordinate: coordinates) {
-            if (coordinate.getFile() == file && coordinate.getRank() == rank) {
-                isContain = true;
-                break;
-            }
-        }
-
-        return isContain;
+        assertTrue(coordinates.contains(new Coordinate(file, rank)));
     }
 }

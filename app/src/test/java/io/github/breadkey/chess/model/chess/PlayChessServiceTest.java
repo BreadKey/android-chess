@@ -5,18 +5,18 @@ import org.junit.Test;
 
 import io.github.breadkey.chess.mock.MockPlayerHJ;
 import io.github.breadkey.chess.mock.MockPlayerYK;
-import io.github.breadkey.chess.model.Player;
 import io.github.breadkey.chess.model.chess.chessPieces.Bishop;
 import io.github.breadkey.chess.model.chess.chessPieces.King;
 import io.github.breadkey.chess.model.chess.chessPieces.Knight;
 import io.github.breadkey.chess.model.chess.chessPieces.Queen;
 import io.github.breadkey.chess.model.chess.chessPieces.Rook;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 public class PlayChessServiceTest {
     PlayChessService playChessService;
-    ChessRuleManager ruleManager = ChessRuleManager.getInstance();
 
     @Before
     public void setUp() {
@@ -73,30 +73,6 @@ public class PlayChessServiceTest {
         assertEquals(PlayChessService.Division.White, playChessService.getPieceAt('b', 5).division);
         assertEquals(1, playChessService.getPieceAt('b', 5).killScore);
         System.out.println(playChessService);
-    }
-
-    @Test
-    public void check() {
-        playChessService.clearChessBoard();
-        playChessService.placeNewPiece('a', 5, new King(PlayChessService.Division.White));
-        playChessService.placeNewPiece('a', 1, new Rook(PlayChessService.Division.White));
-        playChessService.placeNewPiece('b', 8, new King(PlayChessService.Division.Black));
-
-        playChessService.tryMove('a', 1, 'b' ,1);
-        assertTrue(playChessService.getKing(PlayChessService.Division.Black).isChecked());
-        assertNull(playChessService.getWinner());
-    }
-
-    @Test
-    public void isBlackPiecesCanMove_d5() {
-        assertTrue(playChessService.arePiecesCanMove(PlayChessService.Division.Black, new Coordinate('d', 5)));
-    }
-
-    @Test
-    public void isWhitePiecesCanMove_b7WhenRookOn_a1() {
-        playChessService.clearChessBoard();
-        playChessService.placeNewPiece('a' ,1, new Rook(PlayChessService.Division.White));
-        assertFalse(playChessService.arePiecesCanMove(PlayChessService.Division.White, new Coordinate('b', 7)));
     }
 
     @Test
@@ -277,6 +253,30 @@ public class PlayChessServiceTest {
 
         playChessService.undoMoves(PlayChessService.Division.Black);
         assertEquals(PlayChessService.Division.Black, playChessService.getCurrentTurn());
+    }
+
+    @Test
+    public void kingSideCastling() {
+        playChessService.clearChessBoard();
+        playChessService.placeNewPiece('e', 1, new King(PlayChessService.Division.White));
+        playChessService.placeNewPiece('h', 1, new Rook(PlayChessService.Division.White));
+        playChessService.placeNewPiece('e', 8, new King(PlayChessService.Division.Black));
+
+        playChessService.tryMove('e', 1, 'g', 1);
+        assertEquals(ChessPiece.Type.King, playChessService.getPieceAt('g', 1).getType());
+        assertEquals(ChessPiece.Type.Rook, playChessService.getPieceAt('f', 1).getType());
+    }
+
+    @Test
+    public void queenSideCastling() {
+        playChessService.clearChessBoard();
+        playChessService.placeNewPiece('e', 1, new King(PlayChessService.Division.White));
+        playChessService.placeNewPiece('a', 1, new Rook(PlayChessService.Division.White));
+        playChessService.placeNewPiece('e', 8, new King(PlayChessService.Division.Black));
+
+        playChessService.tryMove('e', 1, 'c', 1);
+        assertEquals(ChessPiece.Type.King, playChessService.getPieceAt('c', 1).getType());
+        assertEquals(ChessPiece.Type.Rook, playChessService.getPieceAt('d', 1).getType());
     }
 
     public void kill_b7PawnWith_a2Pawn() {

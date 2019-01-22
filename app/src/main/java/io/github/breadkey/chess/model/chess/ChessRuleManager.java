@@ -4,8 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.github.breadkey.chess.model.chess.chessPieces.King;
+
 public class ChessRuleManager {
     private static final ChessRuleManager ourInstance = new ChessRuleManager();
+    public enum Rule {
+        Check,
+        Checkmate,
+        KingSideCastling,
+        QueenSideCastling,
+        EnPassant
+    }
 
     public static ChessRuleManager getInstance() {
         return ourInstance;
@@ -53,6 +62,7 @@ public class ChessRuleManager {
                         coordinates.add(sideForwardCoordinate);
                     }
                 }
+
                 break;
             }
 
@@ -99,11 +109,39 @@ public class ChessRuleManager {
 
                 coordinates = filterOutOfBoard(coordinates);
                 coordinates = filterAllyPiecePlaced(chessBoard, coordinates, division);
+
+                addCastlingCoordinate(chessBoard, piece, file, rank, coordinates);
+
                 break;
             }
         }
 
         return coordinates;
+    }
+
+    private void addCastlingCoordinate(ChessBoard chessBoard, ChessPiece king, char file, int rank, List<Coordinate> destination) {
+        if (king.moveCount == 0) {
+            char kingSideRookFile = ChessBoard.files.get(ChessBoard.files.size() - 1);
+            ChessPiece kingSideRook = chessBoard.getPieceAt(kingSideRookFile, rank);
+            char queenSideRookFile = ChessBoard.files.get(0);
+            ChessPiece queenSideRook = chessBoard.getPieceAt(queenSideRookFile, rank);
+            List<Coordinate> lineCoordinates = new ArrayList<>();
+            PlayChessService.Division enemyDivision = king.division == PlayChessService.Division.White ? PlayChessService.Division.Black : PlayChessService.Division.White;
+            findRookCoordinatesCanMove(chessBoard, lineCoordinates, file, rank, enemyDivision);
+
+            ChessPiece[] rooks = new ChessPiece[]{kingSideRook, queenSideRook};
+
+            for (ChessPiece rook : rooks) {
+                if (rook != null && rook.moveCount == 0) {
+                    if (lineCoordinates.contains(rook.getCoordinate())) {
+                        int side = rook.getFile() > file? 1 : -1;
+                        if (!arePiecesCanMove(chessBoard, enemyDivision, new Coordinate((char) (file + side), rank))) {
+                            destination.add(new Coordinate((char) (file + side * 2), rank));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private List<Coordinate> findAnotherPiecePlace(ChessBoard chessBoard, List<Coordinate> coordinates) {
@@ -216,5 +254,96 @@ public class ChessRuleManager {
             }
             destination.add(coordinate);
         }
+    }
+
+    public List<Rule> findRules(ChessBoard chessBoard, Move newMove) {
+        List<Rule> rules = new ArrayList<>();
+        Coordinate fromCoordinate = newMove.getFromCoordinate();
+        Coordinate toCoordinate = newMove.getToCoordinate();
+        int moveDistance = Math.abs(toCoordinate.getFile() - fromCoordinate.getFile()) + Math.abs(toCoordinate.getRank() - fromCoordinate.getRank());
+
+        if (newMove.getPieceType() == ChessPiece.Type.King) {
+            if (moveDistance == 2) {
+                if (toCoordinate.getFile() > fromCoordinate.getFile()) {
+                    rules.add(Rule.KingSideCastling);
+                }
+                else {
+                    rules.add(Rule.QueenSideCastling);
+                }
+            }
+        }
+
+        PlayChessService.Division enemyDivision = newMove.getDivision() == PlayChessService.Division.White? PlayChessService.Division.Black : PlayChessService.Division.White;
+        if (isCheckmate(chessBoard, enemyDivision)) {
+            rules.add(Rule.Checkmate);
+        }
+
+        else if (isCheck(chessBoard, newMove, enemyDivision)) {
+            rules.add(Rule.Check);
+        }
+
+        return rules;
+    }
+
+    private boolean isCheck(ChessBoard chessBoard, Move newMove, PlayChessService.Division enemyDivision) {
+        Coordinate movedCoordinate = newMove.getToCoordinate();
+        List<Coordinate> coordinatesCanMoveNextTurn = findSquareCoordinateCanMove(chessBoard, movedCoordinate.getFile(), movedCoordinate.getRank());
+        King enemyKing = chessBoard.getKing(enemyDivision);
+        if (coordinatesCanMoveNextTurn.contains(enemyKing.getCoordinate())) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isCheckmate(ChessBoard chessBoard, PlayChessService.Division enemyDivision) {
+        List<Coordinate> coordinatesEnemyCanMove = new ArrayList<>();
+
+        for (ChessPiece enemyPiece : chessBoard.getPieces(enemyDivision)) {
+            List<Coordinate> enemyPieceCanMoveCoordinates = findSquareCoordinateCanMove(chessBoard, enemyPiece.getFile(), enemyPiece.getRank());
+            for (Coordinate coordinate : coordinatesEnemyCanMove) {
+                if (enemyPieceCanMoveCoordinates.contains(coordinate)) {
+                    enemyPieceCanMoveCoordinates.remove(coordinate);
+                }
+            }
+            coordinatesEnemyCanMove.addAll(filterKingCanDead(chessBoard, enemyPieceCanMoveCoordinates,  enemyPiece));
+        }
+
+        return coordinatesEnemyCanMove.size() == 0;
+    }
+
+    public List filterKingCanDead(ChessBoard chessBoard, List<Coordinate> coordinatesCanMove, ChessPiece pieceWillMove) {
+        List<Coordinate> filteredCoordinates = new ArrayList<>(coordinatesCanMove);
+
+        King king = chessBoard.getKing(pieceWillMove.division);
+
+        char currentPieceFile = pieceWillMove.getFile();
+        int currentPieceRank = pieceWillMove.getRank();
+        PlayChessService.Division enemyDivision = pieceWillMove.division == PlayChessService.Division.White? PlayChessService.Division.Black : PlayChessService.Division.White;
+
+        chessBoard.placePiece(currentPieceFile, currentPieceRank, null);
+        for (Coordinate coordinate : coordinatesCanMove) {
+            ChessPiece pieceAlreadyPlace = chessBoard.getPieceAt(coordinate.getFile(), coordinate.getRank());
+            chessBoard.placePiece(coordinate.getFile(), coordinate.getRank(), pieceWillMove);
+            if (arePiecesCanMove(chessBoard, enemyDivision, king.getCoordinate())) {
+                filteredCoordinates.remove(coordinate);
+            }
+            chessBoard.placePiece(coordinate.getFile(), coordinate.getRank(), pieceAlreadyPlace);
+        }
+        chessBoard.placePiece(currentPieceFile, currentPieceRank, pieceWillMove);
+
+        return filteredCoordinates;
+    }
+
+    boolean arePiecesCanMove(ChessBoard chessBoard, PlayChessService.Division division, Coordinate coordinate) {
+        List<ChessPiece> pieces = chessBoard.getPieces(division);
+        for (ChessPiece piece : pieces) {
+            List<Coordinate> coordinatesCanMove = findSquareCoordinateCanMove(chessBoard, piece.getFile(), piece.getRank());
+            if (coordinatesCanMove.contains(coordinate)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
