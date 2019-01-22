@@ -22,8 +22,6 @@ public class PlayChessService {
     private HashMap<PlayChessService.Division, Player> players;
 
     private ChessBoard chessBoard;
-    private HashMap<Division, King> kingHashMap;
-    private HashMap<Division, List<ChessPiece>> piecesHashMap;
 
     private Division currentTurn;
     private ChessRuleManager ruleManager = ChessRuleManager.getInstance();
@@ -39,12 +37,6 @@ public class PlayChessService {
     }
 
     public void startNewGame(Player player1, Player player2) {
-        chessBoard = new ChessBoard();
-        kingHashMap = new HashMap<>();
-        piecesHashMap = new HashMap<>();
-        piecesHashMap.put(Division.White, new ArrayList<ChessPiece>(16));
-        piecesHashMap.put(Division.Black, new ArrayList<ChessPiece>(16));
-
         setChessBoard();
         currentTurn = Division.White;
         decideDivision(player1, player2);
@@ -70,7 +62,9 @@ public class PlayChessService {
         }
     }
 
-    private void setChessBoard() {
+    public void setChessBoard() {
+        chessBoard = new ChessBoard();
+
         placePawns();
         placeRooks();
         placeKnights();
@@ -139,13 +133,13 @@ public class PlayChessService {
     }
 
     private void move(ChessPiece pieceToMove, char toFile, int toRank) {
-        King king = kingHashMap.get(pieceToMove.division);
+        King king = chessBoard.kingHashMap.get(pieceToMove.division);
         king.setChecked(false);
 
         ChessPiece pieceWillDead = getPieceAt(toFile, toRank);
         if (pieceWillDead != null) {
             pieceToMove.killScore++;
-            piecesHashMap.get(pieceWillDead.division).remove(pieceWillDead);
+            chessBoard.piecesHashMap.get(pieceWillDead.division).remove(pieceWillDead);
             killLogs.add(new KillLog(pieceToMove, pieceWillDead, toFile, toRank));
 
             for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
@@ -160,12 +154,7 @@ public class PlayChessService {
         chessBoard.placePiece(fromFile, fromRank, null);
         pieceToMove.moveCount++;
 
-        Move newMove = new Move(pieceToMove.division, pieceToMove.type, new Coordinate(fromFile, fromRank), new Coordinate(toFile, toRank));
-        moves.add(newMove);
-
-        for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
-            chessPlayObserver.pieceMoved(newMove);
-        }
+        List<ChessRuleManager.Rule> rules = ruleManager.findRules(fromFile, fromRank, toFile, toRank, pieceToMove);
 
         Division enemyDivision = pieceToMove.division == Division.White? Division.Black : Division.White;
 
@@ -177,13 +166,21 @@ public class PlayChessService {
         else if (isCheck(toFile, toRank, enemyDivision)) {
 
         }
+
+        Move newMove = new Move(pieceToMove.division, pieceToMove.type, new Coordinate(fromFile, fromRank), new Coordinate(toFile, toRank));
+        moves.add(newMove);
+
+        for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
+            chessPlayObserver.pieceMoved(newMove);
+        }
+
         changeTurn();
     }
 
     private List filterKingCanDead(List<Coordinate> coordinatesCanMove, ChessPiece pieceWillMove) {
         List<Coordinate> filteredCoordinates = new ArrayList<>(coordinatesCanMove);
 
-        King king = kingHashMap.get(pieceWillMove.division);
+        King king = chessBoard.kingHashMap.get(pieceWillMove.division);
 
         char currentPieceFile = pieceWillMove.getFile();
         int currentPieceRank = pieceWillMove.getRank();
@@ -231,7 +228,7 @@ public class PlayChessService {
 
     private boolean isCheck(char movedFile, int movedRank, Division enemyDivision) {
         List<Coordinate> coordinatesCanMoveNextTurn = ruleManager.findSquareCoordinateCanMove(chessBoard, movedFile, movedRank);
-        King enemyKing = kingHashMap.get(enemyDivision);
+        King enemyKing = chessBoard.kingHashMap.get(enemyDivision);
         if (coordinatesCanMoveNextTurn.contains(enemyKing.getCoordinate())) {
             enemyKing.setChecked(true);
             return true;
@@ -332,28 +329,25 @@ public class PlayChessService {
 
     public void clearChessBoard() {
         chessBoard = new ChessBoard();
-        kingHashMap.clear();
-        piecesHashMap.get(Division.White).clear();
-        piecesHashMap.get(Division.Black).clear();
     }
 
     public void placeNewPiece(char file, int rank, ChessPiece piece) {
         if (piece.type == ChessPiece.Type.King) {
-            kingHashMap.put(piece.division, (King) piece);
+            chessBoard.kingHashMap.put(piece.division, (King) piece);
         }
 
         Division pieceDivision = piece.division;
-        piecesHashMap.get(pieceDivision).add(piece);
+        chessBoard.piecesHashMap.get(pieceDivision).add(piece);
 
         chessBoard.placePiece(file, rank, piece);
     }
 
     public List<ChessPiece> getPieces(Division division) {
-        return piecesHashMap.get(division);
+        return chessBoard.piecesHashMap.get(division);
     }
 
     public King getKing(Division division) {
-        return kingHashMap.get(division);
+        return chessBoard.kingHashMap.get(division);
     }
 
     private void endGame(Division winner) {

@@ -86,6 +86,7 @@ public class ChessRuleManagerTest {
     @Test
     public void find_b1KnightCanMoveCoordinatesWhenBoardInitialized() {
         PlayChessService playChessService = new PlayChessService();
+        playChessService.setChessBoard();
         chessBoard = playChessService.getChessBoard();
 
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'b', 1);
@@ -101,7 +102,7 @@ public class ChessRuleManagerTest {
 
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard,'b', 1);
         assertEquals(2, coordinates.size());
-        assertCoordinatesNotContains('a', 3, coordinates);
+        assertFalse(coordinates.contains(new Coordinate('a', 3)));
     }
 
     @Test
@@ -127,7 +128,7 @@ public class ChessRuleManagerTest {
             if (rank == 4) { continue; }
             assertCoordinatesContains('d', rank, coordinates);
         }
-        assertCoordinatesNotContains('d', 4, coordinates);
+        assertTrue(coordinates.contains(new Coordinate('a', 4)));
     }
 
     @Test
@@ -231,6 +232,7 @@ public class ChessRuleManagerTest {
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'd', 4);
 
         assertEquals(8, coordinates.size());
+        assertTrue(coordinates.contains(new Coordinate('c', 4)));
         assertCoordinatesContains('c', 4, coordinates);
         assertCoordinatesContains('c', 5, coordinates);
         assertCoordinatesContains('d', 5, coordinates);
@@ -243,29 +245,42 @@ public class ChessRuleManagerTest {
 
     @Test
     public void find_e1KingCanMoveCoordinatesWhenBoardInitialized() {
-        chessBoard = new PlayChessService().getChessBoard();
+        PlayChessService playChessService = new PlayChessService();
+        playChessService.setChessBoard();
+        chessBoard = playChessService.getChessBoard();
         List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'e', 1);
         assertEquals(0, coordinates.size());
     }
 
+    @Test
+    public void findKingSideCastling() {
+        List<ChessRuleManager.Rule> rules = ruleManager.findRules('e', 1, 'g', 1, new King(PlayChessService.Division.White));
+
+        assertTrue(rules.contains(ChessRuleManager.Rule.KingSideCastling));
+    }
+
+    @Test
+    public void findCastlingCoordinate() {
+        chessBoard.placePiece('e', 1, new King(PlayChessService.Division.White));
+        chessBoard.placePiece('h', 1, new Rook(PlayChessService.Division.White));
+        chessBoard.placePiece('a', 1, new Rook(PlayChessService.Division.White));
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'e', 1);
+
+        assertTrue(coordinates.contains(new Coordinate('g', 1)));
+        assertTrue(coordinates.contains(new Coordinate('c', 1)));
+    }
+
+    @Test
+    public void canNotCastlingBecauseCheck() {
+        chessBoard.placePiece('e', 1, new King(PlayChessService.Division.White));
+        chessBoard.placePiece('h', 1, new Rook(PlayChessService.Division.White));
+        chessBoard.placePiece('f', 8, new Rook(PlayChessService.Division.Black));
+        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'e', 1);
+
+        assertFalse(coordinates.contains(new Coordinate('g', 1)));
+    }
+
     private void assertCoordinatesContains(char file, int rank, List<Coordinate> coordinates) {
-        assertTrue(isContain(file, rank, coordinates));
-    }
-
-    private void assertCoordinatesNotContains(char file, int rank, List<Coordinate> coordinates) {
-        assertTrue(!isContain(file, rank, coordinates));
-    }
-
-    private boolean isContain(char file, int rank, List<Coordinate> coordinates) {
-        boolean isContain = false;
-
-        for (Coordinate coordinate: coordinates) {
-            if (coordinate.getFile() == file && coordinate.getRank() == rank) {
-                isContain = true;
-                break;
-            }
-        }
-
-        return isContain;
+        assertTrue(coordinates.contains(new Coordinate(file, rank)));
     }
 }

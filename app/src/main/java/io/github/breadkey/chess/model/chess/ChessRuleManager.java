@@ -6,6 +6,11 @@ import java.util.List;
 
 public class ChessRuleManager {
     private static final ChessRuleManager ourInstance = new ChessRuleManager();
+    public enum Rule {
+        KingSideCastling,
+        QueenSideCastling,
+        EnPassant
+    }
 
     public static ChessRuleManager getInstance() {
         return ourInstance;
@@ -53,6 +58,7 @@ public class ChessRuleManager {
                         coordinates.add(sideForwardCoordinate);
                     }
                 }
+
                 break;
             }
 
@@ -99,11 +105,37 @@ public class ChessRuleManager {
 
                 coordinates = filterOutOfBoard(coordinates);
                 coordinates = filterAllyPiecePlaced(chessBoard, coordinates, division);
+
+                addCastlingCoordinate(chessBoard, piece, file, rank, coordinates);
+
                 break;
             }
         }
 
         return coordinates;
+    }
+
+    private void addCastlingCoordinate(ChessBoard chessBoard, ChessPiece king, char file, int rank, List<Coordinate> destination) {
+        if (king.moveCount == 0) {
+            char kingSideRookFile = ChessBoard.files.get(ChessBoard.files.size() - 1);
+            ChessPiece kingSideRook = chessBoard.getPieceAt(kingSideRookFile, rank);
+            char queenSideRookFile = ChessBoard.files.get(0);
+            ChessPiece queenSideRook = chessBoard.getPieceAt(queenSideRookFile, rank);
+            List<Coordinate> lineCoordinates = new ArrayList<>();
+            PlayChessService.Division enemyDivision = king.division == PlayChessService.Division.White ? PlayChessService.Division.Black : PlayChessService.Division.White;
+            findRookCoordinatesCanMove(chessBoard, lineCoordinates, file, rank, enemyDivision);
+
+            ChessPiece[] rooks = new ChessPiece[]{kingSideRook, queenSideRook};
+
+            for (ChessPiece rook : rooks) {
+                if (rook != null && rook.moveCount == 0) {
+                    if (lineCoordinates.contains(rook.getCoordinate())) {
+                        char sideFile = rook.getFile() > file? (char) (file + 2) : (char) (file - 2);
+                        destination.add(new Coordinate(sideFile, rank));
+                    }
+                }
+            }
+        }
     }
 
     private List<Coordinate> findAnotherPiecePlace(ChessBoard chessBoard, List<Coordinate> coordinates) {
@@ -216,5 +248,23 @@ public class ChessRuleManager {
             }
             destination.add(coordinate);
         }
+    }
+
+    public List<Rule> findRules(char fromFile, int fromRank, char toFile, int toRank, ChessPiece pieceToMove) {
+        List<Rule> rules = new ArrayList<>();
+        int moveDistance = Math.abs(toFile - fromFile) + Math.abs(toRank - fromRank);
+
+        if (pieceToMove.getType() == ChessPiece.Type.King) {
+            if (moveDistance == 2) {
+                if (toFile > fromFile) {
+                    rules.add(Rule.KingSideCastling);
+                }
+                else {
+                    rules.add(Rule.QueenSideCastling);
+                }
+            }
+        }
+
+        return rules;
     }
 }

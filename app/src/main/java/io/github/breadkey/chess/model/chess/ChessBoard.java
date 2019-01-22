@@ -1,5 +1,6 @@
 package io.github.breadkey.chess.model.chess;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -9,10 +10,16 @@ import io.github.breadkey.chess.model.chess.chessPieces.King;
 public  class ChessBoard {
     public static final List<Character> files = Arrays.asList('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
     public static final List<Integer> ranks = Arrays.asList(8, 7, 6, 5, 4, 3, 2, 1);
+    HashMap<PlayChessService.Division, King> kingHashMap;
+    HashMap<PlayChessService.Division, List<ChessPiece>> piecesHashMap;
     HashMap<Coordinate, Square> squares;
 
     public ChessBoard() {
         createSquares();
+        kingHashMap = new HashMap<>();
+        piecesHashMap = new HashMap<>();
+        piecesHashMap.put(PlayChessService.Division.White, new ArrayList<ChessPiece>(16));
+        piecesHashMap.put(PlayChessService.Division.Black, new ArrayList<ChessPiece>(16));
     }
 
     private void createSquares() {
