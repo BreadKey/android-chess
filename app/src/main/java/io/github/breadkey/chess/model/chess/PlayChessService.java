@@ -67,6 +67,14 @@ public class PlayChessService {
         if (pieceWillMove != null) {
             List coordinatesCanMove = ruleManager.findSquareCoordinateCanMove(chessBoard, fromFile, fromRank);
             coordinatesCanMove = ruleManager.filterKingCanDead(chessBoard, coordinatesCanMove, pieceWillMove);
+            if (pieceWillMove.type == ChessPiece.Type.King) {
+                if (!coordinatesCanMove.contains(new Coordinate((char) (pieceWillMove.getFile() + 1), pieceWillMove.getRank()))) {
+                    coordinatesCanMove.remove(new Coordinate((char) (pieceWillMove.getFile() + 2), pieceWillMove.getRank()));
+                }
+                if (!coordinatesCanMove.contains(new Coordinate((char) (pieceWillMove.getFile() - 1), pieceWillMove.getRank()))) {
+                    coordinatesCanMove.remove(new Coordinate((char) (pieceWillMove.getFile() - 2), pieceWillMove.getRank()));
+                }
+            }
 
             if (coordinatesCanMove.contains(new Coordinate(toFile, toRank))) {
                 move(pieceWillMove, toFile, toRank);

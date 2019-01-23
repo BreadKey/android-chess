@@ -284,16 +284,6 @@ public class ChessRuleManagerTest {
         assertTrue(coordinates.contains(new Coordinate('c', 1)));
     }
 
-    @Test
-    public void canNotCastlingBecauseCheck() {
-        chessBoard.placeNewPiece('e', 1, new King(PlayChessService.Division.White));
-        chessBoard.placeNewPiece('h', 1, new Rook(PlayChessService.Division.White));
-        chessBoard.placeNewPiece('f', 8, new Rook(PlayChessService.Division.Black));
-        List<Coordinate> coordinates = ruleManager.findSquareCoordinateCanMove(chessBoard, 'e', 1);
-
-        assertFalse(coordinates.contains(new Coordinate('g', 1)));
-    }
-
     private void assertCoordinatesContains(char file, int rank, List<Coordinate> coordinates) {
         assertTrue(coordinates.contains(new Coordinate(file, rank)));
     }
