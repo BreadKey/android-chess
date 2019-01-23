@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -55,6 +56,48 @@ public class ChessActivity extends AppCompatActivity {
             }
         });
         createSquareButtons();
+        drawRanks();
+        drawFiles();
+    }
+
+    private void drawRanks() {
+        LinearLayout rankLinearLayout = findViewById(R.id.rank_linear_layout);
+        for (int rank : ChessBoard.ranks) {
+            TextView rankTextView = new TextView(this);
+            rankTextView.setGravity(Gravity.TOP);
+            rankTextView.setText(String.valueOf(rank));
+            if (rank % 2 == 0) {
+                rankTextView.setTextColor(getResources().getColor(R.color.bread));
+            }
+            else {
+                rankTextView.setTextColor(getResources().getColor(R.color.dough));
+            }
+            rankLinearLayout.addView(rankTextView);
+            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) rankTextView.getLayoutParams();
+            layoutParams.height = 0;
+            layoutParams.weight = 1;
+            rankTextView.setLayoutParams(layoutParams);
+        }
+    }
+    private void drawFiles() {
+        LinearLayout fileLinearLayout = findViewById(R.id.file_linear_layout);
+        for (int i = 0; i < ChessBoard.files.size(); i++) {
+            char file = ChessBoard.files.get(i);
+            TextView fileTextView = new TextView(this);
+            fileTextView.setGravity(Gravity.RIGHT);
+            fileTextView.setText(String.valueOf(file));
+            if (i % 2 == 0) {
+                fileTextView.setTextColor(getResources().getColor(R.color.dough));
+            }
+            else {
+                fileTextView.setTextColor(getResources().getColor(R.color.bread));
+            }
+            fileLinearLayout.addView(fileTextView);
+            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) fileTextView.getLayoutParams();
+            layoutParams.width = 0;
+            layoutParams.weight = 1;
+            fileTextView.setLayoutParams(layoutParams);
+        }
     }
 
     private void createSquareButtons() {
