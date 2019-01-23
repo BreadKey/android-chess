@@ -8,40 +8,176 @@
     tools:context=".view.ChessActivity">
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/chess_board_layout"
-        android:layout_width="340dp"
-        android:layout_height="340dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:id="@+id/head"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/darkChocolate"
+        app:layout_constraintBottom_toTopOf="@id/body"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/chess_board"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/chess_board" />
+        <Button
+            android:id="@+id/show_move_button"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/show_table_button_background"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
 
-        <GridLayout
-            android:id="@+id/chess_square_layout"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/body"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/head">
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/black_player_layout"
+            android:layout_width="120dp"
+            android:layout_height="50dp"
+            android:background="@color/plate"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/black_player_tier_icon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginRight="2dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/black_player_text"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/pawn_default_black" />
+
+                <TextView
+                    android:id="@+id/black_player_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Black_Player"
+                    android:textColor="@color/darkChocolate"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/white_player_layout"
+            android:layout_width="120dp"
+            android:layout_height="50dp"
+            android:background="@color/plate"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/white_player_tier_icon"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="2dp"
+                    android:layout_marginRight="2dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/white_player_text"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/pawn_default_white" />
+
+                <TextView
+                    android:id="@+id/white_player_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="White_Player"
+                    android:textColor="@color/whiteChocolate"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.v4.widget.DrawerLayout
+            android:id="@+id/move_drawer_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:columnCount="8"
-            android:rowCount="8"
-            app:layout_constraintEnd_toStartOf="@+id/chess_board"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/chess_board"
-            app:layout_constraintTop_toBottomOf="@+id/chess_board"></GridLayout>
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="0dp">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/chess_board_layout"
+                    android:layout_width="340dp"
+                    android:layout_height="340dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/chess_board"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/chess_board" />
+
+                    <GridLayout
+                        android:id="@+id/chess_square_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="10dp"
+                        android:columnCount="8"
+                        android:rowCount="8"
+                        app:layout_constraintEnd_toStartOf="@+id/chess_board"
+                        app:layout_constraintStart_toEndOf="@+id/chess_board"
+                        app:layout_constraintTop_toBottomOf="@+id/chess_board"></GridLayout>
+                </android.support.constraint.ConstraintLayout>
+            </android.support.constraint.ConstraintLayout>
+
+            <FrameLayout
+                android:layout_width="240dp"
+                android:layout_height="400dp"
+                android:layout_gravity="start"
+                android:choiceMode="singleChoice"
+                android:divider="@android:color/transparent"
+                android:dividerHeight="0dp">
+
+                <include layout="@layout/move_table" />
+            </FrameLayout>
+        </android.support.v4.widget.DrawerLayout>
     </android.support.constraint.ConstraintLayout>
 
     <android.support.constraint.ConstraintLayout
@@ -55,7 +191,6 @@
             android:layout_height="200dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -65,7 +200,6 @@
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -100,94 +234,6 @@
                     android:text="vs 온라인" />
             </LinearLayout>
         </android.support.constraint.ConstraintLayout>
-    </android.support.constraint.ConstraintLayout>
-
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/black_player_layout"
-        android:layout_width="120dp"
-        android:layout_height="50dp"
-        android:background="@color/plate"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/black_player_tier_icon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginEnd="2dp"
-                android:layout_marginRight="2dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/black_player_text"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/pawn_default_black" />
-
-            <TextView
-                android:id="@+id/black_player_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Black_Player"
-                android:textColor="@color/darkChocolate"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </android.support.constraint.ConstraintLayout>
-
-    </android.support.constraint.ConstraintLayout>
-
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/white_player_layout"
-        android:layout_width="120dp"
-        android:layout_height="50dp"
-        android:background="@color/plate"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <android.support.constraint.ConstraintLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/white_player_tier_icon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginEnd="2dp"
-                android:layout_marginRight="2dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/white_player_text"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/pawn_default_white" />
-
-            <TextView
-                android:id="@+id/white_player_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="White_Player"
-                android:textColor="@color/whiteChocolate"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </android.support.constraint.ConstraintLayout>
-
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

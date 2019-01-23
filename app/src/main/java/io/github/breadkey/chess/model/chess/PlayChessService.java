@@ -113,6 +113,11 @@ public class PlayChessService {
         List<ChessRuleManager.Rule> rules = ruleManager.findRules(chessBoard, newMove);
         newMove.setRules(rules);
         Division enemyDivision = pieceToMove.division == Division.White? Division.Black : Division.White;
+        moves.add(newMove);
+
+        for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
+            chessPlayObserver.pieceMoved(newMove);
+        }
 
         for (ChessRuleManager.Rule rule : rules) {
             switch (rule) {
@@ -138,12 +143,6 @@ public class PlayChessService {
                     break;
                 }
             }
-        }
-
-        moves.add(newMove);
-
-        for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
-            chessPlayObserver.pieceMoved(newMove);
         }
 
         changeTurn();

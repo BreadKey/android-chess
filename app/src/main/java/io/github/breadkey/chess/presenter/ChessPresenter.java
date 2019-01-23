@@ -132,6 +132,7 @@ public class ChessPresenter extends PlayChessController {
                 }
             }
         }
+        view.addMoveRow(move);
     }
 
     private void movePiece(Coordinate fromCoordinate, Coordinate toCoordinate) {
@@ -188,6 +189,8 @@ public class ChessPresenter extends PlayChessController {
         String titleString = "체크메이트! ";
         String informationString = winnerPlayer.nickName + "의 승리!";
         BakeryInformation.showInformation((ViewGroup) view.findViewById(R.id.main), titleString, informationString,  listener, listener);
+
+        view.clearMoveTable();
     }
 
     @Override
