@@ -42,10 +42,6 @@ public class ChessPresenter extends PlayChessController {
         whitePlayerTimer = view.findViewById(R.id.white_player_timer);
         blackPlayerTimer = view.findViewById(R.id.black_player_timer);
         coordinatesPieceCanMoveCache = new ArrayList<>();
-        initView();
-    }
-
-    private void initView() {
         view.findViewById(R.id.play_in_real_button).setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,6 +71,13 @@ public class ChessPresenter extends PlayChessController {
                 updateChessBoard();
             }
         });
+        initView();
+    }
+
+    private void initView() {
+        whitePlayerTimer.setVisibility(View.INVISIBLE);
+        blackPlayerTimer.setVisibility(View.INVISIBLE);
+        matchPlayerLayout.setVisibility(View.VISIBLE);
     }
 
     private void updateChessBoard() {
@@ -186,7 +189,7 @@ public class ChessPresenter extends PlayChessController {
         InformationActionListener listener = new InformationActionListener() {
             @Override
             public void action() {
-                matchPlayerLayout.setVisibility(View.VISIBLE);
+                initView();
             }
         };
 
