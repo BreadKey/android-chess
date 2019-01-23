@@ -43,42 +43,65 @@
         <android.support.constraint.ConstraintLayout
             android:id="@+id/black_player_layout"
             android:layout_width="120dp"
-            android:layout_height="50dp"
-            android:background="@color/plate"
+            android:layout_height="60dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <android.support.constraint.ConstraintLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <ProgressBar
+                android:id="@+id/black_player_timer"
+                style="@style/PlayerTimerProgressBar"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:max="1"
+                android:progress="1"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent" />
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@color/plate"
+                app:layout_constraintBottom_toTopOf="@+id/black_player_timer"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <ImageView
-                    android:id="@+id/black_player_tier_icon"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginEnd="2dp"
-                    android:layout_marginRight="2dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/black_player_text"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/pawn_default_black" />
-
-                <TextView
-                    android:id="@+id/black_player_text"
+                <android.support.constraint.ConstraintLayout
+                    android:id="@+id/constraintLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Black_Player"
-                    android:textColor="@color/darkChocolate"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/black_player_tier_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="2dp"
+                        android:layout_marginRight="2dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/black_player_text"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/pawn_default_black" />
+
+                    <TextView
+                        android:id="@+id/black_player_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Black_Player"
+                        android:textColor="@color/darkChocolate"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </android.support.constraint.ConstraintLayout>
             </android.support.constraint.ConstraintLayout>
 
         </android.support.constraint.ConstraintLayout>
@@ -86,42 +109,65 @@
         <android.support.constraint.ConstraintLayout
             android:id="@+id/white_player_layout"
             android:layout_width="120dp"
-            android:layout_height="50dp"
+            android:layout_height="60dp"
             android:background="@color/plate"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
+            <ProgressBar
+                android:id="@+id/white_player_timer"
+                style="@style/PlayerTimerProgressBar"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:max="1"
+                android:progress="1"
+                android:visibility="visible"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <android.support.constraint.ConstraintLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@+id/white_player_timer">
 
-                <ImageView
-                    android:id="@+id/white_player_tier_icon"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginEnd="2dp"
-                    android:layout_marginRight="2dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/white_player_text"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/pawn_default_white" />
-
-                <TextView
-                    android:id="@+id/white_player_text"
+                <android.support.constraint.ConstraintLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="White_Player"
-                    android:textColor="@color/whiteChocolate"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/white_player_tier_icon"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="2dp"
+                        android:layout_marginRight="2dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/white_player_text"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/pawn_default_white" />
+
+                    <TextView
+                        android:id="@+id/white_player_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="White_Player"
+                        android:textColor="@color/whiteChocolate"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </android.support.constraint.ConstraintLayout>
             </android.support.constraint.ConstraintLayout>
 
         </android.support.constraint.ConstraintLayout>

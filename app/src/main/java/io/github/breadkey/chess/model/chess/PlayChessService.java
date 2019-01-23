@@ -34,7 +34,7 @@ public class PlayChessService {
     public void startNewGame(Player player1, Player player2) {
         clearChessBoard();
         chessBoard.setChessBoard();
-        currentTurn = Division.White;
+        setCurrentTurn(Division.White);
         decideDivision(player1, player2);
         moves = new ArrayList<>();
         killLogs = new ArrayList<>();
@@ -156,10 +156,10 @@ public class PlayChessService {
 
     private void changeTurn() {
         if (currentTurn == Division.Black) {
-            currentTurn = Division.White;
+            setCurrentTurn(Division.White);
         }
         else {
-            currentTurn = Division.Black;
+            setCurrentTurn(Division.Black);
         }
     }
 
@@ -200,7 +200,6 @@ public class PlayChessService {
         }
         moves.remove(moveHaveToUndo);
         setCurrentTurn(moveHaveToUndo.getDivision());
-
     }
 
     private boolean isKiller(ChessPiece piece, KillLog killLog, Coordinate atCoordinate) {
@@ -214,8 +213,11 @@ public class PlayChessService {
         return currentTurn;
     }
 
-    public void setCurrentTurn(Division division) {
-        currentTurn = division;
+    public void setCurrentTurn(Division turn) {
+        currentTurn = turn;
+        for (ChessPlayObserver observer : chessPlayObservers) {
+            observer.turnChanged(turn);
+        }
     }
 
     public void attachGameObserver(ChessPlayObserver gameObserver) {

@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,10 +33,14 @@ public class ChessPresenter extends PlayChessController {
     ChessActivity view;
     View matchPlayerLayout;
     List<Coordinate> coordinatesPieceCanMoveCache;
+    ProgressBar whitePlayerTimer;
+    ProgressBar blackPlayerTimer;
 
     public ChessPresenter(ChessActivity view) {
         this.view = view;
         matchPlayerLayout = view.findViewById(R.id.match_player_layout);
+        whitePlayerTimer = view.findViewById(R.id.white_player_timer);
+        blackPlayerTimer = view.findViewById(R.id.black_player_timer);
         coordinatesPieceCanMoveCache = new ArrayList<>();
         initView();
     }
@@ -201,6 +206,18 @@ public class ChessPresenter extends PlayChessController {
     private void unShowCanMoveCoordinates() {
         for (Coordinate coordinate : coordinatesPieceCanMoveCache) {
             view.getSquareLayout(coordinate).setBackgroundColor(Color.TRANSPARENT);
+        }
+    }
+
+    @Override
+    public void turnChanged(PlayChessService.Division turn) {
+        if (turn == PlayChessService.Division.White) {
+            whitePlayerTimer.setVisibility(View.VISIBLE);
+            blackPlayerTimer.setVisibility(View.INVISIBLE);
+        }
+        else {
+            blackPlayerTimer.setVisibility(View.VISIBLE);
+            whitePlayerTimer.setVisibility(View.INVISIBLE);
         }
     }
 }
