@@ -288,7 +288,11 @@ public class PlayChessServiceTest {
         playChessService.tryMove('g', 1, 'f', 3);
         playChessService.tryMove('g', 8, 'f', 6);
 
-        System.out.print(playChessService.getChessBoard());
+        playChessService.tryMove('e', 1, 'g', 1);
+
+        assertEquals(ChessPiece.Type.King, playChessService.getPieceAt('g', 1).getType());
+        assertEquals(ChessPiece.Type.Rook, playChessService.getPieceAt('f', 1).getType());
+        assertNull(playChessService.getPieceAt('h', 1));
     }
 
     @Test

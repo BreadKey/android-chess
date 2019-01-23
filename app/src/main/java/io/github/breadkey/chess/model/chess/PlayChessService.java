@@ -134,12 +134,14 @@ public class PlayChessService {
                     char kingSideRookFile = ChessBoard.files.get(ChessBoard.files.size() - 1);
                     ChessPiece kingSideRook = getPieceAt(kingSideRookFile, toRank);
                     chessBoard.placePiece((char) (toFile - 1), toRank, kingSideRook);
+                    chessBoard.placePiece(kingSideRookFile, toRank, null);
                     break;
                 }
                 case QueenSideCastling: {
                     char queenSideRookFile = ChessBoard.files.get(0);
                     ChessPiece queenSideRook = getPieceAt(queenSideRookFile, toRank);
                     chessBoard.placePiece((char) (toFile + 1), toRank, queenSideRook);
+                    chessBoard.placePiece(queenSideRookFile, toRank, null);
                     break;
                 }
             }
