@@ -284,6 +284,19 @@ public class ChessRuleManagerTest {
         assertTrue(coordinates.contains(new Coordinate('c', 1)));
     }
 
+    @Test
+    public void notCastlingWhenKingMoveDiagonal() {
+        chessBoard.placePiece('e', 1, new King(PlayChessService.Division.White));
+        chessBoard.placePiece('h', 1, new Rook(PlayChessService.Division.White));
+        List<ChessRuleManager.Rule> rules = ruleManager.findRules(chessBoard, new Move(
+                PlayChessService.Division.White,
+                ChessPiece.Type.King,
+                new Coordinate('e', 1),
+                new Coordinate('f', 2)));
+
+        assertFalse(rules.contains(ChessRuleManager.Rule.KingSideCastling));
+    }
+
     private void assertCoordinatesContains(char file, int rank, List<Coordinate> coordinates) {
         assertTrue(coordinates.contains(new Coordinate(file, rank)));
     }
