@@ -7,6 +7,7 @@ import java.util.List;
 import io.github.breadkey.chess.model.chess.chessPieces.King;
 
 public class ChessRuleManager {
+    private final static ChessRuleManager outInstance = new ChessRuleManager();
     public enum Rule {
         Check,
         Checkmate,
@@ -16,7 +17,7 @@ public class ChessRuleManager {
     }
 
     public static ChessRuleManager getInstance() {
-        return new ChessRuleManager();
+        return outInstance;
     }
 
     private ChessRuleManager() {
@@ -255,16 +256,14 @@ public class ChessRuleManager {
         List<Rule> rules = new ArrayList<>();
         Coordinate fromCoordinate = newMove.getFromCoordinate();
         Coordinate toCoordinate = newMove.getToCoordinate();
-        int moveDistance = Math.abs(toCoordinate.getFile() - fromCoordinate.getFile()) + Math.abs(toCoordinate.getRank() - fromCoordinate.getRank());
+        int moveFileDistance = toCoordinate.getFile() - fromCoordinate.getFile();
 
         if (newMove.getPieceType() == ChessPiece.Type.King) {
-            if (moveDistance == 2) {
-                if (toCoordinate.getFile() > fromCoordinate.getFile()) {
-                    rules.add(Rule.KingSideCastling);
-                }
-                else {
-                    rules.add(Rule.QueenSideCastling);
-                }
+            if (moveFileDistance == 2) {
+                rules.add(Rule.KingSideCastling);
+            }
+            else if (moveFileDistance == -2) {
+                rules.add(Rule.QueenSideCastling);
             }
         }
 
