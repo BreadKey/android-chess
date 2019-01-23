@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/darkChocolate">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="10dp">
+
+        <TableLayout
+            android:id="@+id/move_table_head"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:stretchColumns="0, 1, 2, 3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TableRow
+                android:background="@color/plate"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
+                <TextView android:text="　" />
+
+                <TextView
+                    android:text="백"
+                    android:textAlignment="center"
+                    android:textColor="@color/whiteChocolate"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:text="흑"
+                    android:textAlignment="center"
+                    android:textColor="@color/darkChocolate"
+                    android:textStyle="bold" />
+
+                <TextView />
+            </TableRow>
+        </TableLayout>
+
+        <ScrollView
+            android:id="@+id/move_scroll_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/dough"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/move_table_head">
+
+            <TableLayout
+                android:id="@+id/move_table_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:stretchColumns="0, 1, 2, 3">
+                <TableRow>
+
+                    <TextView android:layout_height="0dp" />
+
+                    <TextView android:layout_height="0dp" />
+
+                    <TextView android:layout_height="0dp" />
+
+                    <TextView android:layout_height="0dp" />
+                </TableRow>
+            </TableLayout>
+        </ScrollView>
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.constraint.ConstraintLayout>
