@@ -53,7 +53,6 @@ public class SquareLayout extends ConstraintLayout {
                         break;
                     case MotionEvent.ACTION_MOVE:
                         moveCount++;
-                        System.out.println(moveCount);
                         break;
                 }
                 if (moveCount >= sensitivity) {
