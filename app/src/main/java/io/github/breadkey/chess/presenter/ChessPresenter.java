@@ -16,7 +16,9 @@ import io.github.breadkey.chess.ChessPieceImageFactory;
 import io.github.breadkey.chess.R;
 import io.github.breadkey.chess.model.PlayChessController;
 import io.github.breadkey.chess.model.Player;
+import io.github.breadkey.chess.model.chess.ChessBoard;
 import io.github.breadkey.chess.model.chess.ChessPiece;
+import io.github.breadkey.chess.model.chess.ChessRuleManager;
 import io.github.breadkey.chess.model.chess.Coordinate;
 import io.github.breadkey.chess.model.chess.Move;
 import io.github.breadkey.chess.model.chess.PlayChessService;
@@ -110,9 +112,31 @@ public class ChessPresenter extends PlayChessController {
     @Override
     public void pieceMoved(Move move) {
         unShowCanMoveCoordinates();
+        movePiece(move.getFromCoordinate(), move.getToCoordinate());
 
-        SquareLayout fromSquare = view.getSquareLayout(move.getFromCoordinate());
-        SquareLayout toSquare = view.getSquareLayout(move.getToCoordinate());
+        for (ChessRuleManager.Rule rule : move.getRules()) {
+            switch (rule) {
+                case KingSideCastling: {
+                    char rookFromFile = ChessBoard.files.get(ChessBoard.files.size() - 1);
+                    char rookToFile = (char) (move.getToCoordinate().getFile() - 1);
+                    int rookRank = move.getToCoordinate().getRank();
+                    movePiece(new Coordinate(rookFromFile, rookRank), new Coordinate(rookToFile, rookRank));
+                    break;
+                }
+                case QueenSideCastling: {
+                    char rookFromFile = ChessBoard.files.get(0);
+                    char rookToFile = (char) (move.getToCoordinate().getFile() + 1);
+                    int rookRank = move.getToCoordinate().getRank();
+                    movePiece(new Coordinate(rookFromFile, rookRank), new Coordinate(rookToFile, rookRank));
+                    break;
+                }
+            }
+        }
+    }
+
+    private void movePiece(Coordinate fromCoordinate, Coordinate toCoordinate) {
+        SquareLayout fromSquare = view.getSquareLayout(fromCoordinate);
+        SquareLayout toSquare = view.getSquareLayout(toCoordinate);
 
         Drawable pieceBackground = fromSquare.getPieceButton().getBackground();
         fromSquare.getPieceButton().setBackgroundColor(Color.TRANSPARENT);
