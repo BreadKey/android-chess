@@ -279,6 +279,30 @@ public class PlayChessServiceTest {
         assertEquals(ChessPiece.Type.Rook, playChessService.getPieceAt('d', 1).getType());
     }
 
+    @Test
+    public void castlingProcess() {
+        playChessService.tryMove('e', 2, 'e', 4);
+        playChessService.tryMove('e', 7, 'e', 5);
+        playChessService.tryMove('f', 1, 'c', 4);
+        playChessService.tryMove('f', 8, 'c', 5);
+        playChessService.tryMove('g', 1, 'f', 3);
+        playChessService.tryMove('g', 8, 'f', 6);
+
+        System.out.print(playChessService.getChessBoard());
+    }
+
+    @Test
+    public void canNotCastlingBecauseCheck() {
+        playChessService.clearChessBoard();
+        playChessService.placeNewPiece('e', 1, new King(PlayChessService.Division.White));
+        playChessService.placeNewPiece('h', 1, new Rook(PlayChessService.Division.White));
+        playChessService.placeNewPiece('f', 8, new Rook(PlayChessService.Division.Black));
+        playChessService.placeNewPiece('e', 8, new King(PlayChessService.Division.Black));
+        playChessService.tryMove('e', 1, 'g', 1);
+
+        assertNull(playChessService.getPieceAt('g', 1));
+    }
+
     public void kill_b7PawnWith_a2Pawn() {
         playChessService.tryMove('a', 2, 'a', 4);
         playChessService.tryMove('b', 7, 'b', 5);

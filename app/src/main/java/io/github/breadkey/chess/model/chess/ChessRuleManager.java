@@ -7,7 +7,6 @@ import java.util.List;
 import io.github.breadkey.chess.model.chess.chessPieces.King;
 
 public class ChessRuleManager {
-    private static final ChessRuleManager ourInstance = new ChessRuleManager();
     public enum Rule {
         Check,
         Checkmate,
@@ -17,7 +16,7 @@ public class ChessRuleManager {
     }
 
     public static ChessRuleManager getInstance() {
-        return ourInstance;
+        return new ChessRuleManager();
     }
 
     private ChessRuleManager() {
@@ -111,7 +110,6 @@ public class ChessRuleManager {
                 coordinates = filterAllyPiecePlaced(chessBoard, coordinates, division);
 
                 addCastlingCoordinate(chessBoard, piece, file, rank, coordinates);
-
                 break;
             }
         }
@@ -128,16 +126,13 @@ public class ChessRuleManager {
             List<Coordinate> lineCoordinates = new ArrayList<>();
             PlayChessService.Division enemyDivision = king.division == PlayChessService.Division.White ? PlayChessService.Division.Black : PlayChessService.Division.White;
             findRookCoordinatesCanMove(chessBoard, lineCoordinates, file, rank, enemyDivision);
-
             ChessPiece[] rooks = new ChessPiece[]{kingSideRook, queenSideRook};
 
             for (ChessPiece rook : rooks) {
                 if (rook != null && rook.moveCount == 0) {
                     if (lineCoordinates.contains(rook.getCoordinate())) {
                         int side = rook.getFile() > file? 1 : -1;
-                        if (!arePiecesCanMove(chessBoard, enemyDivision, new Coordinate((char) (file + side), rank))) {
-                            destination.add(new Coordinate((char) (file + side * 2), rank));
-                        }
+                        destination.add(new Coordinate((char) (file + side * 2), rank));
                     }
                 }
             }
