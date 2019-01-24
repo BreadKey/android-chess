@@ -66,4 +66,9 @@ public class MockPlayChessController extends PlayChessController {
     public boolean requestPlayerAcceptPlay() {
         return true;
     }
+
+    @Override
+    public void turnChanged(PlayChessService.Division turn) {
+
+    }
 }

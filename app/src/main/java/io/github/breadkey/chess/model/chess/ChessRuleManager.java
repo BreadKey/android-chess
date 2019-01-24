@@ -252,39 +252,43 @@ public class ChessRuleManager {
         }
     }
 
-    public List<Rule> findRules(ChessBoard chessBoard, Move newMove) {
-        List<Rule> rules = new ArrayList<>();
-        Coordinate fromCoordinate = newMove.getFromCoordinate();
-        Coordinate toCoordinate = newMove.getToCoordinate();
+    public Rule findCastling(ChessBoard chessBoard, Move move) {
+        Coordinate fromCoordinate = move.getFromCoordinate();
+        Coordinate toCoordinate = move.getToCoordinate();
         int moveFileDistance = toCoordinate.getFile() - fromCoordinate.getFile();
 
-        if (newMove.getPieceType() == ChessPiece.Type.King) {
+        if (move.getPieceType() == ChessPiece.Type.King) {
             if (moveFileDistance == 2) {
-                rules.add(Rule.KingSideCastling);
+                return Rule.KingSideCastling;
             }
             else if (moveFileDistance == -2) {
-                rules.add(Rule.QueenSideCastling);
+                return Rule.QueenSideCastling;
             }
         }
 
-        PlayChessService.Division enemyDivision = newMove.getDivision() == PlayChessService.Division.White? PlayChessService.Division.Black : PlayChessService.Division.White;
+        return null;
+    }
+
+    public Rule findCheck(ChessBoard chessBoard, Move move) {
+        PlayChessService.Division enemyDivision = move.getDivision() == PlayChessService.Division.White? PlayChessService.Division.Black : PlayChessService.Division.White;
         if (isCheckmate(chessBoard, enemyDivision)) {
-            rules.add(Rule.Checkmate);
+            return Rule.Checkmate;
         }
 
-        else if (isCheck(chessBoard, newMove, enemyDivision)) {
-            rules.add(Rule.Check);
+        else if (isCheck(chessBoard, move, enemyDivision)) {
+            return Rule.Check;
         }
 
-        return rules;
+        return null;
     }
 
     private boolean isCheck(ChessBoard chessBoard, Move newMove, PlayChessService.Division enemyDivision) {
-        Coordinate movedCoordinate = newMove.getToCoordinate();
-        List<Coordinate> coordinatesCanMoveNextTurn = findSquareCoordinateCanMove(chessBoard, movedCoordinate.getFile(), movedCoordinate.getRank());
         King enemyKing = chessBoard.getKing(enemyDivision);
-        if (coordinatesCanMoveNextTurn.contains(enemyKing.getCoordinate())) {
-            return true;
+        for (ChessPiece piece: chessBoard.getPieces(newMove.getDivision())) {
+            List<Coordinate> coordinatesPieceCanMove = findSquareCoordinateCanMove(chessBoard, piece.getFile(), piece.getRank());
+            if (coordinatesPieceCanMove.contains(enemyKing.getCoordinate())) {
+                return true;
+            }
         }
 
         return false;

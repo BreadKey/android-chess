@@ -256,9 +256,9 @@ public class ChessRuleManagerTest {
         chessBoard.placeNewPiece('b', 1, new Rook(PlayChessService.Division.White));
 
         Move move = new Move(PlayChessService.Division.White, ChessPiece.Type.Rook, new Coordinate('a', 1), new Coordinate('b', 1));
-        List<ChessRuleManager.Rule> rules = ruleManager.findRules(chessBoard, move);
+        ChessRuleManager.Rule check = ruleManager.findCheck(chessBoard, move);
 
-        assertTrue(rules.contains(ChessRuleManager.Rule.Check));
+        assertEquals(ChessRuleManager.Rule.Check, check);
     }
 
     @Test
@@ -288,13 +288,13 @@ public class ChessRuleManagerTest {
     public void notCastlingWhenKingMoveDiagonal() {
         chessBoard.placePiece('e', 1, new King(PlayChessService.Division.White));
         chessBoard.placePiece('h', 1, new Rook(PlayChessService.Division.White));
-        List<ChessRuleManager.Rule> rules = ruleManager.findRules(chessBoard, new Move(
+        ChessRuleManager.Rule castling = ruleManager.findCastling(chessBoard, new Move(
                 PlayChessService.Division.White,
                 ChessPiece.Type.King,
                 new Coordinate('e', 1),
                 new Coordinate('f', 2)));
 
-        assertFalse(rules.contains(ChessRuleManager.Rule.KingSideCastling));
+        assertNull(castling);
     }
 
     private void assertCoordinatesContains(char file, int rank, List<Coordinate> coordinates) {

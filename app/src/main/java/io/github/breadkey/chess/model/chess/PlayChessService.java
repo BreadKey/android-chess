@@ -110,26 +110,11 @@ public class PlayChessService {
         pieceToMove.moveCount++;
 
         Move newMove = new Move(pieceToMove.division, pieceToMove.type, new Coordinate(fromFile, fromRank), new Coordinate(toFile, toRank));
-        List<ChessRuleManager.Rule> rules = ruleManager.findRules(chessBoard, newMove);
-        newMove.setRules(rules);
-        Division enemyDivision = pieceToMove.division == Division.White? Division.Black : Division.White;
-        moves.add(newMove);
-
-        for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
-            chessPlayObserver.pieceMoved(newMove);
-        }
-
-        for (ChessRuleManager.Rule rule : rules) {
-            switch (rule) {
-                case Check: {
-                    King enemyKing = chessBoard.getKing(enemyDivision);
-                    enemyKing.setChecked(true);
-                    break;
-                }
-                case Checkmate: {
-                    endGame(pieceToMove.division);
-                    break;
-                }
+        List<ChessRuleManager.Rule> rules = new ArrayList<>();
+        ChessRuleManager.Rule castling = ruleManager.findCastling(chessBoard, newMove);
+        if (castling != null) {
+            rules.add(castling);
+            switch (castling) {
                 case KingSideCastling: {
                     char kingSideRookFile = ChessBoard.files.get(ChessBoard.files.size() - 1);
                     ChessPiece kingSideRook = getPieceAt(kingSideRookFile, toRank);
@@ -145,6 +130,31 @@ public class PlayChessService {
                     break;
                 }
             }
+        }
+
+        ChessRuleManager.Rule check = ruleManager.findCheck(chessBoard, newMove);
+        if (check != null) {
+            rules.add(check);
+            Division enemyDivision = pieceToMove.division == Division.White? Division.Black : Division.White;
+
+            switch (check) {
+                case Check: {
+                    King enemyKing = chessBoard.getKing(enemyDivision);
+                    enemyKing.setChecked(true);
+                    break;
+                }
+                case Checkmate: {
+                    endGame(pieceToMove.division);
+                    break;
+                }
+            }
+        }
+
+        newMove.setRules(rules);
+        moves.add(newMove);
+
+        for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
+            chessPlayObserver.pieceMoved(newMove);
         }
 
         changeTurn();
