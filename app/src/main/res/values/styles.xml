@@ -7,5 +7,8 @@
         <item name="colorPrimaryDark">@color/darkChocolate</item>
         <item name="colorAccent">#ff9191</item>
     </style>
+    <style name="PlayerTimerProgressBar" parent="android:Widget.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@color/strawberry</item>
+    </style>
 
 </resources>

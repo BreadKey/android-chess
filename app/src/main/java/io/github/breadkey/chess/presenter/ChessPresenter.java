@@ -1,11 +1,11 @@
 package io.github.breadkey.chess.presenter;
 
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,15 +32,15 @@ public class ChessPresenter extends PlayChessController {
     ChessActivity view;
     View matchPlayerLayout;
     List<Coordinate> coordinatesPieceCanMoveCache;
+    ProgressBar whitePlayerTimer;
+    ProgressBar blackPlayerTimer;
 
     public ChessPresenter(ChessActivity view) {
         this.view = view;
         matchPlayerLayout = view.findViewById(R.id.match_player_layout);
+        whitePlayerTimer = view.findViewById(R.id.white_player_timer);
+        blackPlayerTimer = view.findViewById(R.id.black_player_timer);
         coordinatesPieceCanMoveCache = new ArrayList<>();
-        initView();
-    }
-
-    private void initView() {
         view.findViewById(R.id.play_in_real_button).setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,6 +70,13 @@ public class ChessPresenter extends PlayChessController {
                 updateChessBoard();
             }
         });
+        initView();
+    }
+
+    private void initView() {
+        whitePlayerTimer.setVisibility(View.INVISIBLE);
+        blackPlayerTimer.setVisibility(View.INVISIBLE);
+        matchPlayerLayout.setVisibility(View.VISIBLE);
     }
 
     private void updateChessBoard() {
@@ -112,7 +119,8 @@ public class ChessPresenter extends PlayChessController {
     @Override
     public void pieceMoved(Move move) {
         unShowCanMoveCoordinates();
-        movePiece(move.getFromCoordinate(), move.getToCoordinate());
+        view.movePiece(move.getFromCoordinate(), move.getToCoordinate());
+        int sound = view.PIECE_SELECT_SOUND;
 
         for (ChessRuleManager.Rule rule : move.getRules()) {
             switch (rule) {
@@ -120,28 +128,25 @@ public class ChessPresenter extends PlayChessController {
                     char rookFromFile = ChessBoard.files.get(ChessBoard.files.size() - 1);
                     char rookToFile = (char) (move.getToCoordinate().getFile() - 1);
                     int rookRank = move.getToCoordinate().getRank();
-                    movePiece(new Coordinate(rookFromFile, rookRank), new Coordinate(rookToFile, rookRank));
+                    view.movePiece(new Coordinate(rookFromFile, rookRank), new Coordinate(rookToFile, rookRank));
                     break;
                 }
                 case QueenSideCastling: {
                     char rookFromFile = ChessBoard.files.get(0);
                     char rookToFile = (char) (move.getToCoordinate().getFile() + 1);
                     int rookRank = move.getToCoordinate().getRank();
-                    movePiece(new Coordinate(rookFromFile, rookRank), new Coordinate(rookToFile, rookRank));
+                    view.movePiece(new Coordinate(rookFromFile, rookRank), new Coordinate(rookToFile, rookRank));
+                    break;
+                }
+                case Check: {
+                    sound = view.PIECE_CHECK_SOUND;
                     break;
                 }
             }
         }
+
+        view.playSound(sound);
         view.addMoveRow(move);
-    }
-
-    private void movePiece(Coordinate fromCoordinate, Coordinate toCoordinate) {
-        SquareLayout fromSquare = view.getSquareLayout(fromCoordinate);
-        SquareLayout toSquare = view.getSquareLayout(toCoordinate);
-
-        Drawable pieceBackground = fromSquare.getPieceButton().getBackground();
-        fromSquare.getPieceButton().setBackgroundColor(Color.TRANSPARENT);
-        toSquare.getPieceButton().setBackgroundDrawable(pieceBackground);
     }
 
     @Override
@@ -181,7 +186,7 @@ public class ChessPresenter extends PlayChessController {
         InformationActionListener listener = new InformationActionListener() {
             @Override
             public void action() {
-                matchPlayerLayout.setVisibility(View.VISIBLE);
+                initView();
             }
         };
 
@@ -201,6 +206,18 @@ public class ChessPresenter extends PlayChessController {
     private void unShowCanMoveCoordinates() {
         for (Coordinate coordinate : coordinatesPieceCanMoveCache) {
             view.getSquareLayout(coordinate).setBackgroundColor(Color.TRANSPARENT);
+        }
+    }
+
+    @Override
+    public void turnChanged(PlayChessService.Division turn) {
+        if (turn == PlayChessService.Division.White) {
+            whitePlayerTimer.setVisibility(View.VISIBLE);
+            blackPlayerTimer.setVisibility(View.INVISIBLE);
+        }
+        else {
+            blackPlayerTimer.setVisibility(View.VISIBLE);
+            whitePlayerTimer.setVisibility(View.INVISIBLE);
         }
     }
 }

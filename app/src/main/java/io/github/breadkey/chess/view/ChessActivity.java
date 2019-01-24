@@ -2,6 +2,9 @@ package io.github.breadkey.chess.view;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +12,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -28,6 +32,12 @@ public class ChessActivity extends AppCompatActivity {
     TableLayout moveTableLayout;
     int moveCount;
     HashMap<Integer, TableRow> moveRowHashMap;
+    SoundPool soundPool;
+    public final int PIECE_SELECT_SOUND = 0;
+    public final int PIECE_CHECK_SOUND = 1;
+    private int pieceSelectSoundId;
+    private int pieceCheckSoundId;
+    private HashMap<Integer, Integer> soundIdHashMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +46,14 @@ public class ChessActivity extends AppCompatActivity {
         moveRowHashMap = new HashMap<>();
         startActivity(new Intent(this, LoadingActivity.class));
         setContentView(R.layout.activity_chess);
+
+        soundIdHashMap = new HashMap<>();
+        soundPool = new SoundPool(2, AudioManager.STREAM_ALARM, 0);
+        pieceSelectSoundId = soundPool.load(this, R.raw.piece_select_sound, 1);
+        pieceCheckSoundId = soundPool.load(this, R.raw.piece_check_sound, 1);
+        soundIdHashMap.put(PIECE_SELECT_SOUND, pieceSelectSoundId);
+        soundIdHashMap.put(PIECE_CHECK_SOUND, pieceCheckSoundId);
+
         chessSquareLayout = findViewById(R.id.chess_square_layout);
         presenter = new ChessPresenter(this);
 
@@ -55,6 +73,48 @@ public class ChessActivity extends AppCompatActivity {
             }
         });
         createSquareButtons();
+        drawRanks();
+        drawFiles();
+    }
+
+    private void drawRanks() {
+        LinearLayout rankLinearLayout = findViewById(R.id.rank_linear_layout);
+        for (int rank : ChessBoard.ranks) {
+            TextView rankTextView = new TextView(this);
+            rankTextView.setGravity(Gravity.TOP);
+            rankTextView.setText(String.valueOf(rank));
+            if (rank % 2 == 0) {
+                rankTextView.setTextColor(getResources().getColor(R.color.bread));
+            }
+            else {
+                rankTextView.setTextColor(getResources().getColor(R.color.dough));
+            }
+            rankLinearLayout.addView(rankTextView);
+            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) rankTextView.getLayoutParams();
+            layoutParams.height = 0;
+            layoutParams.weight = 1;
+            rankTextView.setLayoutParams(layoutParams);
+        }
+    }
+    private void drawFiles() {
+        LinearLayout fileLinearLayout = findViewById(R.id.file_linear_layout);
+        for (int i = 0; i < ChessBoard.files.size(); i++) {
+            char file = ChessBoard.files.get(i);
+            TextView fileTextView = new TextView(this);
+            fileTextView.setGravity(Gravity.RIGHT);
+            fileTextView.setText(String.valueOf(file));
+            if (i % 2 == 0) {
+                fileTextView.setTextColor(getResources().getColor(R.color.dough));
+            }
+            else {
+                fileTextView.setTextColor(getResources().getColor(R.color.bread));
+            }
+            fileLinearLayout.addView(fileTextView);
+            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) fileTextView.getLayoutParams();
+            layoutParams.width = 0;
+            layoutParams.weight = 1;
+            fileTextView.setLayoutParams(layoutParams);
+        }
     }
 
     private void createSquareButtons() {
@@ -131,6 +191,22 @@ public class ChessActivity extends AppCompatActivity {
         TableRow columnSpacer = (TableRow) moveTableLayout.getChildAt(0);
         moveTableLayout.removeAllViews();
         moveTableLayout.addView(columnSpacer);
+    }
+
+    public void movePiece(Coordinate fromCoordinate, Coordinate toCoordinate) {
+        SquareLayout fromSquare = getSquareLayout(fromCoordinate);
+        SquareLayout toSquare = getSquareLayout(toCoordinate);
+
+        Drawable pieceBackground = fromSquare.getPieceButton().getBackground();
+        fromSquare.getPieceButton().setBackgroundColor(Color.TRANSPARENT);
+        toSquare.getPieceButton().setBackgroundDrawable(pieceBackground);
+    }
+
+    public void playSound(int sound) {
+        int soundId = soundIdHashMap.get(sound);
+        float rate = 1f;
+        if (soundId == pieceCheckSoundId) { rate = 2f; }
+        soundPool.play(soundIdHashMap.get(sound), 1f, 1f, 1, 0, rate);
     }
 }
 

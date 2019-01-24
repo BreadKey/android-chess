@@ -111,4 +111,5 @@ public abstract class PlayChessController implements ChessPlayObserver, MatchPla
     }
     public abstract void coordinatesPieceCanMoveFounded(List<Coordinate> coordinates);
     public abstract boolean requestPlayerAcceptPlay();
+    public abstract void turnChanged(PlayChessService.Division turn);
 }
