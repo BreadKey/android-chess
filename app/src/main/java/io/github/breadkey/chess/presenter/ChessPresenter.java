@@ -142,6 +142,10 @@ public class ChessPresenter extends PlayChessController {
                     sound = view.PIECE_CHECK_SOUND;
                     break;
                 }
+                case Checkmate: {
+                    sound = view.PIECE_CHECK_SOUND;
+                    break;
+                }
             }
         }
 
