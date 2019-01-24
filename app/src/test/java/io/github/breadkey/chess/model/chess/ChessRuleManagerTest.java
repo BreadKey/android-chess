@@ -12,7 +12,10 @@ import io.github.breadkey.chess.model.chess.chessPieces.Pawn;
 import io.github.breadkey.chess.model.chess.chessPieces.Queen;
 import io.github.breadkey.chess.model.chess.chessPieces.Rook;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class ChessRuleManagerTest {
     ChessRuleManager ruleManager = ChessRuleManager.getInstance();
@@ -299,5 +302,13 @@ public class ChessRuleManagerTest {
 
     private void assertCoordinatesContains(char file, int rank, List<Coordinate> coordinates) {
         assertTrue(coordinates.contains(new Coordinate(file, rank)));
+    }
+
+    @Test
+    public void addNullRule() {
+        List<ChessRuleManager.Rule> rules = new RuleList();
+        rules.add(null);
+
+        assertEquals(0, rules.size());
     }
 }

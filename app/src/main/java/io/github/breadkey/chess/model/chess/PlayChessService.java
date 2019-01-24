@@ -110,51 +110,41 @@ public class PlayChessService {
         pieceToMove.moveCount++;
 
         Move newMove = new Move(pieceToMove.division, pieceToMove.type, new Coordinate(fromFile, fromRank), new Coordinate(toFile, toRank));
-        List<ChessRuleManager.Rule> rules = new ArrayList<>();
+        List<ChessRuleManager.Rule> rules = new RuleList();
         ChessRuleManager.Rule castling = ruleManager.findCastling(chessBoard, newMove);
-        if (castling != null) {
-            rules.add(castling);
-            switch (castling) {
-                case KingSideCastling: {
-                    char kingSideRookFile = ChessBoard.files.get(ChessBoard.files.size() - 1);
-                    ChessPiece kingSideRook = getPieceAt(kingSideRookFile, toRank);
-                    chessBoard.placePiece((char) (toFile - 1), toRank, kingSideRook);
-                    chessBoard.placePiece(kingSideRookFile, toRank, null);
-                    break;
-                }
-                case QueenSideCastling: {
-                    char queenSideRookFile = ChessBoard.files.get(0);
-                    ChessPiece queenSideRook = getPieceAt(queenSideRookFile, toRank);
-                    chessBoard.placePiece((char) (toFile + 1), toRank, queenSideRook);
-                    chessBoard.placePiece(queenSideRookFile, toRank, null);
-                    break;
-                }
-            }
+        rules.add(castling);
+        if (castling == ChessRuleManager.Rule.KingSideCastling) {
+            char kingSideRookFile = ChessBoard.files.get(ChessBoard.files.size() - 1);
+            ChessPiece kingSideRook = getPieceAt(kingSideRookFile, toRank);
+            chessBoard.placePiece((char) (toFile - 1), toRank, kingSideRook);
+            chessBoard.placePiece(kingSideRookFile, toRank, null);
+
+        }
+        else if (castling == ChessRuleManager.Rule.QueenSideCastling) {
+            char queenSideRookFile = ChessBoard.files.get(0);
+            ChessPiece queenSideRook = getPieceAt(queenSideRookFile, toRank);
+            chessBoard.placePiece((char) (toFile + 1), toRank, queenSideRook);
+            chessBoard.placePiece(queenSideRookFile, toRank, null);
         }
 
         ChessRuleManager.Rule check = ruleManager.findCheck(chessBoard, newMove);
-        if (check != null) {
-            rules.add(check);
-            Division enemyDivision = pieceToMove.division == Division.White? Division.Black : Division.White;
-
-            switch (check) {
-                case Check: {
-                    King enemyKing = chessBoard.getKing(enemyDivision);
-                    enemyKing.setChecked(true);
-                    break;
-                }
-                case Checkmate: {
-                    endGame(pieceToMove.division);
-                    break;
-                }
-            }
-        }
+        rules.add(check);
 
         newMove.setRules(rules);
         moves.add(newMove);
 
         for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
             chessPlayObserver.pieceMoved(newMove);
+        }
+
+        Division enemyDivision = pieceToMove.division == Division.White? Division.Black : Division.White;
+
+        if (check == ChessRuleManager.Rule.Check) {
+            King enemyKing = chessBoard.getKing(enemyDivision);
+            enemyKing.setChecked(true);
+        }
+        else if (check == ChessRuleManager.Rule.Checkmate) {
+            endGame(pieceToMove.division);
         }
 
         changeTurn();
