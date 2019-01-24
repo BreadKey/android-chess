@@ -204,9 +204,9 @@ public class ChessActivity extends AppCompatActivity {
 
     public void playSound(int sound) {
         int soundId = soundIdHashMap.get(sound);
-        float rate = 1f;
-        if (soundId == pieceCheckSoundId) { rate = 2f; }
-        soundPool.play(soundIdHashMap.get(sound), 1f, 1f, 1, 0, rate);
+        float volume = 1f;
+        if (soundId == pieceCheckSoundId) { volume = 2f; }
+        soundPool.play(soundId, volume, volume, 1, 0, 1f);
     }
 }
 

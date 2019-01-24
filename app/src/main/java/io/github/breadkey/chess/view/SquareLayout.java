@@ -61,6 +61,7 @@ public class SquareLayout extends ConstraintLayout {
                 return false;
             }
         });
+        pieceButton.setSoundEffectsEnabled(false);
     }
 
     public AppCompatButton getPieceButton() {
