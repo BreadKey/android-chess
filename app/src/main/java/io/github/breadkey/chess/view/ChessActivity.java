@@ -2,6 +2,9 @@ package io.github.breadkey.chess.view;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +32,12 @@ public class ChessActivity extends AppCompatActivity {
     TableLayout moveTableLayout;
     int moveCount;
     HashMap<Integer, TableRow> moveRowHashMap;
+    SoundPool soundPool;
+    public final int PIECE_SELECT_SOUND = 0;
+    public final int PIECE_CHECK_SOUND = 1;
+    private int pieceSelectSoundId;
+    private int pieceCheckSoundId;
+    private HashMap<Integer, Integer> soundIdHashMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +46,14 @@ public class ChessActivity extends AppCompatActivity {
         moveRowHashMap = new HashMap<>();
         startActivity(new Intent(this, LoadingActivity.class));
         setContentView(R.layout.activity_chess);
+
+        soundIdHashMap = new HashMap<>();
+        soundPool = new SoundPool(2, AudioManager.STREAM_ALARM, 0);
+        pieceSelectSoundId = soundPool.load(this, R.raw.piece_select_sound, 1);
+        pieceCheckSoundId = soundPool.load(this, R.raw.piece_check_sound, 1);
+        soundIdHashMap.put(PIECE_SELECT_SOUND, pieceSelectSoundId);
+        soundIdHashMap.put(PIECE_CHECK_SOUND, pieceCheckSoundId);
+
         chessSquareLayout = findViewById(R.id.chess_square_layout);
         presenter = new ChessPresenter(this);
 
@@ -174,6 +191,22 @@ public class ChessActivity extends AppCompatActivity {
         TableRow columnSpacer = (TableRow) moveTableLayout.getChildAt(0);
         moveTableLayout.removeAllViews();
         moveTableLayout.addView(columnSpacer);
+    }
+
+    public void movePiece(Coordinate fromCoordinate, Coordinate toCoordinate) {
+        SquareLayout fromSquare = getSquareLayout(fromCoordinate);
+        SquareLayout toSquare = getSquareLayout(toCoordinate);
+
+        Drawable pieceBackground = fromSquare.getPieceButton().getBackground();
+        fromSquare.getPieceButton().setBackgroundColor(Color.TRANSPARENT);
+        toSquare.getPieceButton().setBackgroundDrawable(pieceBackground);
+    }
+
+    public void playSound(int sound) {
+        int soundId = soundIdHashMap.get(sound);
+        float rate = 1f;
+        if (soundId == pieceCheckSoundId) { rate = 2f; }
+        soundPool.play(soundIdHashMap.get(sound), 1f, 1f, 1, 0, rate);
     }
 }
 
