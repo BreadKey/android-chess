@@ -14,6 +14,7 @@ import io.github.breadkey.chess.model.chess.chessPieces.Rook;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class PlayChessServiceTest {
     PlayChessService playChessService;
@@ -305,6 +306,21 @@ public class PlayChessServiceTest {
         playChessService.tryMove('e', 1, 'g', 1);
 
         assertNull(playChessService.getPieceAt('g', 1));
+    }
+
+    @Test
+    public void checkByCastling() {
+        playChessService.clearChessBoard();
+        playChessService.placeNewPiece('e', 1, new King(PlayChessService.Division.White));
+        playChessService.placeNewPiece('h', 1, new Rook(PlayChessService.Division.White));
+        playChessService.placeNewPiece('f', 8, new King(PlayChessService.Division.Black));
+        playChessService.tryMove('e', 1, 'g', 1);
+
+        King blackKing = playChessService.getKing(PlayChessService.Division.Black);
+
+        System.out.print(playChessService.getChessBoard());
+
+        assertTrue(blackKing.isChecked());
     }
 
     public void kill_b7PawnWith_a2Pawn() {
