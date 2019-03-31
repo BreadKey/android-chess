@@ -35,8 +35,10 @@ public class ChessActivity extends AppCompatActivity {
     SoundPool soundPool;
     public final int PIECE_SELECT_SOUND = 0;
     public final int PIECE_CHECK_SOUND = 1;
+    public final int PIECE_CHECKMATE_SOUND = 2;
     private int pieceSelectSoundId;
     private int pieceCheckSoundId;
+    private int pieceCheckmateSoundId;
     private HashMap<Integer, Integer> soundIdHashMap;
 
     @Override
@@ -51,8 +53,10 @@ public class ChessActivity extends AppCompatActivity {
         soundPool = new SoundPool(2, AudioManager.STREAM_ALARM, 0);
         pieceSelectSoundId = soundPool.load(this, R.raw.piece_select_sound, 1);
         pieceCheckSoundId = soundPool.load(this, R.raw.piece_check_sound, 1);
+        pieceCheckmateSoundId = soundPool.load(this, R.raw.piece_checkmate_sound, 1);
         soundIdHashMap.put(PIECE_SELECT_SOUND, pieceSelectSoundId);
         soundIdHashMap.put(PIECE_CHECK_SOUND, pieceCheckSoundId);
+        soundIdHashMap.put(PIECE_CHECKMATE_SOUND, pieceCheckmateSoundId);
 
         chessSquareLayout = findViewById(R.id.chess_square_layout);
         presenter = new ChessPresenter(this);
