@@ -44,13 +44,15 @@ public class SignUpPresenter {
     private void setId(String id) { this.id = id; }
     private void setNickname(String nickname) { this.nickname = nickname; }
 
-    public void nicknameEntered(String nickname) {
+    public void nicknameEntered(final String nickname) {
         if (signUpService.isNicknameAlreadyExist(nickname)) {
             view.showNicknameAlreadyExist();
         } else {
             signUpService.sign(id, nickname, new SignCallback() {
                 @Override
                 public void signSuccess() {
+                    setId(id);
+                    setNickname(nickname);
                     startChessActivity();
                 }
 
