@@ -1,5 +1,6 @@
 package io.github.breadkey.chess.view.chess;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
@@ -27,7 +28,10 @@ import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.model.chess.Coordinate;
 import io.github.breadkey.chess.model.chess.Move;
 import io.github.breadkey.chess.model.chess.PlayChessService;
+import io.github.breadkey.chess.model.sign.LogoutCallback;
+import io.github.breadkey.chess.model.sign.LogoutManager;
 import io.github.breadkey.chess.presenter.ChessPresenter;
+import io.github.breadkey.chess.view.sign.LoginActivity;
 
 public class ChessActivity extends AppCompatActivity {
     ChessPresenter presenter;
@@ -92,6 +96,24 @@ public class ChessActivity extends AppCompatActivity {
         createSquareButtons();
         drawRanks();
         drawFiles();
+
+        Button logoutButton = findViewById(R.id.logout_button);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LogoutManager.getInstance().logout(new LogoutCallback() {
+                    @Override
+                    public void onComplete() {
+                        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+                    }
+
+                    @Override
+                    public void onFailure() {
+
+                    }
+                });
+            }
+        });
     }
 
     private void drawRanks() {
