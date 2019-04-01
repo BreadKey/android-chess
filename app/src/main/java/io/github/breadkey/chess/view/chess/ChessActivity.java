@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -18,10 +19,14 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 
+import io.github.breadkey.chess.ChessPieceImageFactory;
 import io.github.breadkey.chess.R;
+import io.github.breadkey.chess.model.Player;
 import io.github.breadkey.chess.model.chess.ChessBoard;
+import io.github.breadkey.chess.model.chess.ChessPiece;
 import io.github.breadkey.chess.model.chess.Coordinate;
 import io.github.breadkey.chess.model.chess.Move;
+import io.github.breadkey.chess.model.chess.PlayChessService;
 import io.github.breadkey.chess.presenter.ChessPresenter;
 
 public class ChessActivity extends AppCompatActivity {
@@ -40,12 +45,22 @@ public class ChessActivity extends AppCompatActivity {
     private int pieceCheckmateSoundId;
     private HashMap<Integer, Integer> soundIdHashMap;
 
+    private TextView whitePlayerNameTextView;
+    private ImageView whitePlayerTierIconImageView;
+    private TextView blackPlayerNameTextView;
+    private ImageView blackPlayerTierIconImageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         moveCount = 0;
         moveRowHashMap = new HashMap<>();
         setContentView(R.layout.activity_chess);
+
+        whitePlayerNameTextView = findViewById(R.id.white_player_text);
+        whitePlayerTierIconImageView = findViewById(R.id.white_player_tier_icon);
+        blackPlayerNameTextView = findViewById(R.id.black_player_text);
+        blackPlayerTierIconImageView = findViewById(R.id.black_player_tier_icon);
 
         soundIdHashMap = new HashMap<>();
         soundPool = new SoundPool(2, AudioManager.STREAM_ALARM, 0);
@@ -209,6 +224,16 @@ public class ChessActivity extends AppCompatActivity {
         float volume = 1f;
         if (soundId == pieceCheckSoundId) { volume = 2f; }
         soundPool.play(soundId, volume, volume, 1, 0, 1f);
+    }
+
+    public void setPlayer(PlayChessService.Division division, Player player) {
+        if (division == PlayChessService.Division.White) {
+            whitePlayerNameTextView.setText(player.nickName);
+            whitePlayerTierIconImageView.setImageResource(ChessPieceImageFactory.createPieceImage(ChessPiece.Type.Pawn, PlayChessService.Division.White));
+        } else {
+            blackPlayerNameTextView.setText(player.nickName);
+            blackPlayerTierIconImageView.setImageResource(ChessPieceImageFactory.createPieceImage(ChessPiece.Type.Pawn, PlayChessService.Division.Black));
+        }
     }
 }
 

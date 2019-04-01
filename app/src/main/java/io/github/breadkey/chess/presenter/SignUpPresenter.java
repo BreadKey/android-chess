@@ -1,21 +1,19 @@
 package io.github.breadkey.chess.presenter;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 
-import com.kakao.usermgmt.UserManagement;
-import com.kakao.usermgmt.callback.LogoutResponseCallback;
-
-import io.github.breadkey.chess.view.LoadingActivity;
+import io.github.breadkey.chess.model.sign.SignCallback;
+import io.github.breadkey.chess.model.sign.AuthenticationCallback;
+import io.github.breadkey.chess.model.sign.User;
 import io.github.breadkey.chess.view.sign.LoginWith;
-import io.github.breadkey.chess.R;
 import io.github.breadkey.chess.model.sign.SignUpService;
 import io.github.breadkey.chess.model.sign.SignUpServiceFactory;
 import io.github.breadkey.chess.view.sign.SignUpActivity;
 import io.github.breadkey.chess.view.chess.ChessActivity;
 
 public class SignUpPresenter {
+    private String id;
+    private String nickname;
     private SignUpActivity view;
     private SignUpService signUpService;
 
@@ -23,24 +21,50 @@ public class SignUpPresenter {
         this.view = view;
 
         signUpService = SignUpServiceFactory.createSignUpService(LoginWith.getCurrentLoginWith());
-        if (signUpService.isUserAlreadySignedUp()) {
-            UserManagement.getInstance().requestLogout(new LogoutResponseCallback() {
-                @Override
-                public void onCompleteLogout() {
-                    view.startActivity(new Intent(view, LoadingActivity.class));
+        signUpService.requestAuth(new AuthenticationCallback() {
+            @Override
+            public void onSuccess(String id, String nickname) {
+                setId(id);
+                setNickname(nickname);
+
+                if (signUpService.isUserAlreadySignedUp(id)) {
+                    startChessActivity();
+                } else {
+                    view.showEnterNickname(nickname);
                 }
-            });
-            //view.startActivity(new Intent(view, ChessActivity.class));
-        } else {
-            view.showEnterNickname();
-        }
+            }
+
+            @Override
+            public void onFailure() {
+
+            }
+        });
     }
+
+    private void setId(String id) { this.id = id; }
+    private void setNickname(String nickname) { this.nickname = nickname; }
 
     public void nicknameEntered(String nickname) {
         if (signUpService.isNicknameAlreadyExist(nickname)) {
             view.showNicknameAlreadyExist();
         } else {
-            view.startActivity(new Intent(view, ChessActivity.class));
+            signUpService.sign(id, nickname, new SignCallback() {
+                @Override
+                public void signSuccess() {
+                    startChessActivity();
+                }
+
+                @Override
+                public void signFailure() {
+
+                }
+            });
         }
+    }
+
+    private void startChessActivity() {
+        User.getInstance().setNickname(nickname);
+        view.startActivity(new Intent(view, ChessActivity.class));
+        view.finish();
     }
 }

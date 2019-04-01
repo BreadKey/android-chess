@@ -39,15 +39,19 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    public void showEnterNickname() {
+    public void showEnterNickname(String defaultNickname) {
+        if (defaultNickname != null) {
+            nicknameInput.setText(defaultNickname);
+        }
         inputContainer.setVisibility(View.VISIBLE);
     }
 
     public void showNicknameAlreadyExist() {
+        inputContainer.setVisibility(View.GONE);
         InformationActionListener listener = new InformationActionListener() {
             @Override
             public void action() {
-
+                inputContainer.setVisibility(View.VISIBLE);
             }
         };
         BakeryInformation.showInformation((ViewGroup) findViewById(R.id.sign_up_main),
