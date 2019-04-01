@@ -46,7 +46,6 @@ public class ChessActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         moveCount = 0;
         moveRowHashMap = new HashMap<>();
-        startActivity(new Intent(this, LoadingActivity.class));
         setContentView(R.layout.activity_chess);
 
         soundIdHashMap = new HashMap<>();
