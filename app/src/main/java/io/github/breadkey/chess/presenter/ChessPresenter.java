@@ -24,9 +24,9 @@ import io.github.breadkey.chess.model.chess.Move;
 import io.github.breadkey.chess.model.chess.PlayChessService;
 import io.github.breadkey.chess.model.match.PlayerMatcherFactory;
 import io.github.breadkey.chess.view.BakeryInformation;
-import io.github.breadkey.chess.view.ChessActivity;
+import io.github.breadkey.chess.view.chess.ChessActivity;
 import io.github.breadkey.chess.view.InformationActionListener;
-import io.github.breadkey.chess.view.SquareLayout;
+import io.github.breadkey.chess.view.chess.SquareLayout;
 
 public class ChessPresenter extends PlayChessController {
     ChessActivity view;

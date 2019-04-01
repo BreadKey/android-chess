@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.ChessActivity">
+    tools:context=".view.chess.ChessActivity">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/head"
@@ -274,7 +274,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <io.github.breadkey.chess.view.PlayChessButton
+                <io.github.breadkey.chess.view.chess.PlayChessButton
                     android:id="@+id/play_in_real_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -284,7 +284,7 @@
                     android:layout_marginBottom="2dp"
                     android:text="vs 옆사람" />
 
-                <io.github.breadkey.chess.view.PlayChessButton
+                <io.github.breadkey.chess.view.chess.PlayChessButton
                     android:id="@+id/play_with_cpu_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -294,7 +294,7 @@
                     android:layout_marginBottom="2dp"
                     android:text="vs cpu" />
 
-                <io.github.breadkey.chess.view.PlayChessButton
+                <io.github.breadkey.chess.view.chess.PlayChessButton
                     android:id="@+id/play_on_line_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
