@@ -20,7 +20,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        startActivity(new Intent(this, LoadingActivity.class));
         sharedPreferences = getSharedPreferences(getString(R.string.shared_preference), MODE_PRIVATE);
         int loginWithValue = sharedPreferences.getInt("login_with", -1);
         if (loginWithValue != -1) {
