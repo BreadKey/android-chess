@@ -2,12 +2,13 @@ package io.github.breadkey.chess.presenter;
 
 import android.content.Intent;
 
-import io.github.breadkey.chess.model.sign.SignCallback;
+import io.github.breadkey.chess.model.sign.Authenticator;
+import io.github.breadkey.chess.model.sign.SignUpCallback;
 import io.github.breadkey.chess.model.sign.AuthenticationCallback;
 import io.github.breadkey.chess.model.sign.User;
 import io.github.breadkey.chess.view.sign.LoginWith;
 import io.github.breadkey.chess.model.sign.SignUpService;
-import io.github.breadkey.chess.model.sign.SignUpServiceFactory;
+import io.github.breadkey.chess.model.sign.AuthenticatorFactory;
 import io.github.breadkey.chess.view.sign.SignUpActivity;
 import io.github.breadkey.chess.view.chess.ChessActivity;
 
@@ -20,8 +21,9 @@ public class SignUpPresenter {
     public SignUpPresenter(final SignUpActivity view) {
         this.view = view;
 
-        signUpService = SignUpServiceFactory.createSignUpService(LoginWith.getCurrentLoginWith());
-        signUpService.requestAuth(new AuthenticationCallback() {
+        signUpService = new SignUpService();
+        Authenticator authenticator = AuthenticatorFactory.createSignUpService(LoginWith.getCurrentLoginWith());
+        authenticator.requestAuthentication(new AuthenticationCallback() {
             @Override
             public void onSuccess(String id, String nickname) {
                 setId(id);
@@ -45,12 +47,12 @@ public class SignUpPresenter {
     private void setNickname(String nickname) { this.nickname = nickname; }
 
     public void nicknameEntered(final String nickname) {
-        if (signUpService.isNicknameAlreadyExist(nickname)) {
+        if (signUpService.isNicknameDuplicated(nickname)) {
             view.showNicknameAlreadyExist();
         } else {
-            signUpService.sign(id, nickname, new SignCallback() {
+            signUpService.signUp(id, nickname, new SignUpCallback() {
                 @Override
-                public void signSuccess() {
+                public void signUpSuccess() {
                     setId(id);
                     setNickname(nickname);
                     startChessActivity();

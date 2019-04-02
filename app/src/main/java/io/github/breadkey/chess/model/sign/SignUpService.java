@@ -1,17 +1,15 @@
 package io.github.breadkey.chess.model.sign;
 
-public abstract class SignUpService {
-    public abstract void requestAuth(AuthenticationCallback callback);
-
+public class SignUpService {
     public boolean isUserAlreadySignedUp(String id) {
          return false;
     }
 
-    public boolean isNicknameAlreadyExist(String nickName) {
+    public boolean isNicknameDuplicated(String nickName) {
         return false;
     }
 
-    public void sign(String id, String nickname, SignCallback signCallback) {
-        signCallback.signSuccess();
+    public void signUp(String id, String nickname, SignUpCallback signUpCallback) {
+        signUpCallback.signUpSuccess();
     }
 }

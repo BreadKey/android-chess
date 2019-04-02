@@ -4,12 +4,11 @@ import com.kakao.network.ErrorResult;
 import com.kakao.usermgmt.UserManagement;
 import com.kakao.usermgmt.callback.MeV2ResponseCallback;
 import com.kakao.usermgmt.response.MeV2Response;
-
 import java.util.ArrayList;
 
-public class KakaoSignUpService extends SignUpService {
+public class KakaoAuthenticator implements Authenticator {
     @Override
-    public void requestAuth(final AuthenticationCallback callback) {
+    public void requestAuthentication(final AuthenticationCallback callback) {
         ArrayList<String> keys = new ArrayList<>();
         keys.add("properties.nickname");
 
