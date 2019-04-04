@@ -147,6 +147,12 @@ public class PlayChessService {
             endGame(pieceToMove.division);
         }
 
+        ChessRuleManager.Rule pawnRule = ruleManager.findPawnRule(chessBoard, newMove);
+
+        if (pawnRule == ChessRuleManager.Rule.Promotion) {
+            rules.add(pawnRule);
+        }
+
         changeTurn();
     }
 
