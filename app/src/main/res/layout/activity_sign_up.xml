@@ -45,6 +45,8 @@
             android:background="@color/whiteChocolate"
             android:textColor="@color/darkChocolate"
             android:textSize="18sp"
+            android:imeOptions="actionSend"
+            android:inputType="text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/enter_nickname_button"
             app:layout_constraintHorizontal_bias="0.5"

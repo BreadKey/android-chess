@@ -3,11 +3,14 @@ package io.github.breadkey.chess.view.sign;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import io.github.breadkey.chess.R;
 import io.github.breadkey.chess.presenter.SignUpPresenter;
@@ -25,6 +28,20 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
         inputContainer = findViewById(R.id.input_container);
         nicknameInput = findViewById(R.id.nickname_input);
+        nicknameInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                switch (actionId) {
+                    case EditorInfo.IME_ACTION_SEND:
+                        presenter.nicknameEntered(v.getText().toString());
+                        break;
+                    default:
+                        return true;
+                }
+
+                return false;
+            }
+        });
         inputContainer.setVisibility(View.GONE);
 
         presenter = new SignUpPresenter(this);
