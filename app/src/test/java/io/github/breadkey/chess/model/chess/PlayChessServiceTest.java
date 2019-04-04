@@ -13,6 +13,7 @@ import io.github.breadkey.chess.model.chess.chessPieces.Rook;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -201,9 +202,12 @@ public class PlayChessServiceTest {
         playChessService.tryMove('b', 7, 'b', 5);
 
         playChessService.undoMove(playChessService.getMoves().get(playChessService.getMoves().size() - 1));
+        ChessPiece piece = playChessService.getPieceAt('b', 7);
+
         assertEquals(1, playChessService.getMoves().size());
         assertNull(playChessService.getPieceAt('b', 5));
-        assertEquals(ChessPiece.Type.Pawn, playChessService.getPieceAt('b', 7).type);
+        assertEquals(ChessPiece.Type.Pawn, piece.type);
+        assertEquals(0, piece.moveCount);
     }
 
     @Test
@@ -321,6 +325,47 @@ public class PlayChessServiceTest {
         System.out.print(playChessService.getChessBoard());
 
         assertTrue(blackKing.isChecked());
+    }
+
+
+    @Test
+    public void promotion() {
+        promotePawns();
+
+        ChessPiece promotedWhitePiece = playChessService.getPieceAt('a', 8);
+        assertEquals(ChessPiece.Type.Queen, promotedWhitePiece.getType());
+        assertEquals(2, promotedWhitePiece.killScore);
+        assertEquals(5, promotedWhitePiece.moveCount);
+
+        ChessPiece promotedBlackPiece = playChessService.getPieceAt('h', 1);
+        assertEquals(ChessPiece.Type.Queen, promotedBlackPiece.getType());
+        assertEquals(2, promotedBlackPiece.killScore);
+        assertEquals(5, promotedBlackPiece.moveCount);
+    }
+
+    @Test
+    public void undoPromotion() {
+        promotePawns();
+
+        playChessService.undoMoves(PlayChessService.Division.White);
+
+        assertNotNull(playChessService.getPieceAt('a', 8));
+        assertEquals(ChessPiece.Type.Pawn, playChessService.getPieceAt('b', 7).type);
+        assertNotNull(playChessService.getPieceAt('h', 1));
+        assertEquals(ChessPiece.Type.Pawn, playChessService.getPieceAt('g', 2).type);
+    }
+
+    private void promotePawns() {
+        playChessService.tryMove('a', 2, 'a', 4);
+        playChessService.tryMove('h', 7, 'h', 5);
+        playChessService.tryMove('a', 4, 'a', 5);
+        playChessService.tryMove('h', 5, 'h', 4);
+        playChessService.tryMove('a', 5, 'a', 6);
+        playChessService.tryMove('h', 4, 'h', 3);
+        playChessService.tryMove('a', 6, 'b', 7);
+        playChessService.tryMove('h', 3, 'g', 2);
+        playChessService.tryMove('b', 7, 'a', 8);
+        playChessService.tryMove('g', 2, 'h', 1);
     }
 
     public void kill_b7PawnWith_a2Pawn() {
