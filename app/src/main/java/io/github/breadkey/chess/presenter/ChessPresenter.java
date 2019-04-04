@@ -222,6 +222,11 @@ public class ChessPresenter extends PlayChessController {
     }
 
     @Override
+    public ChessPiece.Type selectTypeToPromotion() {
+        return ChessPiece.Type.Queen;
+    }
+
+    @Override
     public void startNewGame() {
         super.startNewGame();
         view.clearMoveTable();

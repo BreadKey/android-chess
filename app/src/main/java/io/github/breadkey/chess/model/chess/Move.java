@@ -9,6 +9,7 @@ public class Move {
     private Coordinate fromCoordinate;
     private Coordinate toCoordinate;
     private List<ChessRuleManager.Rule> rules;
+    private ChessPiece.Type promotedType;
 
     public Move(PlayChessService.Division division, ChessPiece.Type pieceType, Coordinate fromCoordinate, Coordinate toCoordinate) {
         this.division = division;
@@ -45,14 +46,7 @@ public class Move {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        if (pieceType != ChessPiece.Type.Pawn) {
-            if (pieceType == ChessPiece.Type.Knight) {
-                stringBuilder.append('N');
-            }
-            else {
-                stringBuilder.append(pieceType.toString().charAt(0));
-            }
-        }
+        stringBuilder.append(makePieceInitial(pieceType));
         stringBuilder.append(toCoordinate.getFile());
         stringBuilder.append(toCoordinate.getRank());
         for (ChessRuleManager.Rule rule : rules) {
@@ -71,9 +65,28 @@ public class Move {
                 case Checkmate:
                     stringBuilder.append('#');
                     break;
+                case Promotion:
+                    stringBuilder.append("=" + makePieceInitial(promotedType));
             }
         }
 
         return stringBuilder.toString();
+    }
+
+    private String makePieceInitial(ChessPiece.Type pieceType) {
+        if (pieceType != ChessPiece.Type.Pawn) {
+            if (pieceType == ChessPiece.Type.Knight) {
+                return "N";
+            }
+            else {
+                return String.valueOf(pieceType.toString().charAt(0));
+            }
+        }
+
+        return "";
+    }
+
+    public void setPromotedType(ChessPiece.Type promotedType) {
+        this.promotedType = promotedType;
     }
 }

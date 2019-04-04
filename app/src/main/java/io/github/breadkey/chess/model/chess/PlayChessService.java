@@ -9,6 +9,7 @@ import java.util.Random;
 import io.github.breadkey.chess.model.ChessPlayObserver;
 import io.github.breadkey.chess.model.Player;
 import io.github.breadkey.chess.model.chess.chessPieces.King;
+import io.github.breadkey.chess.model.chess.chessPieces.Pawn;
 
 public class PlayChessService {
     public enum Division {
@@ -91,11 +92,13 @@ public class PlayChessService {
         King king = chessBoard.getKing(pieceToMove.division);
         king.setChecked(false);
 
+        KillLog killLog = null;
         ChessPiece pieceWillDead = getPieceAt(toFile, toRank);
         if (pieceWillDead != null) {
             pieceToMove.killScore++;
             chessBoard.getPieces(pieceWillDead.division).remove(pieceWillDead);
-            killLogs.add(new KillLog(pieceToMove, pieceWillDead, toFile, toRank));
+            killLog = new KillLog(pieceToMove, pieceWillDead,toFile, toRank);
+            killLogs.add(killLog);
 
             for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
                 chessPlayObserver.killHappened(pieceToMove, pieceWillDead, toFile, toRank);
@@ -125,6 +128,22 @@ public class PlayChessService {
             ChessPiece queenSideRook = getPieceAt(queenSideRookFile, toRank);
             chessBoard.placePiece((char) (toFile + 1), toRank, queenSideRook);
             chessBoard.placePiece(queenSideRookFile, toRank, null);
+        }
+
+        ChessRuleManager.Rule pawnRule = ruleManager.findPawnRule(chessBoard, newMove);
+
+        if (pawnRule == ChessRuleManager.Rule.Promotion) {
+            rules.add(pawnRule);
+            ChessPiece.Type promoteTo = ChessPiece.Type.Queen;
+            for (ChessPlayObserver observer : chessPlayObservers) {
+                promoteTo = observer.selectTypeToPromotion();
+            }
+            newMove.setPromotedType(promoteTo);
+            chessBoard.promote((Pawn) pieceToMove, promoteTo);
+
+            if (killLog != null) {
+                killLog.killer = chessBoard.getPieceAt(toFile, toRank);
+            }
         }
 
         ChessRuleManager.Rule check = ruleManager.findCheck(chessBoard, newMove);
@@ -188,6 +207,8 @@ public class PlayChessService {
         getChessBoard().placePiece(previousCoordinate.getFile(), previousCoordinate.getRank(), piece);
         getChessBoard().placePiece(currentCoordinate.getFile(), currentCoordinate.getRank(), null);
 
+        piece.moveCount--;
+
         List<KillLog> reversedKillLogs = new ArrayList<>(killLogs);
         Collections.reverse(reversedKillLogs);
         for (KillLog killLog : reversedKillLogs) {
@@ -198,6 +219,13 @@ public class PlayChessService {
                 break;
             }
         }
+
+        for (ChessRuleManager.Rule rule : moveHaveToUndo.getRules()) {
+            if (rule == ChessRuleManager.Rule.Promotion) {
+                chessBoard.demote(piece);
+            }
+        }
+
         moves.remove(moveHaveToUndo);
         setCurrentTurn(moveHaveToUndo.getDivision());
     }

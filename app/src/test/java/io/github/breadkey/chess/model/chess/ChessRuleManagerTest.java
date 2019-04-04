@@ -311,4 +311,24 @@ public class ChessRuleManagerTest {
 
         assertEquals(0, rules.size());
     }
+
+    @Test
+    public void whitePawnPromotionRule() {
+        Move pawnMove = new Move(PlayChessService.Division.White, ChessPiece.Type.Pawn,
+                new Coordinate('a', 7), new Coordinate('a', 8));
+
+        ChessRuleManager.Rule pawnRule = ruleManager.findPawnRule(chessBoard, pawnMove);
+
+        assertEquals(ChessRuleManager.Rule.Promotion, pawnRule);
+    }
+
+    @Test
+    public void blackPawnPromotionRule() {
+        Move pawnMove = new Move(PlayChessService.Division.Black, ChessPiece.Type.Pawn,
+                new Coordinate('a', 2), new Coordinate('a', 1));
+
+        ChessRuleManager.Rule pawnRule = ruleManager.findPawnRule(chessBoard, pawnMove);
+
+        assertEquals(ChessRuleManager.Rule.Promotion, pawnRule);
+    }
 }

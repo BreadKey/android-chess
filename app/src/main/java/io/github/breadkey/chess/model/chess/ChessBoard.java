@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import io.github.breadkey.chess.model.chess.chessPieces.Bishop;
+import io.github.breadkey.chess.model.chess.chessPieces.ChessPieceFactory;
 import io.github.breadkey.chess.model.chess.chessPieces.King;
 import io.github.breadkey.chess.model.chess.chessPieces.Knight;
 import io.github.breadkey.chess.model.chess.chessPieces.Pawn;
@@ -164,6 +165,18 @@ public  class ChessBoard {
 
     public King getKing(PlayChessService.Division enemyDivision) {
         return kingHashMap.get(enemyDivision);
+    }
+
+    public void promote(Pawn pawn, ChessPiece.Type promoteTo) {
+        piecesHashMap.get(pawn.division).remove(pawn);
+        ChessPiece promotedPiece = ChessPieceFactory.promotion(pawn , promoteTo);
+        placeNewPiece(pawn.getFile(), pawn.getRank(), promotedPiece);
+    }
+
+    public void demote(ChessPiece piece) {
+        piecesHashMap.get(piece.division).remove(piece);
+        Pawn pawn = ChessPieceFactory.demote(piece);
+        placeNewPiece(pawn.getFile(), pawn.getRank(), pawn);
     }
 }
 

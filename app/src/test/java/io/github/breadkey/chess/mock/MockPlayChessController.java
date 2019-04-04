@@ -49,7 +49,7 @@ public class MockPlayChessController extends PlayChessController {
         for (int moveIndex = 1; moveIndex < playChessService.getMoves().size(); moveIndex += 2) {
             Move whiteMove = playChessService.getMoves().get(moveIndex - 1);
             Move blackMove = playChessService.getMoves().get(moveIndex);
-            System.out.println(String.valueOf(moveIndex % 2) + ". " + whiteMove + "\t" + blackMove);
+            System.out.println(String.valueOf(moveIndex / 2 + 1) + ". " + whiteMove + "\t" + blackMove);
         }
     }
 
@@ -70,5 +70,10 @@ public class MockPlayChessController extends PlayChessController {
     @Override
     public void turnChanged(PlayChessService.Division turn) {
 
+    }
+
+    @Override
+    public ChessPiece.Type selectTypeToPromotion() {
+        return ChessPiece.Type.Queen;
     }
 }
