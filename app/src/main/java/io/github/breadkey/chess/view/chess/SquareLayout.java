@@ -1,4 +1,4 @@
-package io.github.breadkey.chess.view;
+package io.github.breadkey.chess.view.chess;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -61,6 +61,7 @@ public class SquareLayout extends ConstraintLayout {
                 return false;
             }
         });
+        pieceButton.setSoundEffectsEnabled(false);
     }
 
     public AppCompatButton getPieceButton() {
