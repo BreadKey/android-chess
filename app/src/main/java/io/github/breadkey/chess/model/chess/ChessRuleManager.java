@@ -8,12 +8,14 @@ import io.github.breadkey.chess.model.chess.chessPieces.King;
 
 public class ChessRuleManager {
     private final static ChessRuleManager outInstance = new ChessRuleManager();
+
     public enum Rule {
         Check,
         Checkmate,
         KingSideCastling,
         QueenSideCastling,
-        EnPassant
+        EnPassant,
+        Promotion
     }
 
     public static ChessRuleManager getInstance() {
@@ -309,6 +311,23 @@ public class ChessRuleManager {
 
         return coordinatesEnemyCanMove.size() == 0;
     }
+
+    public Rule findPawnRule(ChessBoard chessBoard, Move newMove) {
+        if (newMove.getPieceType() == ChessPiece.Type.Pawn) {
+            if (newMove.getDivision() == PlayChessService.Division.White) {
+                if (newMove.getToCoordinate().getRank() == 8) {
+                    return Rule.Promotion;
+                }
+            } else {
+                if (newMove.getToCoordinate().getRank() == 1) {
+                    return Rule.Promotion;
+                }
+            }
+        }
+
+        return null;
+    }
+
 
     public List filterKingCanDead(ChessBoard chessBoard, List<Coordinate> coordinatesCanMove, ChessPiece pieceWillMove) {
         List<Coordinate> filteredCoordinates = new ArrayList<>(coordinatesCanMove);

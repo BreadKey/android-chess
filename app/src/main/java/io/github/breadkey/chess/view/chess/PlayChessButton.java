@@ -1,4 +1,4 @@
-package io.github.breadkey.chess.view;
+package io.github.breadkey.chess.view.chess;
 
 import android.content.Context;
 import android.support.v7.widget.AppCompatButton;

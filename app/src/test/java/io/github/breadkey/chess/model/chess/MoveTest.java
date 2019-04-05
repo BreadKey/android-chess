@@ -30,4 +30,13 @@ public class MoveTest {
 
         assertEquals("Nd6+", move.toString());
     }
+
+    @Test
+    public void toStringPromotion() {
+        Move move = new Move(PlayChessService.Division.White, ChessPiece.Type.Pawn, new Coordinate('a', 7), new Coordinate('a', 8));
+        move.setRules(Arrays.asList(ChessRuleManager.Rule.Promotion));
+        move.setPromotedType(ChessPiece.Type.Queen);
+
+        assertEquals("a8=Q", move.toString());
+    }
 }

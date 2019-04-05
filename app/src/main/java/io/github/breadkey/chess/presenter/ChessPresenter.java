@@ -23,10 +23,11 @@ import io.github.breadkey.chess.model.chess.Coordinate;
 import io.github.breadkey.chess.model.chess.Move;
 import io.github.breadkey.chess.model.chess.PlayChessService;
 import io.github.breadkey.chess.model.match.PlayerMatcherFactory;
+import io.github.breadkey.chess.model.sign.User;
 import io.github.breadkey.chess.view.BakeryInformation;
-import io.github.breadkey.chess.view.ChessActivity;
+import io.github.breadkey.chess.view.chess.ChessActivity;
 import io.github.breadkey.chess.view.InformationActionListener;
-import io.github.breadkey.chess.view.SquareLayout;
+import io.github.breadkey.chess.view.chess.SquareLayout;
 
 public class ChessPresenter extends PlayChessController {
     ChessActivity view;
@@ -37,6 +38,9 @@ public class ChessPresenter extends PlayChessController {
 
     public ChessPresenter(ChessActivity view) {
         this.view = view;
+        setPlayer(User.getInstance());
+        view.setPlayer(PlayChessService.Division.White, getPlayer());
+
         matchPlayerLayout = view.findViewById(R.id.match_player_layout);
         whitePlayerTimer = view.findViewById(R.id.white_player_timer);
         blackPlayerTimer = view.findViewById(R.id.black_player_timer);
@@ -105,15 +109,8 @@ public class ChessPresenter extends PlayChessController {
 
     @Override
     public void divisionDecided(Player whitePlayer, Player blackPlayer) {
-        TextView whitePlayerNameTextView = view.findViewById(R.id.white_player_text);
-        ImageView whitePlayerTierIconImageView = view.findViewById(R.id.white_player_tier_icon);
-        whitePlayerNameTextView.setText(whitePlayer.nickName);
-        whitePlayerTierIconImageView.setImageResource(ChessPieceImageFactory.createPieceImage(ChessPiece.Type.Pawn, PlayChessService.Division.White));
-
-        TextView blackPlayerNameTextView = view.findViewById(R.id.black_player_text);
-        ImageView blackPlayerTierIconImageView = view.findViewById(R.id.black_player_tier_icon);
-        blackPlayerNameTextView.setText(blackPlayer.nickName);
-        blackPlayerTierIconImageView.setImageResource(ChessPieceImageFactory.createPieceImage(ChessPiece.Type.Pawn, PlayChessService.Division.Black));
+        view.setPlayer(PlayChessService.Division.White, whitePlayer);
+        view.setPlayer(PlayChessService.Division.Black, blackPlayer);
     }
 
     @Override
@@ -137,6 +134,10 @@ public class ChessPresenter extends PlayChessController {
                     int rookRank = move.getToCoordinate().getRank();
                     view.movePiece(new Coordinate(rookFromFile, rookRank), new Coordinate(rookToFile, rookRank));
                     break;
+                }
+                case Promotion: {
+                    ChessPiece promotedPiece = getPlayChessService().getPieceAt(move.getToCoordinate().getFile(), move.getToCoordinate().getRank());
+                    view.showPromotion(promotedPiece);
                 }
                 case Check: {
                     sound = view.PIECE_CHECK_SOUND;
@@ -199,7 +200,6 @@ public class ChessPresenter extends PlayChessController {
         String informationString = winnerPlayer.nickName + "의 승리!";
         BakeryInformation.showInformation((ViewGroup) view.findViewById(R.id.main), titleString, informationString,  listener, listener);
 
-        view.clearMoveTable();
     }
 
     @Override
@@ -223,5 +223,16 @@ public class ChessPresenter extends PlayChessController {
             blackPlayerTimer.setVisibility(View.VISIBLE);
             whitePlayerTimer.setVisibility(View.INVISIBLE);
         }
+    }
+
+    @Override
+    public void selectTypeToPromotion() {
+
+    }
+
+    @Override
+    public void startNewGame() {
+        super.startNewGame();
+        view.clearMoveTable();
     }
 }
