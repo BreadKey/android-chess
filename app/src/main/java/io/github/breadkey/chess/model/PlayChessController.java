@@ -53,6 +53,10 @@ public abstract class PlayChessController implements ChessPlayObserver, MatchPla
         }
     }
 
+    public void promote(ChessPiece.Type promoteTo) {
+        playChessService.promote(promoteTo);
+    }
+
     private boolean isSelectFromCoordinate() {
         return currentSelectedCoordinate == null;
     }

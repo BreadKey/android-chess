@@ -227,7 +227,7 @@ public class ChessPresenter extends PlayChessController {
 
     @Override
     public void selectTypeToPromotion() {
-
+        view.showSelectPromotionType();
     }
 
     @Override
