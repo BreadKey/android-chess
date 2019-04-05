@@ -257,5 +257,10 @@ public class ChessActivity extends AppCompatActivity {
             blackPlayerTierIconImageView.setImageResource(ChessPieceImageFactory.createPieceImage(ChessPiece.Type.Pawn, PlayChessService.Division.Black));
         }
     }
+
+    public void showPromotion(ChessPiece promotedPiece) {
+        SquareLayout square = getSquareLayout(promotedPiece.getCoordinate());
+        square.getPieceButton().setBackgroundResource(ChessPieceImageFactory.createPieceImage(promotedPiece.type, promotedPiece.division));
+    }
 }
 

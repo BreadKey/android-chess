@@ -331,7 +331,7 @@ public class PlayChessServiceTest {
     @Test
     public void promotion() {
         promotePawns();
-
+        System.out.println(playChessService.getChessBoard().toString());
         ChessPiece promotedWhitePiece = playChessService.getPieceAt('a', 8);
         assertEquals(ChessPiece.Type.Queen, promotedWhitePiece.getType());
         assertEquals(2, promotedWhitePiece.killScore);
@@ -365,7 +365,9 @@ public class PlayChessServiceTest {
         playChessService.tryMove('a', 6, 'b', 7);
         playChessService.tryMove('h', 3, 'g', 2);
         playChessService.tryMove('b', 7, 'a', 8);
+        playChessService.promote(ChessPiece.Type.Queen);
         playChessService.tryMove('g', 2, 'h', 1);
+        playChessService.promote(ChessPiece.Type.Queen);
     }
 
     public void kill_b7PawnWith_a2Pawn() {

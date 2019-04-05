@@ -12,6 +12,11 @@ import io.github.breadkey.chess.model.chess.chessPieces.King;
 import io.github.breadkey.chess.model.chess.chessPieces.Pawn;
 
 public class PlayChessService {
+    private Move newMove;
+    private RuleList newRules;
+    private KillLog newKillLog;
+    private Pawn pawnWillPromote;
+
     public enum Division {
         Black, White
     }
@@ -92,13 +97,12 @@ public class PlayChessService {
         King king = chessBoard.getKing(pieceToMove.division);
         king.setChecked(false);
 
-        KillLog killLog = null;
         ChessPiece pieceWillDead = getPieceAt(toFile, toRank);
         if (pieceWillDead != null) {
             pieceToMove.killScore++;
             chessBoard.getPieces(pieceWillDead.division).remove(pieceWillDead);
-            killLog = new KillLog(pieceToMove, pieceWillDead,toFile, toRank);
-            killLogs.add(killLog);
+            newKillLog = new KillLog(pieceToMove, pieceWillDead,toFile, toRank);
+            killLogs.add(newKillLog);
 
             for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
                 chessPlayObserver.killHappened(pieceToMove, pieceWillDead, toFile, toRank);
@@ -112,10 +116,10 @@ public class PlayChessService {
         chessBoard.placePiece(fromFile, fromRank, null);
         pieceToMove.moveCount++;
 
-        Move newMove = new Move(pieceToMove.division, pieceToMove.type, new Coordinate(fromFile, fromRank), new Coordinate(toFile, toRank));
-        List<ChessRuleManager.Rule> rules = new RuleList();
+        newMove = new Move(pieceToMove.division, pieceToMove.type, new Coordinate(fromFile, fromRank), new Coordinate(toFile, toRank));
+        newRules = new RuleList();
         ChessRuleManager.Rule castling = ruleManager.findCastling(chessBoard, newMove);
-        rules.add(castling);
+        newRules.add(castling);
         if (castling == ChessRuleManager.Rule.KingSideCastling) {
             char kingSideRookFile = ChessBoard.files.get(ChessBoard.files.size() - 1);
             ChessPiece kingSideRook = getPieceAt(kingSideRookFile, toRank);
@@ -133,23 +137,46 @@ public class PlayChessService {
         ChessRuleManager.Rule pawnRule = ruleManager.findPawnRule(chessBoard, newMove);
 
         if (pawnRule == ChessRuleManager.Rule.Promotion) {
-            rules.add(pawnRule);
-            ChessPiece.Type promoteTo = ChessPiece.Type.Queen;
+            newRules.add(pawnRule);
             for (ChessPlayObserver observer : chessPlayObservers) {
-                promoteTo = observer.selectTypeToPromotion();
+                observer.selectTypeToPromotion();
             }
+            pawnWillPromote = (Pawn) pieceToMove;
+
+            /*
             newMove.setPromotedType(promoteTo);
             chessBoard.promote((Pawn) pieceToMove, promoteTo);
 
             if (killLog != null) {
                 killLog.killer = chessBoard.getPieceAt(toFile, toRank);
             }
+            */
+            return;
         }
 
-        ChessRuleManager.Rule check = ruleManager.findCheck(chessBoard, newMove);
-        rules.add(check);
+       endMove(pieceToMove);
+    }
 
-        newMove.setRules(rules);
+    public void promote(ChessPiece.Type promoteTo) {
+        if (pawnWillPromote == null) {
+            return;
+        }
+
+        newMove.setPromotedType(promoteTo);
+        chessBoard.promote(pawnWillPromote, promoteTo);
+
+        if (newKillLog != null) {
+            newKillLog.killer = chessBoard.getPieceAt(pawnWillPromote.getFile(), pawnWillPromote.getRank());
+        }
+
+        endMove(pawnWillPromote);
+    }
+
+    private void endMove(ChessPiece pieceToMove) {
+        ChessRuleManager.Rule check = ruleManager.findCheck(chessBoard, newMove);
+        newRules.add(check);
+
+        newMove.setRules(newRules);
         moves.add(newMove);
 
         for (ChessPlayObserver chessPlayObserver : chessPlayObservers) {
@@ -166,6 +193,10 @@ public class PlayChessService {
             endGame(pieceToMove.division);
         }
 
+        newMove = null;
+        newRules = null;
+        newKillLog = null;
+        pawnWillPromote = null;
         changeTurn();
     }
 

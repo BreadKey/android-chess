@@ -12,5 +12,5 @@ public interface ChessPlayObserver {
     void killHappened(ChessPiece pieceWillMove, ChessPiece pieceWillDead, char toFile, int toRank);
     void gameEnded(PlayChessService.Division winner);
     void turnChanged(PlayChessService.Division turn);
-    ChessPiece.Type selectTypeToPromotion();
+    void selectTypeToPromotion();
 }

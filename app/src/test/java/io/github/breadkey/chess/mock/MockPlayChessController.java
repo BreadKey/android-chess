@@ -73,7 +73,7 @@ public class MockPlayChessController extends PlayChessController {
     }
 
     @Override
-    public ChessPiece.Type selectTypeToPromotion() {
-        return ChessPiece.Type.Queen;
+    public void selectTypeToPromotion() {
+
     }
 }

@@ -135,6 +135,10 @@ public class ChessPresenter extends PlayChessController {
                     view.movePiece(new Coordinate(rookFromFile, rookRank), new Coordinate(rookToFile, rookRank));
                     break;
                 }
+                case Promotion: {
+                    ChessPiece promotedPiece = getPlayChessService().getPieceAt(move.getToCoordinate().getFile(), move.getToCoordinate().getRank());
+                    view.showPromotion(promotedPiece);
+                }
                 case Check: {
                     sound = view.PIECE_CHECK_SOUND;
                     break;
@@ -222,8 +226,8 @@ public class ChessPresenter extends PlayChessController {
     }
 
     @Override
-    public ChessPiece.Type selectTypeToPromotion() {
-        return ChessPiece.Type.Queen;
+    public void selectTypeToPromotion() {
+
     }
 
     @Override
