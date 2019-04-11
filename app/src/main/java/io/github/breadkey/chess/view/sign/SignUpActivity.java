@@ -21,6 +21,7 @@ public class SignUpActivity extends AppCompatActivity {
     private SignUpPresenter presenter;
     private View inputContainer;
     private EditText nicknameInput;
+    private Button enterButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +47,20 @@ public class SignUpActivity extends AppCompatActivity {
 
         presenter = new SignUpPresenter(this);
 
-        Button enterButton = findViewById(R.id.enter_nickname_button);
+        enterButton = findViewById(R.id.enter_nickname_button);
         enterButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(nicknameInput.getWindowToken(), 0);
-                presenter.nicknameEntered(nicknameInput.getText().toString());
+                enterNickname();
             }
         });
+    }
+
+    private void enterNickname() {
+        presenter.nicknameEntered(nicknameInput.getText().toString());
+        nicknameInput.setEnabled(false);
+        enterButton.setEnabled(false);
     }
 
     public void showEnterNickname(String defaultNickname) {
@@ -71,6 +78,8 @@ public class SignUpActivity extends AppCompatActivity {
                 inputContainer.setVisibility(View.VISIBLE);
             }
         };
+        nicknameInput.setEnabled(true);
+        enterButton.setEnabled(true);
         BakeryInformation.showInformation((ViewGroup) findViewById(R.id.sign_up_main),
                 "중복된 닉네임 입니다!",
                 "\""+ nicknameInput.getText().toString() + "\"" + "는(은) 이미 존재하는 닉네임 입니다.",
