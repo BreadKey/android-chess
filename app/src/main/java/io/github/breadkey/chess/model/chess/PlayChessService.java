@@ -47,8 +47,8 @@ public class PlayChessService {
     }
 
     private void decideDivision(Player player1, Player player2) {
-        int dice = new Random().nextInt(2);
-        if (dice == 0) {
+        boolean dice = new Random().nextBoolean();
+        if (dice) {
             players = new HashMap<>();
             players.put(PlayChessService.Division.White, player1);
             players.put(PlayChessService.Division.Black, player2);
